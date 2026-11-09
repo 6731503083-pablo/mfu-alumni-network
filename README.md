@@ -32,6 +32,31 @@ JWT_SECRET=<signs and verifies sign-in tokens until the Identity service publish
 EVENTS_CLUBS_WEBHOOK_SECRET=<a secret only you and Events & Clubs know>
 ```
 
+## Happy-path demo
+
+`npm run demo` runs the presentation's five steps to a mentor against the live API and checks
+every response, so it doubles as an end-to-end test (exit code 1 if any check fails):
+
+0. An alumni creates a profile and consents to share their email but not their LINE ID.
+1. A student searches by country and by a Burmese or Thai job title.
+2. The student opens the profile and sees no contact details.
+3. The student sends a request. A message that's too short gets 400, and a second request to the
+   same alumni gets 409.
+4. The alumni accepts. A second alumni rejects a request, and a request past the mentee limit gets
+   409.
+5. The student sees the email and not the LINE ID. The reveal log and outbox rows are read from D1.
+6. The alumni withdraws consent, and the email is hidden again.
+7. Missing, forged and expired tokens get 401, and the wrong role or owner gets 403.
+8. An admin deactivates the profile, which then returns 404 (skip this with `npm run demo -- --keep`).
+
+```bash
+npm run demo:seed                               # six fictional "(demo)" alumni, safe to rerun
+npm run demo                                    # live site, signs tokens with .demo.vars
+BASE_URL=http://localhost:8787 npm run demo     # local `npm run dev`, signs with .dev.vars
+```
+
+A saved live run is in [`evidence/demo-run-live-2026-11-09.txt`](evidence/demo-run-live-2026-11-09.txt).
+
 ## Evidence checklist for A5
 
 ### 1. Your public endpoint

@@ -32,7 +32,12 @@ npm run db:local                 # apply migrations to LOCAL D1
 npm run dev                      # wrangler dev on :8787, docs at /docs
 npm test                         # Vitest inside the Workers runtime, with its own test secrets
 npm run typecheck                # checks src and test
+npm run demo:seed                # upserts six fictional "(demo)" alumni on BASE_URL (default: live)
+npm run demo                     # happy path end to end on BASE_URL, exits 1 if a check fails
 ```
+
+The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev.vars` (when
+`BASE_URL` is localhost). Both files are git-ignored. The scripts aren't typechecked.
 
 ## Invariants
 

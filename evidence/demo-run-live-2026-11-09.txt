@@ -1,0 +1,117 @@
+
+> alumni-network-integration@1.0.0 demo
+> node scripts/demo.mjs
+
+MFU Alumni Network — happy path demo
+https://alumni-network-integration.phyo2lay.workers.dev   run mw8w7l10
+6 seed alumni ready (npm run demo:seed)
+
+0  Alumni joins on their own terms   BR-01 · BR-02
+  PATCH /alumni/me  as alumni Thiri Aung
+    201 {"consent_contact_email":true,"consent_contact_line":false,"consent_timestamp":"2026-11-09T06:41:18.186Z","consent_purpose_version":"v1","mentee_capacity":1}
+    ✓ returns 201
+    ✓ server recorded when and for what purpose consent was given
+
+1  Search   5 filters, Burmese and Thai text
+  GET /alumni?country=MM&role=အင်ဂျင်နီယာ&open_to_mentoring=true  as student Su Myat
+    200 2 result(s)
+      • Thiri Aung (demo) · ဆော့ဖ်ဝဲ အင်ဂျင်နီယာ · Mandalay, MM
+      • Kyaw Zin Htet (demo) · ဆော့ဖ်ဝဲ အင်ဂျင်နီယာ · Yangon, MM
+    ✓ returns 200
+    ✓ finds Thiri by a Burmese job title
+    ✓ search results contain no contact details
+  GET /alumni?country=TH&role=พยาบาล  as student Su Myat
+    200 1 result(s)
+      • Nattaya Srisuk (demo) · พยาบาลวิชาชีพ · Chiang Rai, TH
+    ✓ returns 200
+    ✓ finds a nurse by a Thai job title
+
+2  View profile   only fields the alumni allows
+  GET /alumni/396bb9f0-fae8-42a1-870c-f98b94309423  as student Su Myat
+    200 {"display_name":"Thiri Aung (demo)","city":"Mandalay","interests":["Software Development","Working Abroad"],"contact":"(hidden)"}
+    ✓ returns 200
+    ✓ no contact details before a connection
+
+3  Request   must write "what I want help with" · 1 per alumni · 5 in total
+  POST /mentoring-requests  as student Su Myat
+    400 {"message":"Too small: expected string to have >=10 characters"}
+    ✓ returns 400
+  POST /mentoring-requests  as student Su Myat
+    201 {"id":"5d9eb67c-fbf7-4437-a22b-61507e4abff3","status":"pending"}
+    ✓ returns 201
+  POST /mentoring-requests  as student Su Myat
+    409 DUPLICATE_PENDING: You already have a pending request to this alumni
+    ✓ returns 409
+  POST /mentoring-requests  as student Su Myat
+    201 {"id":"b623be5e-e360-41bf-ac1a-b66383bb1175","status":"pending"}
+    ✓ returns 201
+
+4  Accept / reject   one tap · capacity, consent, log and outbox in one transaction
+  GET /mentoring-requests/me  as alumni Thiri Aung
+    200 1 result(s)
+      • pending · "I am a third-year IT student. I want advice on sof…"
+    ✓ returns 200
+    ✓ Thiri sees the pending request
+  PATCH /mentoring-requests/5d9eb67c-fbf7-4437-a22b-61507e4abff3  as alumni Thiri Aung
+    200 {"status":"accepted","connection_id":"8e5b976b-fabc-457d-90bd-e8544182876c","revealed_fields":["contact_email"]}
+    ✓ returns 200
+    ✓ only the consented field is revealed
+  PATCH /mentoring-requests/b623be5e-e360-41bf-ac1a-b66383bb1175  as alumni Li Wei (demo)
+    200 {"status":"rejected","responded_at":"2026-11-09T06:41:19.869Z"}
+    ✓ returns 200
+  Thiri set a limit of 1 mentee. A second student asks anyway:
+  POST /mentoring-requests  as student Ko Min
+    201 {"id":"7a3c00a3-8e76-43b6-a82b-6191bc2064d6","status":"pending"}
+    ✓ returns 201
+  PATCH /mentoring-requests/7a3c00a3-8e76-43b6-a82b-6191bc2064d6  as alumni Thiri Aung
+    409 CAPACITY_FULL: You have reached your mentee capacity
+    ✓ returns 409
+
+5  Connect   contact shared · logged · notification queued
+  GET /alumni/396bb9f0-fae8-42a1-870c-f98b94309423  as student Su Myat
+    200 {"display_name":"Thiri Aung (demo)","contact":{"email":"thiri.mw8w7l10@example.com"}}
+    ✓ returns 200
+    ✓ the student sees the email
+    ✓ the student does not see LINE, which was not consented
+  D1 contact_reveal_log (append-only, BR-10)
+      • {"field_name":"contact_email","viewer_id":"demo-student-mw8w7l10","revealed_at":"2026-11-09T06:41:19.673Z"}
+    ✓ the reveal is logged
+  D1 webhook_outbox (FR-10)
+      • {"event_type":"alumni.connection_created","status":"pending","attempts":0}
+    ✓ alumni.connection_created is queued
+
+6  Alumni takes consent back   BR-03
+  PATCH /alumni/me  as alumni Thiri Aung
+    200 {"consent_contact_email":false}
+    ✓ returns 200
+  GET /alumni/396bb9f0-fae8-42a1-870c-f98b94309423  as student Su Myat
+    200 {"display_name":"Thiri Aung (demo)","contact":{}}
+    ✓ returns 200
+    ✓ the email is hidden again
+
+7  Security checks   token on every call · roles · ownership
+  GET /alumni  as no token
+    401 UNAUTHENTICATED: Send a token in the Authorization header
+    ✓ returns 401
+  GET /alumni  as a token signed with a guessed secret
+    401 UNAUTHENTICATED: The token is invalid
+    ✓ returns 401
+  GET /alumni  as a token that expired an hour ago
+    401 UNAUTHENTICATED: The token has expired or has no expiry
+    ✓ returns 401
+  PATCH /admin/alumni/396bb9f0-fae8-42a1-870c-f98b94309423/deactivate  as student Su Myat
+    403 FORBIDDEN: Your role cannot do this
+    ✓ returns 403
+  PATCH /mentoring-requests/7a3c00a3-8e76-43b6-a82b-6191bc2064d6  as student Su Myat, cancelling Ko Min's request
+    403 NOT_OWNER: Only the student who sent a request can cancel it
+    ✓ returns 403
+
+8  Admin keeps data clean   turns a profile off · nothing is hard-deleted
+  PATCH /admin/alumni/396bb9f0-fae8-42a1-870c-f98b94309423/deactivate  as admin Admin
+    200 {"id":"396bb9f0-fae8-42a1-870c-f98b94309423","is_active":false}
+    ✓ returns 200
+  GET /alumni/396bb9f0-fae8-42a1-870c-f98b94309423  as student Su Myat
+    404 NOT_FOUND: Alumni not found
+    ✓ returns 404
+
+✓ All 35 checks passed

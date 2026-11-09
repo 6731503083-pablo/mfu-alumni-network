@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p test",
     "db:local": "wrangler d1 migrations apply alumni-network-db --local",
     "db:remote": "wrangler d1 migrations apply alumni-network-db --remote",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "demo": "node scripts/demo.mjs",
+    "demo:seed": "node scripts/seed.mjs"
   },
   "dependencies": {
     "hono": "^4.13.4",
