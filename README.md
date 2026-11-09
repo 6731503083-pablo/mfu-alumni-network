@@ -7,6 +7,9 @@ A Cloudflare Worker with two parts:
 - **Team 17 integration lab (A5):** one endpoint exposed to a partner, one endpoint called on a
   partner, a signed webhook receiver and sender, and one idempotent create endpoint.
 
+**Live:** <https://alumni-network-integration.phyo2lay.workers.dev>, with the API docs and a request
+console at [`/docs`](https://alumni-network-integration.phyo2lay.workers.dev/docs).
+
 ## Setup
 
 ```bash
@@ -105,5 +108,6 @@ npx wrangler secret put EVENTS_CLUBS_WEBHOOK_SECRET
 npm run deploy
 ```
 
-`WEBHOOK_SECRET` and `PARTNER_WEBHOOK_SECRET` are already set on the live Worker. Secrets go in
-`wrangler secret put` or the Cloudflare dashboard, never in the repo.
+All four secrets are set on the live Worker. Secrets go in `wrangler secret put` or the Cloudflare
+dashboard, never in the repo. The live `JWT_SECRET` is kept locally in `.demo.vars` (git-ignored) for
+signing demo tokens.
