@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MFU Alumni Network API docs</title>
+<meta name="description" content="How to call the MFU Alumni Network API, with a console for trying each endpoint.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23122B22'/%3E%3Cpath d='M6 16h14' stroke='%23C9A227' stroke-width='3'/%3E%3Cpath d='M18 9l8 7-8 7z' fill='%23C9A227'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caladea:wght@700&family=Carlito:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@400;600;700&display=swap">
+<style>
+  /* Palette and typefaces come from the team's PRD deck. */
+  :root {
+    --pine: #122b22;
+    --well: #0c1f18;
+    --forest: #1b4332;
+    --fern: #2d6a4f;
+    --edge: #4f8a70;
+    --gold: #c9a227;
+    --gold-hover: #dbb539;
+    --brass: #806400;
+    --wheat: #fbf4d9;
+    --sage: #9fc4b2;
+    --pale: #cfe3d8;
+    --mist: #f4f8f6;
+    --line: #e1eae5;
+    --ink: #22332d;
+    --muted: #5f7268;
+    --error: #b3261e;
+    --serif: Caladea, Cambria, Georgia, serif;
+    --sans: Carlito, Calibri, "Segoe UI", system-ui, sans-serif;
+    --mono: Inconsolata, ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: #fff; color: var(--ink); font: 400 18px/1.5 var(--sans); }
+  p { margin: 0; text-wrap: pretty; }
+  code { font-family: var(--mono); }
+  :focus-visible { outline: 2px solid var(--fern); outline-offset: 2px; }
+  .wrap { max-width: 1400px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
+
+  /* Cover */
+  .cover { background: var(--pine); color: #fff; }
+  .cover-inner { padding-block: clamp(32px, 5vw, 56px); }
+  .masthead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 48px; }
+  .masthead > div:first-child { flex: 1 1 560px; min-width: 0; }
+  h1 { margin: 0; font: 700 clamp(2.5rem, 6vw, 4.5rem)/1.05 var(--serif); text-wrap: balance; }
+  .lede { max-width: 62ch; margin-top: 14px; color: var(--pale); font-size: 21px; line-height: 1.4; }
+  .server { display: grid; gap: 2px; margin: 0; font-size: 16px; }
+  .server div { display: flex; gap: 10px; }
+  .server dt { min-width: 62px; color: var(--sage); }
+  .server dd { margin: 0; overflow-wrap: anywhere; }
+  .server code { font-size: 16px; }
+
+  /* Map: three lifelines at the left edge, centre and right edge, one link per call */
+  .map { margin-top: clamp(28px, 4vw, 44px); }
+  .actors { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; }
+  .actor { padding: 6px 12px; border: 1.5px solid var(--gold); font-size: 16px; font-weight: 700; white-space: nowrap; }
+  .actor:first-child { justify-self: start; }
+  .actor:last-child { justify-self: end; }
+  .actor-self { background: var(--gold); color: var(--pine); }
+  .hops { position: relative; }
+  .hops::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--gold) 0 0) 0 0 / 1.5px 100% no-repeat,
+      linear-gradient(var(--gold) 0 0) 50% 0 / 1.5px 100% no-repeat,
+      linear-gradient(var(--gold) 0 0) 100% 0 / 1.5px 100% no-repeat;
+  }
+  .hop { display: grid; grid-template-columns: 1fr 1fr; align-items: end; padding-block: 12px 10px; color: var(--pale); text-decoration: none; }
+  .hop:hover { background: var(--forest); color: #fff; }
+  .hop:focus-visible { outline: 2px solid #fff; outline-offset: -2px; background: var(--forest); color: #fff; }
+  .seg { display: block; min-width: 0; }
+  .label { display: block; padding: 0 12px 6px; text-align: center; font: 600 16px/1.25 var(--mono); }
+  .label b { color: var(--gold); font-weight: 700; }
+  .label-them, .label .from { font: italic 400 16px/1.25 var(--sans); }
+  .label .from { margin-right: 6px; }
+  .wire { position: relative; display: block; height: 1.5px; background: var(--gold); animation: draw .35s cubic-bezier(.2, .7, .3, 1) both; animation-delay: var(--d, 0s); }
+  .wire::after { content: ""; position: absolute; top: 50%; transform: translateY(-50%); border-block: 5px solid transparent; }
+  .to-right .wire { transform-origin: left center; }
+  .to-right .wire::after { right: 0; border-left: 9px solid var(--gold); }
+  .to-left .wire { transform-origin: right center; }
+  .to-left .wire::after { left: 0; border-right: 9px solid var(--gold); }
+  @keyframes draw { from { transform: scaleX(0); } }
+
+  /* Index: a plain block on small screens, a sticky rail on wide ones */
+  .index { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px 40px; padding-block: 28px; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .index-group { margin-bottom: 4px; color: var(--forest); font-weight: 700; }
+  .index ul { display: flex; flex-wrap: wrap; gap: 0 14px; margin: 0; padding: 0; list-style: none; }
+  .index a { display: block; padding: 4px 0; color: var(--ink); text-underline-offset: 3px; }
+  .index a:hover { color: var(--fern); }
+  .index a[aria-current] { color: var(--forest); font-weight: 700; }
+
+  /* Groups and endpoints */
+  .group-head { padding-block: 56px 8px; }
+  h2 { margin: 0; color: var(--forest); font: 700 clamp(2rem, 4.4vw, 3rem)/1.1 var(--serif); text-wrap: balance; }
+  .group-head p { max-width: 62ch; margin-top: 10px; font-size: 21px; line-height: 1.4; }
+  .group + .group { margin-top: 24px; border-top: 3px solid var(--forest); }
+  .endpoint { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); align-items: start; gap: 32px 48px; padding-block: 48px; border-top: 1px solid var(--line); scroll-margin-top: 8px; }
+  .group-head + .endpoint { border-top: 0; padding-top: 32px; }
+  h3 { margin: 0; color: var(--forest); font: 700 clamp(1.5rem, 3vw, 2rem)/1.15 var(--serif); text-wrap: balance; }
+  h4 { margin: 24px 0 6px; color: var(--forest); font: 700 18px/1.3 var(--sans); }
+  .route { display: inline-block; margin: 8px 0 14px; padding: 1px 6px 1px 0; font: 600 20px/1.3 var(--mono); overflow-wrap: anywhere; }
+  .endpoint:target .route { animation: arrive 1.6s ease-out; }
+  @keyframes arrive { from { background: #f3e4a6; box-shadow: -6px 0 0 #f3e4a6; } to { background: transparent; box-shadow: -6px 0 0 transparent; } }
+  .method { font-weight: 700; }
+  .method-get { color: var(--fern); }
+  .method-post { color: var(--brass); }
+  .method-patch { color: #1f5c8f; }
+  .method-delete { color: var(--error); }
+  .api-id { margin-left: 6px; color: var(--muted); font: 400 16px/1 var(--sans); }
+  .doc code { padding: .05em .28em; border-radius: 3px; background: var(--mist); font-size: .95em; overflow-wrap: anywhere; }
+  .doc code.shape { display: block; margin-top: 2px; padding: 0; background: none; color: var(--muted); }
+  .doc ol { margin: 0; padding-left: 1.3em; }
+  .doc li { padding-block: 2px; }
+  .doc a { color: var(--fern); text-underline-offset: 3px; }
+  .sample { margin: 0; padding: 12px 14px; border-radius: 4px; background: var(--mist); font: 400 15px/1.45 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .note { margin-top: 16px; padding: 10px 14px; border-radius: 4px; background: var(--wheat); }
+  .spec { width: 100%; border-collapse: collapse; }
+  .spec th { padding: 0 12px 4px 0; border-bottom: 1px solid var(--edge); color: var(--muted); font-size: 16px; font-weight: 400; text-align: left; }
+  .spec td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .spec td:last-child, .spec th:last-child { padding-right: 0; }
+  .spec td:first-child code { white-space: nowrap; }
+  .where { display: block; color: var(--muted); font-size: 16px; }
+  .status { font: 700 18px/1.5 var(--mono); }
+  .s2 { color: var(--fern); }
+  .s4 { color: var(--brass); }
+  .s5 { color: var(--error); }
+  .ref { margin-top: 18px; padding-block: 2px; }
+  .ref summary { color: var(--forest); font-weight: 700; cursor: pointer; }
+  .ref p { margin-top: 4px; line-height: 1.8; }
+
+  /* Console */
+  .console { display: grid; gap: 16px; min-width: 0; padding: 20px; border-radius: 6px; background: var(--pine); color: #fff; font-size: 16px; line-height: 1.4; }
+  .console :focus-visible { outline-color: #fff; }
+  .field { display: grid; gap: 4px; min-width: 0; }
+  .field > label { color: var(--pale); font-weight: 700; }
+  .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .hint { color: var(--sage); }
+  .inline { display: flex; gap: 8px; min-width: 0; }
+  .inline input { flex: 1 1 auto; min-width: 0; }
+  .console input:not([type=checkbox]), .console textarea, .console select { width: 100%; padding: 9px 10px; border: 1px solid var(--edge); border-radius: 4px; background: var(--forest); color: #fff; font: 400 16px/1.4 var(--mono); }
+  .console select { font-family: var(--sans); }
+  .console ::placeholder { color: var(--sage); opacity: 1; }
+  .console textarea { display: block; resize: vertical; }
+  .check { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .check input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--gold); }
+  .curl, .result pre { margin: 0; padding: 12px; border-radius: 4px; background: var(--well); font: 400 15px/1.45 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .curl { color: var(--pale); }
+  .result { display: grid; gap: 8px; min-width: 0; }
+  .result pre { max-height: 320px; overflow: auto; color: #fff; }
+  .result-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+  .code { font: 700 17px/1.3 var(--mono); }
+  .ok { color: #95e0b4; }
+  .warn { color: #f0cf6b; }
+  .bad { color: #ffb4a8; }
+  .time, .empty { color: var(--sage); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn { flex: none; min-height: 44px; padding: 10px 16px; border: 1px solid var(--edge); border-radius: 4px; background: transparent; color: #fff; font: 700 16px/1.2 var(--sans); white-space: nowrap; cursor: pointer; }
+  .btn:hover:not([disabled]) { background: var(--forest); }
+  .btn-send { border-color: var(--gold); background: var(--gold); color: var(--pine); }
+  .btn-send:hover:not([disabled]) { border-color: var(--gold-hover); background: var(--gold-hover); }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+  footer { margin-top: 24px; padding-block: 24px 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 16px; }
+
+  @media (min-width: 1240px) {
+    .layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; }
+    .index { position: sticky; top: 0; display: block; align-self: start; max-height: 100vh; overflow-y: auto; padding-block: 56px 24px; border-bottom: 0; }
+    .index > div + div { margin-top: 24px; }
+    .index ul { display: block; }
+    .index a { padding: 3px 0; text-decoration: none; }
+    .index a:hover { text-decoration: underline; }
+  }
+  @media (max-width: 900px) {
+    .endpoint { grid-template-columns: minmax(0, 1fr); padding-block: 40px; }
+    .group-head { padding-top: 40px; }
+  }
+  @media (max-width: 560px) {
+    .lede, .group-head p { font-size: 18px; }
+    .console { padding: 16px; }
+    .actor { padding: 4px 8px; font-size: 15px; }
+    .label { padding-inline: 6px; font-size: 14px; }
+    .label-them, .label .from { display: block; margin-right: 0; font-size: 15px; }
+    .inline { flex-wrap: wrap; }
+    .fields thead { display: none; }
+    .fields tr { display: block; padding-block: 9px; border-bottom: 1px solid var(--line); }
+    .fields td { display: block; padding: 0; border: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wire, .endpoint:target .route { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap cover-inner">
+    <div class="masthead">
+      <div>
+        <h1>MFU Alumni Network API</h1>
+        <p class="lede">Students find alumni and ask for mentoring, and partner teams exchange events with this service. Each line on the map is a real call. Select one to read about it and try it.</p>
+      </div>
+      <dl class="server">
+        <div><dt>Base URL</dt><dd><code id="base-url"></code></dd></div>
+        <div><dt>Status</dt><dd id="live-status">checking</dd></div>
+      </dl>
+    </div>
+
+    <nav class="map" aria-label="Map of who calls whom">
+      <div class="actors" aria-hidden="true">
+        <span class="actor">Partners</span>
+        <span class="actor actor-self">Alumni Network</span>
+        <span class="actor">You</span>
+      </div>
+      <div class="hops">
+        <a class="hop" href="#mentoring" aria-label="You call the Mentoring API on this service, which has 8 endpoints">
+          <span class="seg"></span>
+          <span class="seg to-left" style="--d:.1s"><span class="label label-them"><b>Mentoring API</b>: 8 endpoints</span><i class="wire"></i></span>
+        </a>
+        <a class="hop" href="#events-clubs" aria-label="Events and Clubs sends events to POST /webhooks/events-clubs on this service">
+          <span class="seg to-right" style="--d:.25s"><span class="label"><span class="from">Events &amp; Clubs</span> <b>POST</b> /webhooks/<wbr>events-clubs</span><i class="wire"></i></span>
+          <span class="seg"></span>
+        </a>
+        <a class="hop" href="#status" aria-label="Team 17 calls GET /api/integration/status on this service">
+          <span class="seg to-right" style="--d:.4s"><span class="label"><span class="from">Team 17</span> <b>GET</b> /api/<wbr>integration/<wbr>status</span><i class="wire"></i></span>
+          <span class="seg"></span>
+        </a>
+        <a class="hop" href="#partner-status" aria-label="You call GET /api/partner/status, then this service calls Team 17's status endpoint">
+          <span class="seg to-left" style="--d:.7s"><span class="label label-them">Team 17's status endpoint</span><i class="wire"></i></span>
+          <span class="seg to-left" style="--d:.55s"><span class="label"><b>GET</b> /api/<wbr>partner/<wbr>status</span><i class="wire"></i></span>
+        </a>
+        <a class="hop" href="#receive-webhook" aria-label="Team 17 sends webhooks to POST /api/webhooks/partner on this service">
+          <span class="seg to-right" style="--d:.85s"><span class="label"><span class="from">Team 17</span> <b>POST</b> /api/<wbr>webhooks/<wbr>partner</span><i class="wire"></i></span>
+          <span class="seg"></span>
+        </a>
+        <a class="hop" href="#send-webhook" aria-label="You call POST /api/webhooks/send-test, then this service sends a webhook to Team 17">
+          <span class="seg to-left" style="--d:1.15s"><span class="label label-them">Team 17's webhook receiver</span><i class="wire"></i></span>
+          <span class="seg to-left" style="--d:1s"><span class="label"><b>POST</b> /api/<wbr>webhooks/<wbr>send-test</span><i class="wire"></i></span>
+        </a>
+        <a class="hop" href="#idempotent-create" aria-label="You call POST /api/connections on this service">
+          <span class="seg"></span>
+          <span class="seg to-left" style="--d:1.3s"><span class="label"><b>POST</b> /api/<wbr>connections</span><i class="wire"></i></span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="index" aria-label="All endpoints">
+    <div>
+      <p class="index-group">Mentoring API</p>
+      <ul>
+        <li><a href="#sign-in">Sign in for testing</a></li>
+        <li><a href="#search">Search alumni</a></li>
+        <li><a href="#profile">View a profile</a></li>
+        <li><a href="#update-profile">Create or update your profile</a></li>
+        <li><a href="#send-request">Send a mentoring request</a></li>
+        <li><a href="#list-requests">List your requests</a></li>
+        <li><a href="#answer-request">Accept, reject or cancel</a></li>
+        <li><a href="#end-connection">End a connection</a></li>
+        <li><a href="#deactivate">Deactivate a profile</a></li>
+        <li><a href="#events-clubs">Receive an alumni event</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="index-group">Team 17 integration lab</p>
+      <ul>
+        <li><a href="#status">Check this service's status</a></li>
+        <li><a href="#partner-status">Check Team 17's status</a></li>
+        <li><a href="#receive-webhook">Receive a Team 17 webhook</a></li>
+        <li><a href="#send-webhook">Send Team 17 a test webhook</a></li>
+        <li><a href="#idempotent-create">Try an idempotent create</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="group" id="mentoring">
+      <div class="group-head">
+        <h2>Mentoring API</h2>
+        <p>The PRD's nine endpoints. Students find alumni and ask for mentoring, and alumni decide what they share.</p>
+      </div>
+
+      <section class="endpoint" id="sign-in">
+        <div class="doc">
+          <h3>Sign in for testing</h3>
+          <p style="margin-top:12px">Every Mentoring API call needs a token in the <code>Authorization: Bearer</code> header, except the Events &amp; Clubs webhook. Until the Identity service publishes its token contract, tokens are HS256 JWTs signed with <code>JWT_SECRET</code>.</p>
+          <h4>Token claims</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Claim</th><th scope="col">What it holds</th></tr></thead>
+            <tbody>
+              <tr><td><code>sub</code><span class="where">Required</span></td><td>The user's ID. <code>user_id</code> also works.</td></tr>
+              <tr><td><code>role</code><span class="where">Required</span></td><td><code>student</code>, <code>alumni</code> or <code>admin</code>.</td></tr>
+              <tr><td><code>exp</code><span class="where">Required</span></td><td>Expiry time. A token without one is rejected.</td></tr>
+            </tbody>
+          </table>
+          <h4>Errors on any call that needs a token</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s4">401</td><td><code>UNAUTHENTICATED</code>: the token is missing, invalid or expired.</td></tr>
+              <tr><td class="status s4">403</td><td><code>FORBIDDEN</code>: your role can't call this endpoint.</td></tr>
+              <tr><td class="status s5">503</td><td><code>AUTH_NOT_CONFIGURED</code>: the server has no <code>JWT_SECRET</code>.</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:12px">Errors look like this, with <code>fields</code> on a 400:</p>
+          <pre class="sample" style="margin-top:6px">{ "error": "Some fields are invalid", "code": "VALIDATION_ERROR", "fields": { "message": "..." } }</pre>
+          <h4>Try the whole flow</h4>
+          <ol>
+            <li>Add the JWT secret on this page.</li>
+            <li><a href="#update-profile">Create a profile</a> as Alumni 1.</li>
+            <li><a href="#send-request">Send a request</a> as Student 1.</li>
+            <li><a href="#answer-request">Accept it</a> as Alumni 1.</li>
+            <li><a href="#profile">View the profile</a> as Student 1 to see the shared contact details.</li>
+            <li><a href="#end-connection">End the connection</a>.</li>
+          </ol>
+          <p style="margin-top:6px">IDs carry over from one step to the next.</p>
+        </div>
+        <div class="console">
+          <div class="field">
+            <label for="jwt-secret">JWT secret</label>
+            <input id="jwt-secret" type="password" autocomplete="new-password" spellcheck="false" aria-describedby="jwt-secret-hint">
+            <p class="hint" id="jwt-secret-hint">When running locally, it's <code>JWT_SECRET</code> in <code>.dev.vars</code>. It signs test tokens in this browser, and it isn't sent or saved.</p>
+          </div>
+          <div class="field">
+            <label for="pasted-token">Or paste a token</label>
+            <input id="pasted-token" type="text" autocomplete="off" spellcheck="false" aria-describedby="pasted-token-hint">
+            <p class="hint" id="pasted-token-hint">Choose "Pasted token" under "Send as" to use it.</p>
+          </div>
+          <p class="empty" id="auth-state" aria-live="polite">No secret yet, so signed-in calls return 401.</p>
+        </div>
+      </section>
+
+      <section class="endpoint" id="search">
+        <div class="doc">
+          <h3>Search alumni</h3>
+          <p class="route"><span class="method method-get">GET</span> /alumni <span class="api-id">API-01</span></p>
+          <p>For students and alumni. Returns active alumni, most recent graduates first. Contact details are never included, even when an alumni has agreed to share them.</p>
+          <h4>Filters</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Filter</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>faculty_id</code></td><td>Faculty number from the list below.</td></tr>
+              <tr><td><code>role</code></td><td>Part of the job title, in any language.</td></tr>
+              <tr><td><code>interests</code></td><td>Interest names separated by commas. Matches any of them.</td></tr>
+              <tr><td><code>grad_year</code></td><td>Graduation year.</td></tr>
+              <tr><td><code>country</code></td><td>2-letter country code, such as <code>MM</code>.</td></tr>
+              <tr><td><code>open_to_mentoring</code></td><td><code>true</code> or <code>false</code>.</td></tr>
+              <tr><td><code>limit</code>, <code>offset</code></td><td>Page size from 1 to 50 (default 20), and where to start.</td></tr>
+            </tbody>
+          </table>
+          <details class="ref" id="reference">
+            <summary>Faculties and interests</summary>
+            <h4>Faculties</h4>
+            <table class="spec">
+              <thead><tr><th scope="col">Number</th><th scope="col">School</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>School of Science</td></tr>
+                <tr><td>2</td><td>School of Liberal Arts</td></tr>
+                <tr><td>3</td><td>School of Management</td></tr>
+                <tr><td>4</td><td>School of Law</td></tr>
+                <tr><td>5</td><td>School of Medicine</td></tr>
+                <tr><td>6</td><td>School of Agro-Industry</td></tr>
+                <tr><td>7</td><td>School of Information Technology</td></tr>
+                <tr><td>8</td><td>School of Cosmetic Science</td></tr>
+                <tr><td>9</td><td>School of Health Science</td></tr>
+                <tr><td>10</td><td>School of Nursing</td></tr>
+                <tr><td>11</td><td>School of Anti-Aging and Regenerative Medicine</td></tr>
+              </tbody>
+            </table>
+            <h4>Interests</h4>
+            <p><code>Software Development</code> <code>Data &amp; AI</code> <code>Cybersecurity</code> <code>UX/UI Design</code> <code>Product Management</code> <code>Entrepreneurship</code> <code>Marketing</code> <code>Finance</code> <code>Hospitality &amp; Tourism</code> <code>Healthcare</code> <code>Nursing Practice</code> <code>Law &amp; Compliance</code> <code>Cosmetic Science</code> <code>Food Technology</code> <code>Teaching &amp; Academia</code> <code>Studying Abroad</code> <code>Working Abroad</code></p>
+          </details>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The matching alumni.<code class="shape">{ data: [profile], pagination: { limit, offset, total } }</code></td></tr>
+              <tr><td class="status s4">400</td><td>A filter is invalid or unknown.<code class="shape">{ error, code, fields }</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/alumni" aria-label="Try GET /alumni" autocomplete="off">
+          <div class="field"><label for="as-search">Send as</label><select id="as-search" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field-grid">
+            <div class="field"><label for="q-role">role</label><input id="q-role" type="text" data-query="role" spellcheck="false" placeholder="Engineer"></div>
+            <div class="field"><label for="q-faculty">faculty_id</label><input id="q-faculty" type="text" inputmode="numeric" data-query="faculty_id" placeholder="7"></div>
+            <div class="field"><label for="q-interests">interests</label><input id="q-interests" type="text" data-query="interests" spellcheck="false" placeholder="Finance,Marketing"></div>
+            <div class="field"><label for="q-year">grad_year</label><input id="q-year" type="text" inputmode="numeric" data-query="grad_year" placeholder="2021"></div>
+            <div class="field"><label for="q-country">country</label><input id="q-country" type="text" data-query="country" spellcheck="false" placeholder="MM"></div>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="profile">
+        <div class="doc">
+          <h3>View a profile</h3>
+          <p class="route"><span class="method method-get">GET</span> /alumni/{id} <span class="api-id">API-02</span></p>
+          <p>For students and alumni. What comes back depends on who's asking.</p>
+          <h4>What each person sees</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Who's asking</th><th scope="col">What they see</th></tr></thead>
+            <tbody>
+              <tr><td>Anyone signed in</td><td>Name, graduation year, faculty, job title, company, location, bio, interests and mentoring availability.</td></tr>
+              <tr><td>A student connected to this alumni</td><td>All of that, plus <code>contact</code> with only the details the alumni shares right now.</td></tr>
+              <tr><td>The alumni who owns it</td><td>Everything, including every contact detail and consent setting.</td></tr>
+            </tbody>
+          </table>
+          <p class="note">When an alumni stops sharing a detail, it disappears on the next request, even inside an active connection.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The profile, as described above.</td></tr>
+              <tr><td class="status s4">404</td><td>There's no profile with this ID, or it has been deactivated.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/alumni/{id}" aria-label="Try GET /alumni/{id}" autocomplete="off">
+          <div class="field"><label for="as-profile">Send as</label><select id="as-profile" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field"><label for="profile-id">Alumni ID</label><input id="profile-id" type="text" data-param="id" data-fill="alumniId" spellcheck="false"></div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="update-profile">
+        <div class="doc">
+          <h3>Create or update your profile</h3>
+          <p class="route"><span class="method method-patch">PATCH</span> /alumni/me <span class="api-id">API-03</span></p>
+          <p>For alumni. The first call creates your profile, so it needs <code>display_name</code>, <code>grad_year</code> and <code>faculty_id</code>. Later calls change only the fields you send. Send <code>null</code> to clear an optional field. Any field not listed here is rejected.</p>
+          <h4>Fields</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>display_name</code></td><td>1 to 100 characters.</td></tr>
+              <tr><td><code>grad_year</code></td><td>From 1998 to next year.</td></tr>
+              <tr><td><code>faculty_id</code></td><td>Faculty number. See <a href="#reference">faculties and interests</a>.</td></tr>
+              <tr><td><code>job_title</code><br><code>company</code><br><code>city</code></td><td>Up to 100 characters each.</td></tr>
+              <tr><td><code>country_code</code></td><td>2 capital letters, such as <code>MM</code>.</td></tr>
+              <tr><td><code>bio</code></td><td>Up to 1,000 characters.</td></tr>
+              <tr><td><code>is_open_to_mentoring</code></td><td><code>true</code> or <code>false</code>. Starts as <code>false</code>.</td></tr>
+              <tr><td><code>mentee_capacity</code></td><td>0 to 10. Starts at 3.</td></tr>
+              <tr><td><code>contact_email</code><br><code>contact_line</code><br><code>contact_linkedin</code></td><td>Hidden until you agree to share them. LinkedIn must be a <code>https://linkedin.com</code> link.</td></tr>
+              <tr><td><code>consent_contact_email</code><br><code>consent_contact_line</code><br><code>consent_contact_linkedin</code></td><td><code>true</code> shares that detail with connected students. The detail must be filled in first. The server records the time and purpose version.</td></tr>
+              <tr><td><code>interests</code></td><td>Names from <a href="#reference">the list</a>. Replaces your whole list.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">201</td><td>Profile created. The body is your full profile.</td></tr>
+              <tr><td class="status s2">200</td><td>Profile updated. The body is your full profile.</td></tr>
+              <tr><td class="status s4">400</td><td>A field is invalid or unknown.<code class="shape">{ error, code, fields }</code></td></tr>
+              <tr><td class="status s4">409</td><td><code>PROFILE_EXISTS</code>: two first calls arrived together. Send it again.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="PATCH" data-path="/alumni/me" data-capture="alumniId:id" aria-label="Try PATCH /alumni/me" autocomplete="off">
+          <div class="field"><label for="as-update">Send as</label><select id="as-update" data-as data-default="alumni-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field">
+            <label for="update-body">Body</label>
+            <textarea id="update-body" data-body rows="15" spellcheck="false">{
+  "display_name": "Aung Kyaw",
+  "grad_year": 2021,
+  "faculty_id": 7,
+  "job_title": "Backend Engineer",
+  "company": "Grab",
+  "country_code": "MM",
+  "city": "Yangon",
+  "is_open_to_mentoring": true,
+  "mentee_capacity": 2,
+  "contact_email": "aung.kyaw@example.com",
+  "consent_contact_email": true,
+  "interests": ["Software Development", "Working Abroad"]
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="send-request">
+        <div class="doc">
+          <h3>Send a mentoring request</h3>
+          <p class="route"><span class="method method-post">POST</span> /mentoring-requests <span class="api-id">API-04</span></p>
+          <p>For students. Asks an alumni for mentoring.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>alumni_id</code><span class="where">Required</span></td><td>The alumni's profile ID.</td></tr>
+              <tr><td><code>message</code><span class="where">Required</span></td><td>What you want help with, in 10 to 2,000 characters.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">201</td><td>Request sent, and now pending.<code class="shape">{ id, student_id, alumni_id, message, status, created_at, responded_at }</code></td></tr>
+              <tr><td class="status s4">400</td><td>A field is invalid or unknown.<code class="shape">{ error, code, fields }</code></td></tr>
+              <tr><td class="status s4">404</td><td>There's no active alumni with this ID.</td></tr>
+              <tr><td class="status s4">409</td><td><code>DUPLICATE_PENDING</code>: you already have a pending request to this alumni.</td></tr>
+              <tr><td class="status s4">409</td><td><code>PENDING_LIMIT</code>: you already have 5 pending requests.</td></tr>
+              <tr><td class="status s4">409</td><td><code>NOT_OPEN_TO_MENTORING</code>: this alumni isn't taking requests.</td></tr>
+              <tr><td class="status s4">409</td><td><code>ALREADY_CONNECTED</code>: you're already connected with this alumni.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/mentoring-requests" data-capture="requestId:id" aria-label="Try POST /mentoring-requests" autocomplete="off">
+          <div class="field"><label for="as-request">Send as</label><select id="as-request" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field">
+            <label for="request-body">Body</label>
+            <textarea id="request-body" data-body data-fill="alumniId" data-fill-json="alumni_id" rows="5" spellcheck="false">{
+  "alumni_id": "",
+  "message": "I am a 3rd-year IT student and want advice on backend jobs abroad."
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="list-requests">
+        <div class="doc">
+          <h3>List your requests</h3>
+          <p class="route"><span class="method method-get">GET</span> /mentoring-requests/me <span class="api-id">API-05</span></p>
+          <p>Students see the requests they sent. Alumni see the requests they received. Newest come first. Use <code>limit</code> (1 to 50, default 20) and <code>offset</code> to page through.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Your requests. Each one has <code>alumni_name</code> and <code>connection</code>, which stays <code>null</code> until the request is accepted.<code class="shape">{ data: [request], pagination: { limit, offset, total } }</code></td></tr>
+              <tr><td class="status s4">400</td><td>A query parameter is invalid or unknown.<code class="shape">{ error, code, fields }</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/mentoring-requests/me" data-capture="requestId:data.0.id,connectionId:data.0.connection.id" aria-label="Try GET /mentoring-requests/me" autocomplete="off">
+          <div class="field"><label for="as-list">Send as</label><select id="as-list" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="answer-request">
+        <div class="doc">
+          <h3>Accept, reject or cancel</h3>
+          <p class="route"><span class="method method-patch">PATCH</span> /mentoring-requests/{id} <span class="api-id">API-06</span></p>
+          <p>Answers or withdraws a pending request. A request that's already closed can't change.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col"><code>status</code></th><th scope="col">Who can set it</th></tr></thead>
+            <tbody>
+              <tr><td><code>accepted</code></td><td>The alumni who received the request.</td></tr>
+              <tr><td><code>rejected</code></td><td>The alumni who received the request.</td></tr>
+              <tr><td><code>cancelled</code></td><td>The student who sent the request.</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:12px">Accepting either does all of this or none of it: checks capacity, marks the request accepted, creates the connection, logs each contact detail the student can now see, and queues an <code>alumni.connection_created</code> event.</p>
+          <p class="note"><strong>Queued events aren't sent yet.</strong> The delivery job isn't built, so they wait in <code>webhook_outbox</code>.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The updated request. <code>connection</code> is <code>null</code> unless it was accepted, and accepting adds <code>revealed_fields</code>.<code class="shape">{ ...request, connection, revealed_fields }</code></td></tr>
+              <tr><td class="status s4">400</td><td>The status isn't one of the three above.</td></tr>
+              <tr><td class="status s4">403</td><td><code>NOT_OWNER</code>: only the people in the table above can do this.</td></tr>
+              <tr><td class="status s4">404</td><td>There's no request with this ID.</td></tr>
+              <tr><td class="status s4">409</td><td><code>INVALID_STATE</code>: the request isn't pending anymore.</td></tr>
+              <tr><td class="status s4">409</td><td><code>CAPACITY_FULL</code>: the alumni has no mentee slots left.</td></tr>
+              <tr><td class="status s4">409</td><td><code>ALUMNI_INACTIVE</code>: this profile has been deactivated.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="PATCH" data-path="/mentoring-requests/{id}" data-capture="connectionId:connection.id" aria-label="Try PATCH /mentoring-requests/{id}" autocomplete="off">
+          <div class="field"><label for="as-answer">Send as</label><select id="as-answer" data-as data-default="alumni-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field"><label for="answer-id">Request ID</label><input id="answer-id" type="text" data-param="id" data-fill="requestId" spellcheck="false"></div>
+          <div class="field">
+            <label for="answer-status">status</label>
+            <select id="answer-status" data-json-field="status">
+              <option value="accepted">accepted</option>
+              <option value="rejected">rejected</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Update request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="end-connection">
+        <div class="doc">
+          <h3>End a connection</h3>
+          <p class="route"><span class="method method-delete">DELETE</span> /connections/{id} <span class="api-id">API-07</span></p>
+          <p>Either side can end it. The record stays, the student stops seeing contact details, and the alumni gets a mentee slot back.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Connection ended.<code class="shape">{ id, request_id, student_id, alumni_id, status: "ended", created_at, ended_at }</code></td></tr>
+              <tr><td class="status s4">403</td><td><code>NOT_OWNER</code>: you aren't part of this connection.</td></tr>
+              <tr><td class="status s4">404</td><td>There's no connection with this ID.</td></tr>
+              <tr><td class="status s4">409</td><td><code>INVALID_STATE</code>: this connection has already ended.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="DELETE" data-path="/connections/{id}" aria-label="Try DELETE /connections/{id}" autocomplete="off">
+          <div class="field"><label for="as-end">Send as</label><select id="as-end" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field"><label for="end-id">Connection ID</label><input id="end-id" type="text" data-param="id" data-fill="connectionId" spellcheck="false"></div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">End connection</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="deactivate">
+        <div class="doc">
+          <h3>Deactivate a profile</h3>
+          <p class="route"><span class="method method-patch">PATCH</span> /admin/alumni/{id}/deactivate <span class="api-id">API-08</span></p>
+          <p>For admins. Removes the profile from search and profile views, and blocks new requests to it. It returns status fields only, with no contact details. Repeating it is safe.</p>
+          <p class="note"><strong>There's no undo.</strong> No route reactivates a profile.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The profile is deactivated.<code class="shape">{ id, is_active: false }</code></td></tr>
+              <tr><td class="status s4">404</td><td>There's no profile with this ID.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="PATCH" data-path="/admin/alumni/{id}/deactivate" aria-label="Try PATCH /admin/alumni/{id}/deactivate" autocomplete="off">
+          <div class="field"><label for="as-deactivate">Send as</label><select id="as-deactivate" data-as data-default="admin-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field"><label for="deactivate-id">Alumni ID</label><input id="deactivate-id" type="text" data-param="id" spellcheck="false"></div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Deactivate profile</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="events-clubs">
+        <div class="doc">
+          <h3>Receive an alumni event</h3>
+          <p class="route"><span class="method method-post">POST</span> /webhooks/events-clubs <span class="api-id">API-09</span></p>
+          <p>Events &amp; Clubs posts alumni events here. The signature replaces a token. A bad event is logged and skipped, and a retried event is stored once.</p>
+          <p class="note"><strong>This is a draft contract.</strong> Events &amp; Clubs hasn't published its schema, so this shape follows the Week 06 lab. Stored events aren't shown to students yet.</p>
+          <h4>Request</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>X-Webhook-Signature</code><span class="where">Header, required</span></td><td>Hex HMAC-SHA256 of the raw body, keyed with <code>EVENTS_CLUBS_WEBHOOK_SECRET</code>.</td></tr>
+              <tr><td><code>event_id</code><span class="where">Required</span></td><td>Unique event ID. A repeated ID counts as a retry.</td></tr>
+              <tr><td><code>event_type</code><span class="where">Required</span></td><td>Must be <code>alumni.event</code>.</td></tr>
+              <tr><td><code>occurred_at</code><span class="where">Required</span></td><td>ISO 8601 time.</td></tr>
+              <tr><td><code>data.title</code><span class="where">Required</span></td><td>1 to 200 characters.</td></tr>
+              <tr><td><code>data.starts_at</code><span class="where">Required</span></td><td>ISO 8601 time.</td></tr>
+              <tr><td><code>data.faculty_id</code><br><code>data.interests</code><br><code>data.url</code><span class="where">Optional</span></td><td>Who the event is for, and an http or https link to it.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Event stored.<code class="shape">{ received: true }</code></td></tr>
+              <tr><td class="status s2">200</td><td>This event ID is already stored, so nothing changed.<code class="shape">{ received: true, duplicate: true }</code></td></tr>
+              <tr><td class="status s4">400</td><td>The signature is valid but the event isn't. It's logged and skipped.<code class="shape">{ error, code, fields }</code></td></tr>
+              <tr><td class="status s4">401</td><td><code>INVALID_SIGNATURE</code>: the signature is missing or wrong.</td></tr>
+              <tr><td class="status s5">503</td><td><code>WEBHOOK_NOT_CONFIGURED</code>: the server has no secret for this webhook.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/webhooks/events-clubs" aria-label="Try POST /webhooks/events-clubs" autocomplete="off">
+          <div class="field">
+            <label for="events-body">Body</label>
+            <textarea id="events-body" data-body rows="12" spellcheck="false"></textarea>
+          </div>
+          <div class="field">
+            <label for="events-secret">Shared secret</label>
+            <input id="events-secret" type="password" data-secret autocomplete="new-password" spellcheck="false" aria-describedby="events-secret-hint">
+            <p class="hint" id="events-secret-hint">Signs the body in this browser. It isn't sent or saved. Leave it empty to see the 401.</p>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+    </div>
+
+    <div class="group" id="lab">
+      <div class="group-head">
+        <h2>Team 17 integration lab</h2>
+        <p>The A5 lab routes, submitted as evidence. They need no token and work separately from the Mentoring API.</p>
+      </div>
+
+      <section class="endpoint" id="status">
+        <div class="doc">
+          <h3>Check this service's status</h3>
+          <p class="route"><span class="method method-get">GET</span> /api/integration/status</p>
+          <p>Team 17 calls this to confirm the service is running. It's public, with no headers or body needed.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The service is running.<code class="shape">{ team, service, version, status: "ok" }</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/api/integration/status" aria-label="Try GET /api/integration/status" autocomplete="off">
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="partner-status">
+        <div class="doc">
+          <h3>Check Team 17's status</h3>
+          <p class="route"><span class="method method-get">GET</span> /api/partner/status</p>
+          <p>This service calls Team 17's status endpoint and passes back the answer. It stops waiting after 5 seconds, so a dead partner can't hang the request.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Team 17 answered. The body is their JSON, unchanged.</td></tr>
+              <tr><td class="status s5">502</td><td>Team 17 answered with an error.<code class="shape">{ error, status }</code></td></tr>
+              <tr><td class="status s5">504</td><td>Team 17 didn't answer within 5 seconds, or its answer wasn't JSON.<code class="shape">{ error, detail }</code></td></tr>
+            </tbody>
+          </table>
+          <p class="note">The first call after a quiet spell can time out. Send it again before assuming Team 17 is down.</p>
+        </div>
+        <form class="console" data-method="GET" data-path="/api/partner/status" aria-label="Try GET /api/partner/status" autocomplete="off">
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="receive-webhook">
+        <div class="doc">
+          <h3>Receive a Team 17 webhook</h3>
+          <p class="route"><span class="method method-post">POST</span> /api/webhooks/partner</p>
+          <p>Team 17 posts events here. This service checks the signature, then stores each event once, however many times it's delivered.</p>
+          <h4>Request</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>X-Webhook-Signature</code><span class="where">Header, required</span></td><td>Hex HMAC-SHA256 of the raw body, keyed with the shared <code>WEBHOOK_SECRET</code>.</td></tr>
+              <tr><td><code>id</code><span class="where">Body, required</span></td><td>Unique event ID. A repeated ID counts as a retry.</td></tr>
+              <tr><td><code>type</code><span class="where">Body, required</span></td><td>Event name, such as <code>internship.status_changed</code>.</td></tr>
+              <tr><td><code>data</code><span class="where">Body, optional</span></td><td>Event details. Stored with the rest of the body.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Event stored.<code class="shape">{ received: true }</code></td></tr>
+              <tr><td class="status s2">200</td><td>This event ID is already stored, so nothing changed.<code class="shape">{ received: true, duplicate: true }</code></td></tr>
+              <tr><td class="status s4">401</td><td>The signature is missing or wrong.<code class="shape">{ error: "invalid signature" }</code></td></tr>
+              <tr><td class="status s5">500</td><td>The signature is valid, but the body isn't JSON.<code class="shape">{ error, code }</code></td></tr>
+            </tbody>
+          </table>
+          <p class="note"><strong>Always send <code>id</code> and <code>type</code>.</strong> An event missing either one isn't stored, but it still gets the <code>duplicate: true</code> reply.</p>
+        </div>
+        <form class="console" data-method="POST" data-path="/api/webhooks/partner" aria-label="Try POST /api/webhooks/partner" autocomplete="off">
+          <div class="field">
+            <label for="webhook-body">Body</label>
+            <textarea id="webhook-body" data-body rows="8" spellcheck="false"></textarea>
+          </div>
+          <div class="field">
+            <label for="webhook-secret">Shared secret</label>
+            <input id="webhook-secret" type="password" data-secret autocomplete="new-password" spellcheck="false" aria-describedby="webhook-secret-hint">
+            <p class="hint" id="webhook-secret-hint">Signs the body in this browser. It isn't sent or saved. Leave it empty to see the 401.</p>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="send-webhook">
+        <div class="doc">
+          <h3>Send Team 17 a test webhook</h3>
+          <p class="route"><span class="method method-post">POST</span> /api/webhooks/send-test</p>
+          <p>Takes no body. This service posts a <code>partner.updated</code> event to Team 17's receiver, with their shared secret in <code>X-Webhook-Secret</code>. That's a plain secret rather than a signature, because each receiver sets its own rules.</p>
+          <h4>What Team 17 receives</h4>
+          <pre class="sample">{
+  "event_id": "alumni-team17-handshake-&lt;timestamp&gt;",
+  "event_type": "partner.updated",
+  "occurred_at": "&lt;ISO 8601 time&gt;",
+  "source": "pod5-alumni-network",
+  "data": { "resource_id": "alumni-demo-001", "status": "updated" }
+}</pre>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Team 17 answered. Check <code>partnerStatus</code>, because this stays 200 even if they rejected the event.<code class="shape">{ sent: true, partnerStatus, partnerBody }</code></td></tr>
+              <tr><td class="status s5">504</td><td>Team 17 didn't answer within 5 seconds.<code class="shape">{ error, detail }</code></td></tr>
+            </tbody>
+          </table>
+          <p class="note"><strong>This reaches a live system.</strong> Every send posts a real event to Team 17, even from a local server.</p>
+        </div>
+        <form class="console" data-method="POST" data-path="/api/webhooks/send-test" aria-label="Try POST /api/webhooks/send-test" autocomplete="off">
+          <pre class="curl"><code></code></pre>
+          <label class="check"><input type="checkbox" data-arm> Yes, post a real event to Team 17's live system</label>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send to Team 17</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="idempotent-create">
+        <div class="doc">
+          <h3>Try an idempotent create</h3>
+          <p class="route"><span class="method method-post">POST</span> /api/connections</p>
+          <p>A lab demo, separate from real connections, which only come from <a href="#answer-request">accepting a request</a>. Retrying with the same <code>Idempotency-Key</code> returns the first result, so a retry can't create a second one.</p>
+          <h4>Request</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>Idempotency-Key</code><span class="where">Header, required</span></td><td>Any unique string.</td></tr>
+              <tr><td>JSON object<span class="where">Body, required</span></td><td>Such as <code>{ "studentId": 1, "alumniId": 1 }</code>. Fields are copied into the result without validation.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">201</td><td>Created.<code class="shape">{ id, ...your fields, createdAt }</code></td></tr>
+              <tr><td class="status s2">200</td><td>This key was already used. You get the first result, and this request's body is ignored.</td></tr>
+              <tr><td class="status s4">400</td><td>No key was sent.<code class="shape">{ error: "Idempotency-Key header required" }</code></td></tr>
+              <tr><td class="status s5">500</td><td>The body isn't valid JSON.<code class="shape">{ error, code }</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/api/connections" aria-label="Try POST /api/connections" autocomplete="off">
+          <div class="field">
+            <label for="idem-key">Idempotency-Key</label>
+            <div class="inline">
+              <input id="idem-key" type="text" data-header="Idempotency-Key" spellcheck="false" aria-describedby="idem-key-hint">
+              <button class="btn" type="button" data-new-key>New key</button>
+            </div>
+            <p class="hint" id="idem-key-hint">Send twice with the same key to see the first result come back.</p>
+          </div>
+          <div class="field">
+            <label for="connection-body">Body</label>
+            <textarea id="connection-body" data-body rows="4" spellcheck="false">{
+  "studentId": 1,
+  "alumniId": 1
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+    </div>
+  </main>
+</div>
+
+<footer class="wrap">Team 19 (Pod 5), Mae Fah Luang University.</footer>
+
+<script>
+  const statusText = { 200: 'OK', 201: 'Created', 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 409: 'Conflict', 500: 'Internal Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable', 504: 'Gateway Timeout' };
+  const people = {
+    'student-1': { label: 'Student 1', sub: 'student-1', role: 'student' },
+    'student-2': { label: 'Student 2', sub: 'student-2', role: 'student' },
+    'alumni-1': { label: 'Alumni 1', sub: 'alumni-1', role: 'alumni' },
+    'alumni-2': { label: 'Alumni 2', sub: 'alumni-2', role: 'alumni' },
+    'admin-1': { label: 'Admin', sub: 'admin-1', role: 'admin' },
+    expired: { label: 'Expired token (Student 1)', sub: 'student-1', role: 'student', expired: true },
+    pasted: { label: 'Pasted token' },
+    none: { label: 'No token' },
+  };
+  const curlTokens = new WeakMap();
+  const encoder = new TextEncoder();
+  const jwtSecret = document.getElementById('jwt-secret');
+  const pastedToken = document.getElementById('pasted-token');
+
+  const randomId = (prefix) => `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+  const shellQuote = (value) => `'${value.replace(/'/g, `'\\''`)}'`;
+  const parseJson = (text) => {
+    try { return JSON.parse(text); } catch { return undefined; }
+  };
+  const pretty = (text) => {
+    const value = parseJson(text);
+    return value === undefined ? text : JSON.stringify(value, null, 2);
+  };
+  const el = (tag, className, text) => {
+    const node = document.createElement(tag);
+    node.className = className;
+    node.textContent = text;
+    return node;
+  };
+
+  async function hmac(secret, message) {
+    if (!crypto.subtle) throw new Error('Signing only works on HTTPS or localhost.');
+    const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    return new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(message)));
+  }
+  const toHex = (bytes) => [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  const toBase64Url = (bytes) => btoa(String.fromCharCode(...bytes)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+  const encodeJson = (value) => toBase64Url(encoder.encode(JSON.stringify(value)));
+
+  // Test tokens are signed here, so the secret never leaves this browser. Rounding the issue time
+  // keeps the token in the curl command stable from one keystroke to the next.
+  async function tokenFor(choice) {
+    if (choice === 'none') return null;
+    if (choice === 'pasted') return pastedToken.value.trim() || null;
+    if (!jwtSecret.value) return null;
+    const person = people[choice];
+    const issued = Math.floor(Date.now() / 600000) * 600;
+    const claims = { sub: person.sub, role: person.role, iat: person.expired ? issued - 7200 : issued, exp: person.expired ? issued - 3600 : issued + 3600 };
+    const unsigned = `${encodeJson({ alg: 'HS256', typ: 'JWT' })}.${encodeJson(claims)}`;
+    return `${unsigned}.${toBase64Url(await hmac(jwtSecret.value, unsigned))}`;
+  }
+
+  async function buildRequest(form) {
+    const headers = {};
+    let path = form.dataset.path.replace(/\{(\w+)\}/g, (whole, name) => {
+      const value = form.querySelector(`[data-param="${name}"]`)?.value.trim();
+      return value ? encodeURIComponent(value) : whole;
+    });
+
+    const query = new URLSearchParams();
+    form.querySelectorAll('[data-query]').forEach((field) => {
+      if (field.value.trim()) query.set(field.dataset.query, field.value.trim());
+    });
+    if ([...query].length) path += `?${query}`;
+
+    const as = form.querySelector('[data-as]');
+    if (as) {
+      const token = await tokenFor(as.value);
+      if (token) headers.Authorization = `Bearer ${token}`;
+    }
+
+    const bodyField = form.querySelector('[data-body]');
+    const jsonFields = [...form.querySelectorAll('[data-json-field]')];
+    let body;
+    if (bodyField) body = bodyField.value;
+    if (jsonFields.length) body = JSON.stringify(Object.fromEntries(jsonFields.map((field) => [field.dataset.jsonField, field.value])));
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+
+    form.querySelectorAll('[data-header]').forEach((field) => {
+      if (field.value.trim()) headers[field.dataset.header] = field.value.trim();
+    });
+
+    // The secret stays here. Only the signature goes in the request and the curl command.
+    const secret = form.querySelector('[data-secret]');
+    if (secret && secret.value) headers['X-Webhook-Signature'] = toHex(await hmac(secret.value, body));
+
+    return { method: form.dataset.method, path, headers, body };
+  }
+
+  function toCurl({ method, path, headers, body }) {
+    const parts = [`curl -i${method === 'GET' ? '' : ` -X ${method}`} ${shellQuote(location.origin + path)}`];
+    for (const [name, value] of Object.entries(headers)) parts.push(`-H ${shellQuote(`${name}: ${value}`)}`);
+    if (body !== undefined) parts.push(`--data-raw ${shellQuote(body)}`);
+    return parts.join(' \\\n  ');
+  }
+
+  function updateAsHint(form) {
+    const as = form.querySelector('[data-as]');
+    if (!as) return;
+    let text = '';
+    if (as.value === 'pasted' && !pastedToken.value.trim()) text = 'Paste a token under "Sign in for testing" first.';
+    if (as.value !== 'pasted' && as.value !== 'none' && !jwtSecret.value) text = 'Add the JWT secret under "Sign in for testing" first, or this returns 401.';
+    const hint = form.querySelector('[data-as-hint]');
+    hint.textContent = text;
+    hint.hidden = !text;
+  }
+
+  async function refreshCurl(form) {
+    const token = (curlTokens.get(form) || 0) + 1;
+    curlTokens.set(form, token);
+    updateAsHint(form);
+    let text;
+    try { text = toCurl(await buildRequest(form)); } catch (error) { text = error.message; }
+    if (curlTokens.get(form) === token) form.querySelector('.curl code').textContent = text;
+  }
+
+  // Passes a new ID on to the consoles that need it, so the flow can be followed without copying.
+  function carryIds(form, status, text) {
+    if (status >= 300 || !form.dataset.capture) return;
+    const json = parseJson(text);
+    for (const capture of form.dataset.capture.split(',')) {
+      const [name, path] = capture.split(':');
+      const value = path.split('.').reduce((current, key) => current?.[key], json);
+      if (!value) continue;
+      document.querySelectorAll(`[data-fill="${name}"]`).forEach((field) => {
+        if (field.dataset.fillJson) {
+          const body = parseJson(field.value);
+          if (!body) return;
+          body[field.dataset.fillJson] = value;
+          field.value = JSON.stringify(body, null, 2);
+        } else {
+          field.value = value;
+        }
+        refreshCurl(field.form);
+      });
+      if (name === 'alumniId') document.getElementById('deactivate-id').placeholder = value;
+    }
+  }
+
+  function showResponse(form, status, ms, text) {
+    const tone = status < 300 ? 'ok' : status < 500 ? 'warn' : 'bad';
+    const head = el('p', 'result-head', '');
+    head.append(el('strong', `code ${tone}`, `${status} ${statusText[status] || ''}`.trim()), el('span', 'time', `${ms} ms`));
+    const body = el('pre', '', pretty(text));
+    body.tabIndex = 0;
+    form.querySelector('.result').replaceChildren(head, body);
+  }
+
+  function showFailure(form, message) {
+    form.querySelector('.result').replaceChildren(el('p', 'bad', message));
+  }
+
+  async function copyCurl(button, form) {
+    try {
+      await navigator.clipboard.writeText(form.querySelector('.curl code').textContent);
+      button.textContent = 'Copied';
+    } catch {
+      button.textContent = 'Copy failed';
+    }
+    setTimeout(() => { button.textContent = 'Copy curl'; }, 1500);
+  }
+
+  async function send(form) {
+    const button = form.querySelector('.btn-send');
+    const arm = form.querySelector('[data-arm]');
+    if (button.disabled || (arm && !arm.checked)) return;
+    const idleLabel = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Sending…';
+    const started = performance.now();
+    try {
+      const request = await buildRequest(form);
+      if (request.path.includes('{')) {
+        showFailure(form, 'Add the ID first. It fills in by itself after the step that creates it.');
+        return;
+      }
+      const response = await fetch(request.path, { method: request.method, headers: request.headers, body: request.body, cache: 'no-store' });
+      const text = await response.text();
+      showResponse(form, response.status, Math.round(performance.now() - started), text);
+      carryIds(form, response.status, text);
+    } catch (error) {
+      showFailure(form, error instanceof TypeError ? "This server didn't answer. Check that it's still running, then send again." : error.message);
+    } finally {
+      button.textContent = idleLabel;
+      // A real send to Team 17 needs a fresh confirmation every time.
+      if (arm) arm.checked = false;
+      button.disabled = Boolean(arm);
+    }
+  }
+
+  document.getElementById('base-url').textContent = location.origin;
+  fetch('/api/integration/status', { cache: 'no-store' })
+    .then((response) => (response.ok ? response.json() : Promise.reject()))
+    .then((body) => { document.getElementById('live-status').textContent = `${body.status}, version ${body.version}`; })
+    .catch(() => { document.getElementById('live-status').textContent = 'not responding'; });
+
+  document.getElementById('webhook-body').value = JSON.stringify({
+    id: randomId('evt'),
+    type: 'internship.status_changed',
+    data: { application_id: 'app_demo_001', current_status: 'approved' },
+  }, null, 2);
+  document.getElementById('events-body').value = JSON.stringify({
+    event_id: randomId('evt'),
+    event_type: 'alumni.event',
+    occurred_at: new Date().toISOString(),
+    source: 'events-clubs',
+    data: { title: 'Alumni career talk', starts_at: '2026-12-01T09:00:00Z', faculty_id: 7, interests: ['Data & AI'] },
+  }, null, 2);
+  document.getElementById('idem-key').value = randomId('demo');
+
+  document.querySelector('[data-new-key]').addEventListener('click', (event) => {
+    document.getElementById('idem-key').value = randomId('demo');
+    refreshCurl(event.target.form);
+  });
+
+  document.querySelectorAll('[data-as]').forEach((select) => {
+    select.append(...Object.entries(people).map(([value, person]) => {
+      const option = el('option', '', person.label);
+      option.value = value;
+      return option;
+    }));
+    select.value = select.dataset.default;
+  });
+
+  document.querySelectorAll('form.console').forEach((form) => {
+    const arm = form.querySelector('[data-arm]');
+    if (arm) {
+      const button = form.querySelector('.btn-send');
+      arm.checked = false;
+      button.disabled = true;
+      arm.addEventListener('change', () => { button.disabled = !arm.checked; });
+    }
+    form.querySelector('[data-copy]').addEventListener('click', (event) => copyCurl(event.target, form));
+    form.addEventListener('input', () => refreshCurl(form));
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      send(form);
+    });
+    refreshCurl(form);
+  });
+
+  const authState = document.getElementById('auth-state');
+  const refreshSignedConsoles = () => {
+    authState.textContent = jwtSecret.value
+      ? 'Signing test tokens with this secret. If calls return 401, check it matches the server.'
+      : 'No secret yet, so signed-in calls return 401.';
+    document.querySelectorAll('form.console').forEach((form) => {
+      if (form.querySelector('[data-as]')) refreshCurl(form);
+    });
+  };
+  jwtSecret.addEventListener('input', refreshSignedConsoles);
+  pastedToken.addEventListener('input', refreshSignedConsoles);
+
+  document.querySelectorAll('a[href="#reference"]').forEach((link) => {
+    link.addEventListener('click', () => { document.getElementById('reference').open = true; });
+  });
+
+  // Marks the section being read in the rail.
+  const indexLinks = new Map([...document.querySelectorAll('.index a')].map((link) => [link.getAttribute('href').slice(1), link]));
+  const spy = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      indexLinks.forEach((link) => link.removeAttribute('aria-current'));
+      indexLinks.get(entry.target.id)?.setAttribute('aria-current', 'true');
+    }
+  }, { rootMargin: '-20% 0px -75% 0px' });
+  document.querySelectorAll('.endpoint').forEach((section) => spy.observe(section));
+</script>
+</body>
+</html>
