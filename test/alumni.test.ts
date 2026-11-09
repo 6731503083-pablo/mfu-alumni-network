@@ -383,6 +383,42 @@ describe('GET /alumni/:id (API-02)', () => {
     expect(after.text).not.toContain('aung@example.com');
   });
 
+  // BR-10: the accept logs what was consented then. A field consented later is logged when the
+  // student first sees it, so the log still records every disclosure.
+  it('logs a field consented after connecting, once, when the student first sees it', async () => {
+    const alumni = await makeAlumni(CONTACT);
+    const student = await makePerson('student');
+    const connectionId = await connect(student, alumni);
+    const logged = () =>
+      rows(
+        'SELECT field_name, viewer_id FROM contact_reveal_log WHERE connection_id = ? ORDER BY field_name',
+        connectionId,
+      );
+    expect(await logged()).toEqual([{ field_name: 'contact_email', viewer_id: student.id }]);
+
+    await call('PATCH', '/alumni/me', { as: alumni, body: { consent_contact_line: true } });
+    expect(await logged()).toHaveLength(1);
+
+    const first = await call('GET', `/alumni/${alumni.profileId}`, { as: student });
+    expect(first.json.contact).toEqual({ email: 'aung@example.com', line: 'aung.kyaw' });
+    await call('GET', `/alumni/${alumni.profileId}`, { as: student });
+    expect(await logged()).toEqual([
+      { field_name: 'contact_email', viewer_id: student.id },
+      { field_name: 'contact_line', viewer_id: student.id },
+    ]);
+  });
+
+  it('does not log anything when a stranger views a profile', async () => {
+    const alumni = await makeAlumni(CONTACT);
+    await call('GET', `/alumni/${alumni.profileId}`, { as: await makePerson('student') });
+    const logged = await rows(
+      `SELECT l.id FROM contact_reveal_log l JOIN connections c ON c.id = l.connection_id
+       WHERE c.alumni_id = ?`,
+      alumni.profileId,
+    );
+    expect(logged).toEqual([]);
+  });
+
   it('stops showing contact once the connection has ended', async () => {
     const alumni = await makeAlumni(CONTACT);
     const student = await makePerson('student');

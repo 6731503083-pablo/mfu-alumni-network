@@ -52,19 +52,46 @@ async function loadOwnerProfile(db: D1Database, id: string) {
   };
 }
 
-/** What a student connected to this alumni may see. Non-consented values never leave the database. */
+/**
+ * What a student connected to this alumni may see. Non-consented values never leave the database.
+ *
+ * BR-10: the accept flow logs the fields consented at that moment. A field consented later is
+ * logged here, the first time this connection shows it. The log insert and the read run in one
+ * batch, so they see the same consent flags.
+ */
 async function loadConsentedContact(db: D1Database, alumniId: string, studentId: string) {
-  const row = await db
-    .prepare(
-      `SELECT CASE WHEN a.consent_contact_email = 1 THEN a.contact_email END AS email,
-              CASE WHEN a.consent_contact_line = 1 THEN a.contact_line END AS line,
-              CASE WHEN a.consent_contact_linkedin = 1 THEN a.contact_linkedin END AS linkedin
-       FROM connections c JOIN alumni_profiles a ON a.id = c.alumni_id
-       WHERE c.alumni_id = ? AND c.student_id = ? AND c.status = 'active'
-       LIMIT 1`,
-    )
-    .bind(alumniId, studentId)
-    .first<Row>();
+  const [, contact] = await db.batch<Row>([
+    db
+      .prepare(
+        `INSERT INTO contact_reveal_log (connection_id, viewer_id, field_name, revealed_at)
+         SELECT c.id, c.student_id, f.field_name, ?3
+         FROM connections c
+         JOIN alumni_profiles a ON a.id = c.alumni_id
+         JOIN (
+           SELECT 'contact_email' AS field_name UNION ALL
+           SELECT 'contact_line' UNION ALL
+           SELECT 'contact_linkedin'
+         ) f ON (f.field_name = 'contact_email' AND a.consent_contact_email = 1 AND a.contact_email IS NOT NULL)
+             OR (f.field_name = 'contact_line' AND a.consent_contact_line = 1 AND a.contact_line IS NOT NULL)
+             OR (f.field_name = 'contact_linkedin' AND a.consent_contact_linkedin = 1 AND a.contact_linkedin IS NOT NULL)
+         WHERE c.alumni_id = ?1 AND c.student_id = ?2 AND c.status = 'active'
+           AND NOT EXISTS (
+             SELECT 1 FROM contact_reveal_log l WHERE l.connection_id = c.id AND l.field_name = f.field_name
+           )`,
+      )
+      .bind(alumniId, studentId, new Date().toISOString()),
+    db
+      .prepare(
+        `SELECT CASE WHEN a.consent_contact_email = 1 THEN a.contact_email END AS email,
+                CASE WHEN a.consent_contact_line = 1 THEN a.contact_line END AS line,
+                CASE WHEN a.consent_contact_linkedin = 1 THEN a.contact_linkedin END AS linkedin
+         FROM connections c JOIN alumni_profiles a ON a.id = c.alumni_id
+         WHERE c.alumni_id = ? AND c.student_id = ? AND c.status = 'active'
+         LIMIT 1`,
+      )
+      .bind(alumniId, studentId),
+  ]);
+  const row = contact.results[0];
   if (!row) return null;
   return Object.fromEntries(Object.entries(row).filter(([, value]) => value !== null));
 }
