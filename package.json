@@ -1,0 +1,31 @@
+{
+  "name": "alumni-network-integration",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MFU Alumni Network — Week 06 integration lab (A5): partner endpoint, webhook send/receive, idempotency.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test",
+    "db:local": "wrangler d1 migrations apply alumni-network-db --local",
+    "db:remote": "wrangler d1 migrations apply alumni-network-db --remote",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "hono": "^4.13.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.5.0",
+    "@cloudflare/workers-types": "^5.20260822.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.127.1"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "workerd@1.20260828.1": true
+  }
+}

@@ -1,0 +1,26 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "alumni-network-integration",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-09-08",
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"TEAM_NAME": "pod5-alumni-network",
+		"SERVICE_NAME": "alumni-network-integration",
+		"SERVICE_VERSION": "0.1",
+		// Partner: Team 17 — Internship Management. Not sensitive on their own; the
+		// shared secret that goes with them is set via `wrangler secret put` instead.
+		"PARTNER_API_URL": "https://team17-internship.vercel.app/api/integration/status",
+		"PARTNER_WEBHOOK_URL": "https://team17-internship.vercel.app/api/webhooks/partner"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "alumni-network-db",
+			"database_id": "302d1978-0403-47f8-8a61-bdc29d5356b2",
+			"migrations_dir": "migrations"
+		}
+	]
+}
