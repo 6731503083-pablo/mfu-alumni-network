@@ -1,21 +1,42 @@
-# Mentor Availability API: Team 19 to Team 17 handover
+# Mentor Availability API: Team 19 to Team 17
 
-Provider: Team 19, MFU Alumni Network (Pod 5)
-Consumer: Team 17, Internship Management (Pod 5)
-Contract version: 1.0, 9 November 2026
+Hi Team 17,
 
-## What it's for
+Team 19 (Alumni Network, Pod 5) here. Two things.
 
-We show your internships in our app, with **Find a mentor for this** on each one. This API lets you
-do the same in reverse: on an internship page, show how many MFU alumni can mentor a student in that
-field, with a link that opens our alumni directory already filtered to it.
+**1. We've integrated your Internship API, and it works live.** Your contract meets our needs:
+students see your open internships and press **Find a mentor for this** to reach alumni in that
+field. The demo listings are fine for the evaluation, and we label them as demo listings. Our call:
+`GET /api/placements?status=open&page=1&limit=5&category=Engineering` returned `200` at
+2026-11-09 07:13:44 UTC, request ID **a461ec05-1277-4b26-a79a-ed2b280d8ed7**. Here are
+[your listings in our app](../evidence/team17-internships-live.png) and
+[Find a mentor for this](../evidence/team17-find-a-mentor-live.png). Could you find that ID in your
+logs and send us a screenshot, so we both have matching evidence?
+
+**2. Our API for you, so the integration works both ways.** On each internship page, you could show
+how many MFU alumni can mentor a student in that field, with a link that opens our alumni directory
+already filtered to it:
 
 > **MFU alumni who can mentor you in Software Development: 1 available now.** [Find a mentor](https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Software%20Development)
+
+It's public, needs no token, can be called from the browser, and returns no personal data.
+Everything you need is below, laid out like your handover to us: the contract, an OpenAPI file, a
+Postman collection and real responses. When you call it, send us the `request_id` and a screenshot,
+and we'll send you our log entry back.
+
+Also, please keep your API online tomorrow, **10 November, 13:00 to 18:00**, for our final
+evaluation.
+
+Thanks,
+Team 19
 
 ## The contract
 
 | | |
 |---|---|
+| Provider | Team 19, MFU Alumni Network (Pod 5) |
+| Consumer | Team 17, Internship Management (Pod 5) |
+| Version | 1.0, 9 November 2026 |
 | Base URL | `https://alumni-network-integration.phyo2lay.workers.dev` |
 | Endpoint | `GET /api/mentors` |
 | Authentication | None. It's public and read-only |
@@ -145,27 +166,3 @@ the console on our docs page:
 - [ ] Team 17 confirms the mentor box fits their internship pages.
 - [ ] Team 17 calls the endpoint from their app.
 - [ ] Both teams keep matching `request_id`s, timestamps and screenshots.
-
-## Ready to send message
-
-Hi Team 17, Team 19 (Alumni Network) here. Two things:
-
-**1. We've integrated your Internship API, and it works live.** Your contract meets our needs:
-students see your open internships and press "Find a mentor for this" to reach alumni in that field.
-The demo listings are fine for the evaluation, and we label them as demo listings. Our call:
-`GET /api/placements?status=open&page=1&limit=5&category=Engineering` returned `200` at
-2026-11-09 07:13:44 UTC, request ID **a461ec05-1277-4b26-a79a-ed2b280d8ed7** (screenshots:
-[your listings in our app](../evidence/team17-internships-live.png) and
-[Find a mentor for this](../evidence/team17-find-a-mentor-live.png)). Could you find that ID in your
-logs and send us a screenshot, so we both have matching evidence?
-
-**2. Our API for you, so it works both ways.**
-`GET https://alumni-network-integration.phyo2lay.workers.dev/api/mentors?category=Engineering` takes
-your listing's category and returns how many MFU alumni can mentor in that field, with a link to our
-filtered directory. It's public, needs no token, can be called from the browser, and returns no
-personal data. You could show "Find a mentor" on your internship pages. This guide has everything,
-laid out like your handover: the contract, OpenAPI, Postman and examples. If you call it, send us the
-`request_id` and a screenshot, and we'll send our log back.
-
-Also, please keep your API online tomorrow, **10 Nov, 13:00 to 18:00**, for our final evaluation.
-Thanks!
