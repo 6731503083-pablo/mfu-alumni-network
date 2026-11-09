@@ -273,6 +273,7 @@
         <li><a href="#end-connection">End a connection</a></li>
         <li><a href="#deactivate">Deactivate a profile</a></li>
         <li><a href="#events-clubs">Receive an alumni event</a></li>
+        <li><a href="#team17-internships">Browse Team 17’s internships</a></li>
       </ul>
     </div>
     <div>
@@ -793,6 +794,51 @@
             <label for="events-secret">Shared secret</label>
             <input id="events-secret" type="password" data-secret autocomplete="new-password" spellcheck="false" aria-describedby="events-secret-hint">
             <p class="hint" id="events-secret-hint">Signs the body in this browser. It isn't sent or saved. Leave it empty to see the 401.</p>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="team17-internships">
+        <div class="doc">
+          <h3>Browse Team 17’s internships</h3>
+          <p class="route"><span class="method method-get">GET</span> /partners/team17/internships</p>
+          <p>For students and alumni. Calls Team 17’s public Internship Opportunities API (<code>GET /api/placements</code>, contract 1.0) and returns its open listings. Each one includes <code>mentor_interests</code>: our interests that fit its category, so the web app can offer “Find a mentor for this”.</p>
+          <p class="note">Every listing is checked against Team 17’s contract. A broken one is skipped and counted in <code>source.skipped</code>. Only the fields below are passed on, and <code>details_url</code> is kept only if it’s an https link on Team 17’s own site. Team 17 gets 10 seconds to answer.</p>
+          <h4>Query</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Parameter</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>q</code><span class="where">Optional</span></td><td>Up to 100 characters, matched in title, company, description and skills.</td></tr>
+              <tr><td><code>category</code><span class="where">Optional</span></td><td>Up to 60 characters, such as Design, Engineering, Marketing or Data.</td></tr>
+              <tr><td><code>work_mode</code><span class="where">Optional</span></td><td><code>remote</code>, <code>hybrid</code> or <code>on-site</code>.</td></tr>
+              <tr><td><code>page</code>, <code>limit</code><span class="where">Optional</span></td><td>Page from 1, default 1. Limit from 1 to 50, default 10.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Open internships.<code class="shape">{ data: [{ id, title, company, description, location, category, work_mode, skills, allowance_thb, duration_weeks, application_deadline, is_demo, details_url, mentor_interests }], pagination, source: { partner, request_id, fetched_at, skipped } }</code></td></tr>
+              <tr><td class="status s4">400</td><td>A query parameter is invalid or unknown. Team 17 isn’t called.<code class="shape">{ error, code, fields }</code></td></tr>
+              <tr><td class="status s5">502</td><td><code>PARTNER_ERROR</code> or <code>PARTNER_BAD_RESPONSE</code>: Team 17 returned an error or something that breaks its contract.</td></tr>
+              <tr><td class="status s5">503</td><td><code>PARTNER_UNAVAILABLE</code>: Team 17 is down or can’t be reached. Try again later.</td></tr>
+              <tr><td class="status s5">504</td><td><code>PARTNER_TIMEOUT</code>: Team 17 didn’t answer within 10 seconds.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/partners/team17/internships" aria-label="Try GET /partners/team17/internships" autocomplete="off">
+          <div class="field"><label for="as-internships">Send as</label><select id="as-internships" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field-grid">
+            <div class="field"><label for="i-q">q</label><input id="i-q" type="text" data-query="q" spellcheck="false" placeholder="React"></div>
+            <div class="field"><label for="i-category">category</label><input id="i-category" type="text" data-query="category" spellcheck="false" placeholder="Engineering"></div>
+            <div class="field"><label for="i-mode">work_mode</label><input id="i-mode" type="text" data-query="work_mode" spellcheck="false" placeholder="remote"></div>
+            <div class="field"><label for="i-limit">limit</label><input id="i-limit" type="text" inputmode="numeric" data-query="limit" placeholder="10"></div>
           </div>
           <pre class="curl"><code></code></pre>
           <div class="actions">

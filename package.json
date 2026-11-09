@@ -13,7 +13,8 @@
     "db:remote": "wrangler d1 migrations apply alumni-network-db --remote",
     "cf-typegen": "wrangler types",
     "demo": "node scripts/demo.mjs",
-    "demo:seed": "node scripts/seed.mjs"
+    "demo:seed": "node scripts/seed.mjs",
+    "evidence:team17": "node scripts/team17-evidence.mjs"
   },
   "dependencies": {
     "hono": "^4.13.4",

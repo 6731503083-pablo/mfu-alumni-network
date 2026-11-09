@@ -98,3 +98,12 @@ This differs from how we verify inbound webhooks: each direction's contract is s
 the receiver. `PARTNER_API_URL` and `PARTNER_WEBHOOK_URL` live in `wrangler.jsonc` `vars` (not
 secret), and `PARTNER_WEBHOOK_SECRET` is a `wrangler secret`. `POST /api/webhooks/send-test` reaches
 their live system, even from a local server.
+
+Team 17 is our only integration partner for the final evaluation (Team 12 is not). Besides the A5
+routes, `GET /partners/team17/internships` (`src/routes/partner-internships.ts`) consumes their public
+Internship Opportunities API, contract 1.0 (`GET /api/placements`, no auth, documented in
+`../Team17-Team12-API-Handover/`). `PARTNER_PLACEMENTS_URL` is in `wrangler.jsonc` `vars`. The route
+forwards only the filters their contract accepts, checks each listing with zod and skips broken ones,
+keeps `details_url` only if it's https on their origin, and maps their category to our interests
+(`mentor_interests`) for the web app's "Find a mentor for this". Their cold start can take about 3
+seconds, and the route gives them 10. The tests mock `fetch`, so they never call Team 17.

@@ -8,6 +8,7 @@ import { admin } from './routes/admin';
 import { alumni } from './routes/alumni';
 import { connections } from './routes/connections';
 import { demoAuth } from './routes/demo-auth';
+import { partnerInternships } from './routes/partner-internships';
 import { eventsClubs } from './routes/events-clubs';
 import { requests } from './routes/requests';
 import type { AppEnv } from './types';
@@ -48,6 +49,7 @@ app.get('/', (c) =>
       'DELETE /connections/{id}',
       'PATCH /admin/alumni/{id}/deactivate',
       'POST /webhooks/events-clubs',
+      'GET /partners/team17/internships',
       'GET /api/integration/status',
       'GET /api/partner/status',
       'POST /api/webhooks/partner',
@@ -182,5 +184,8 @@ app.route('/mentoring-requests', requests);
 app.route('/connections', connections);
 app.route('/admin', admin);
 app.route('/webhooks/events-clubs', eventsClubs);
+
+// Team 17's internship listings, for students looking for a mentor in that field.
+app.route('/partners/team17', partnerInternships);
 
 export default app;

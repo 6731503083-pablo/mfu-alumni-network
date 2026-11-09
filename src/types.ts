@@ -5,6 +5,7 @@ export type Bindings = {
   SERVICE_VERSION: string;
   PARTNER_API_URL: string;
   PARTNER_WEBHOOK_URL: string;
+  PARTNER_PLACEMENTS_URL: string;
   WEBHOOK_SECRET: string;
   PARTNER_WEBHOOK_SECRET: string;
   JWT_SECRET: string;

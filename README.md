@@ -9,6 +9,9 @@ A Cloudflare Worker with three parts:
   mentoring, and alumni decide what they share.
 - **Team 17 integration lab (A5):** one endpoint exposed to a partner, one endpoint called on a
   partner, a signed webhook receiver and sender, and one idempotent create endpoint.
+- **Team 17 internships:** the web app's Internships tab shows Team 17's live open internships from
+  their public API, with "Find a mentor for this" linking each one to alumni in that field. See
+  [evidence/team17-internships-integration.md](evidence/team17-internships-integration.md).
 
 **Live:** the web app is at <https://alumni-network-integration.phyo2lay.workers.dev/app>, and the
 API docs, with a request console, are at

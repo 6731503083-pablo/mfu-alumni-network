@@ -76,6 +76,7 @@
   input[type="text"], input[type="number"], input[type="email"], input[type="url"], input[type="password"], select, textarea {
     width: 100%; padding: 9px 11px; font: inherit; color: var(--ink); background: var(--white); border: 1px solid #b6c5bc; border-radius: 6px;
   }
+  input[type="text"], input[type="number"], input[type="email"], input[type="url"], input[type="password"], select { min-height: 44px; }
   textarea { min-height: 120px; resize: vertical; }
   .field { margin-bottom: 16px; }
   .field-error { margin-top: 4px; color: var(--danger); font-size: .875rem; }
@@ -125,6 +126,16 @@
   .side-col { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; }
   .more { padding: 14px 22px; border-top: 1px solid var(--line); }
   .empty { padding: 28px 22px; color: var(--muted); }
+
+  /* Internships */
+  .toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 16px; margin-bottom: 20px; padding: 18px 20px 2px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
+  .toolbar .field { flex: 1 1 200px; }
+  .toolbar-action { margin-bottom: 16px; }
+  .listing-title { font-size: 1.3125rem; }
+  .listing-text { max-width: 65ch; margin-top: 8px; }
+  .source { padding: 12px 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8125rem; }
+  .source code { font-size: .8125rem; overflow-wrap: anywhere; }
+  .retry { margin-top: 12px; }
 
   /* Profile */
   .profile { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: start; }
@@ -292,6 +303,10 @@
     FORBIDDEN: "Your account can't do that.",
     NOT_OWNER: 'Only the person this request belongs to can change it.',
     DEMO_ADMIN_LIMITED: 'The demo admin can only turn off demo profiles.',
+    PARTNER_UNAVAILABLE: 'Team 17’s internship service isn’t answering right now. Try again in a minute.',
+    PARTNER_TIMEOUT: 'Team 17’s internship service took too long to answer. Try again in a minute.',
+    PARTNER_BAD_RESPONSE: 'Team 17 sent listings we couldn’t read, so nothing is shown. Try again later.',
+    PARTNER_ERROR: 'Team 17’s internship service returned an error. Try again later.',
     NOT_FOUND: "This profile doesn't exist, or it has been turned off.",
   };
   const explain = (problem) => MESSAGES[problem.code] ?? problem.message;
@@ -464,6 +479,7 @@
       if (route === 'alumni' && param) return show(await profileView(decodeURIComponent(param)));
       if (route === 'requests' && role !== 'admin') return show(await requestsView());
       if (route === 'profile' && role === 'alumni') return show(await editorView());
+      if (route === 'internships' && role !== 'admin') return show(await internshipsView());
       go(role === 'alumni' ? '#/requests' : '#/discover');
     } catch (problem) {
       if (problem.status !== 401) show(errorView(problem));
@@ -481,6 +497,7 @@
     const links = [['discover', role === 'student' ? 'Find a mentor' : 'Alumni directory']];
     if (role !== 'admin') links.push(['requests', role === 'student' ? 'My requests' : 'Requests to me']);
     if (role === 'alumni') links.push(['profile', 'My profile']);
+    if (role !== 'admin') links.push(['internships', 'Internships']);
     const current = route === 'alumni' ? 'discover' : route;
     bar.replaceChildren(h('div', { class: 'bar-inner' },
       h('a', { class: 'brand', href: '#/' }, 'MFU Alumni Network'),
@@ -1118,6 +1135,112 @@
           ? 'Name, graduation year and school are needed. Everything else is up to you.'
           : 'Students find you by these details. You decide which contact details they get, and when.'),
       form);
+  }
+
+  // ── Internships from Team 17 ───────────────────────────────────────────────────────────────
+  // Our Worker calls Team 17's API and checks what comes back. This page only talks to our Worker.
+  const internshipFilters = { q: '', category: '', work_mode: '' };
+  const WORK_MODES = { remote: 'Remote', hybrid: 'Hybrid', 'on-site': 'On-site' };
+  const dayFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok' });
+  const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const deadline = (ymd) => dayFormat.format(new Date(`${ymd}T12:00:00+07:00`));
+
+  async function internshipsView() {
+    const role = session.user.role;
+    const state = { items: [], page: 0, total: 0, hasNext: false, source: null };
+    const q = field('i-q', 'Search', h('input', { type: 'text', value: internshipFilters.q, maxlength: 100, placeholder: 'Title, company or skill' }));
+    const category = field('i-category', 'Category', select([['', 'Any category'], ...['Design', 'Engineering', 'Marketing', 'Data'].map((c) => [c, c])], internshipFilters.category));
+    const mode = field('i-mode', 'Work mode', select([['', 'Any work mode'], ...Object.entries(WORK_MODES)], internshipFilters.work_mode));
+    const results = h('section', { class: 'sheet', 'aria-live': 'polite', 'aria-label': 'Internships' });
+
+    async function load(fresh) {
+      if (fresh) {
+        Object.assign(state, { items: [], page: 0 });
+        results.replaceChildren(h('p', { class: 'empty' }, 'Loading internships from Team 17…'));
+      }
+      const params = new URLSearchParams({ page: String(state.page + 1), limit: '10' });
+      for (const [key, value] of Object.entries(internshipFilters)) if (value) params.set(key, value);
+      results.setAttribute('aria-busy', 'true');
+      try {
+        const res = await api('GET', `/partners/team17/internships?${params}`);
+        state.items.push(...res.data);
+        Object.assign(state, { page: res.pagination.page, total: res.pagination.total, hasNext: res.pagination.has_next, source: res.source });
+        draw();
+      } catch (problem) {
+        if (problem.status === 401) return;
+        results.replaceChildren(h('div', { class: 'empty' },
+          h('p', null, explain(problem)),
+          h('p', { class: 'retry' }, h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => load(true) }, 'Try again'))));
+      } finally {
+        results.setAttribute('aria-busy', 'false');
+      }
+    }
+
+    function sourceLine() {
+      const s = state.source;
+      return h('p', { class: 'source' },
+        `Live from ${s.partner} at ${timeFormat.format(new Date(s.fetched_at))}. Their request ID is `,
+        h('code', null, s.request_id ?? 'not given'),
+        s.skipped ? `. ${s.skipped} listing(s) broke their contract and were left out.` : '.');
+    }
+
+    function findMentor(p) {
+      Object.assign(filters, { role: '', faculty: '', country: '', year: '', interests: [...p.mentor_interests], open: true });
+      toast(`Showing alumni interested in ${p.mentor_interests.join(' and ')}.`);
+      go('#/discover');
+    }
+
+    function row(p) {
+      const allowance = p.allowance_thb === null ? 'allowance not stated' : `${p.allowance_thb.toLocaleString('en-US')} THB a month`;
+      const actions = [];
+      if (role === 'student' && p.mentor_interests.length) {
+        actions.push(h('button', { class: 'btn btn-small', type: 'button', onclick: () => findMentor(p) }, 'Find a mentor for this'));
+      }
+      if (p.details_url) {
+        actions.push(h('a', { class: 'btn btn-quiet btn-small', href: p.details_url, target: '_blank', rel: 'noopener noreferrer' }, 'View on Team 17'));
+      }
+      return h('li', { class: 'person' },
+        h('div', null,
+          h('h2', { class: 'listing-title' }, p.title),
+          h('p', null, p.company),
+          h('p', { class: 'meta' }, p.location.toLowerCase() === p.work_mode ? WORK_MODES[p.work_mode] : `${WORK_MODES[p.work_mode]}, ${p.location}`),
+          h('p', { class: 'meta' }, `Apply by ${deadline(p.application_deadline)}. ${p.duration_weeks} weeks, ${allowance}.`),
+          h('p', { class: 'listing-text' }, p.description),
+          p.skills.length ? h('ul', { class: 'chips', 'aria-label': 'Skills' }, p.skills.map((skill) => h('li', { class: 'chip' }, skill))) : null),
+        h('div', { class: 'side-col' },
+          p.is_demo ? h('span', { class: 'status status-closed' }, 'Demo listing') : null,
+          actions.length ? h('div', { class: 'actions' }, actions) : null));
+    }
+
+    function draw() {
+      const head = h('p', { class: 'sheet-head' }, state.total === 1 ? '1 open internship' : `${state.total} open internships`);
+      if (!state.items.length) {
+        results.replaceChildren(head, h('p', { class: 'empty' }, 'No open internships match. Try a shorter search or another category.'), sourceLine());
+        return;
+      }
+      const more = state.hasNext
+        ? h('div', { class: 'more' }, h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => load(false) }, 'Show more'))
+        : null;
+      results.replaceChildren(...[head, h('ul', null, state.items.map(row)), more, sourceLine()].filter(Boolean));
+    }
+
+    const form = h('form', {
+      class: 'toolbar',
+      'aria-label': 'Internship filters',
+      onsubmit: (event) => {
+        event.preventDefault();
+        Object.assign(internshipFilters, { q: q.control.value.trim(), category: category.control.value, work_mode: mode.control.value });
+        load(true);
+      },
+    }, q.wrap, category.wrap, mode.wrap, h('div', { class: 'toolbar-action' }, h('button', { class: 'btn', type: 'submit' }, 'Search')));
+
+    load(true);
+    return h('div', null,
+      pageHead('Internships', role === 'student'
+        ? 'Open internships from Team 17’s Internship Management system. Found one you like? Ask an MFU alumni who does that work before you apply.'
+        : 'Open internships from Team 17’s Internship Management system. Students see these with a link to find a mentor in that field.'),
+      form,
+      results);
   }
 
   window.addEventListener('hashchange', render);

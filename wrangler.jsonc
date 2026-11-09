@@ -13,7 +13,9 @@
 		// Partner: Team 17 — Internship Management. Not sensitive on their own; the
 		// shared secret that goes with them is set via `wrangler secret put` instead.
 		"PARTNER_API_URL": "https://team17-internship.vercel.app/api/integration/status",
-		"PARTNER_WEBHOOK_URL": "https://team17-internship.vercel.app/api/webhooks/partner"
+		"PARTNER_WEBHOOK_URL": "https://team17-internship.vercel.app/api/webhooks/partner",
+		// Team 17's public internship listings (contract 1.0). No secret: the API is read-only and open.
+		"PARTNER_PLACEMENTS_URL": "https://team17-internship.vercel.app/api/placements"
 	},
 	"d1_databases": [
 		{

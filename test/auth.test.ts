@@ -15,6 +15,7 @@ const PROTECTED_ROUTES: [string, string][] = [
   ['PATCH', '/mentoring-requests/some-id'],
   ['DELETE', '/connections/some-id'],
   ['PATCH', '/admin/alumni/some-id/deactivate'],
+  ['GET', '/partners/team17/internships'],
 ];
 
 const base64url = (value: unknown) =>
