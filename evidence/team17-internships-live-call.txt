@@ -1,0 +1,12 @@
+Team 19 Alumni Network → Team 17 Internship Management
+GET https://alumni-network-integration.phyo2lay.workers.dev/partners/team17/internships?category=Engineering&limit=5
+  as student demo-student-su-myat, at 2026-11-09T07:13:43.789Z
+
+200 in 1430 ms
+  • Frontend Developer Intern, Sample Web Lab (remote) → mentor interests: Software Development
+  • Software Engineering Intern, Sample Systems (hybrid) → mentor interests: Software Development
+
+source {"partner":"Team 17 Internship Management","request_id":"a461ec05-1277-4b26-a79a-ed2b280d8ed7","fetched_at":"2026-11-09T07:13:44.748Z","skipped":0}
+pagination {"page":1,"limit":5,"total":2,"total_pages":1,"has_next":false}
+
+Team 17 request ID: a461ec05-1277-4b26-a79a-ed2b280d8ed7
