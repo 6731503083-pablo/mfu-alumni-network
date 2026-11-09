@@ -32,7 +32,7 @@ deployment, the Team 17 internships integration, and the test and security evide
 | August 2026 | The PRD, the Data and Query Design, and the presentation | Group documents, outside this repo |
 | September 2026 | Week 06 integration with Team 17 (A5): our public status endpoint, a call to theirs, signed webhooks both ways, and an idempotent create. Deployed to Cloudflare | [A5 evidence](A5-Team19-Integration-Evidence.md), dated 21 September |
 | 3 November | The Mentoring API (API-01 to API-09), built test-first from the PRD and the data design, with the `/docs` page | The oldest Mentoring API files are dated 3 November |
-| 9 November | Getting ready for the final evaluation: the public repo, deployment, demo scripts, the web app, the Team 17 internships integration, and the test, security and process evidence | Commits from `4696391` on, below |
+| 9 November | Getting ready for the final evaluation: the public repo, deployment, demo scripts, the web app, the Team 17 internships integration and our API handover to Team 17, and the test, security and process evidence | Commits from `4696391` on, below |
 | 10 November | Final evaluation | |
 
 ### How we work
@@ -111,7 +111,7 @@ instruction and sees every action. Commands that touch secrets need a person's a
 We don't take the AI's word that something works. Every claim in this repo points to a test, a live
 run or a screenshot:
 
-- **283 automated tests**, run inside the real Workers runtime against a real D1 database.
+- **297 automated tests**, run inside the real Workers runtime against a real D1 database.
 - **Failed, then fixed:** each security fix's test was run against the code before the fix, to prove
   the test catches the bug ([three runs](TESTING.md#failed-tests-that-led-to-fixes)).
 - **Live checks:** the 35-check demo, 40 security and PDPA checks, and a Team 17 call with their

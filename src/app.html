@@ -477,6 +477,18 @@
       main.focus({ preventScroll: true });
       window.scrollTo(0, 0);
     };
+
+    // A link from another team's site, from GET /api/mentors: #/mentors/<interest>. It sets the
+    // directory's filter, which survives signing in, then opens the directory.
+    if (route === 'mentors') {
+      let interest = '';
+      try { interest = decodeURIComponent(param); } catch { /* a broken link just opens the directory */ }
+      if (reference.interests.includes(interest)) {
+        Object.assign(filters, { role: '', faculty: '', country: '', year: '', interests: [interest], open: true });
+      }
+      if (session) return go('#/discover');
+    }
+
     if (!session) return show(signInView());
 
     const role = session.user.role;

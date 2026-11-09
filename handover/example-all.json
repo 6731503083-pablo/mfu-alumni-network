@@ -1,0 +1,94 @@
+{
+  "data": [
+    {
+      "interest": "Software Development",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Software%20Development"
+    },
+    {
+      "interest": "Data & AI",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Data%20%26%20AI"
+    },
+    {
+      "interest": "Cybersecurity",
+      "mentors_available": 0,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Cybersecurity"
+    },
+    {
+      "interest": "UX/UI Design",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/UX%2FUI%20Design"
+    },
+    {
+      "interest": "Product Management",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Product%20Management"
+    },
+    {
+      "interest": "Entrepreneurship",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Entrepreneurship"
+    },
+    {
+      "interest": "Marketing",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Marketing"
+    },
+    {
+      "interest": "Finance",
+      "mentors_available": 0,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Finance"
+    },
+    {
+      "interest": "Hospitality & Tourism",
+      "mentors_available": 0,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Hospitality%20%26%20Tourism"
+    },
+    {
+      "interest": "Healthcare",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Healthcare"
+    },
+    {
+      "interest": "Nursing Practice",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Nursing%20Practice"
+    },
+    {
+      "interest": "Law & Compliance",
+      "mentors_available": 0,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Law%20%26%20Compliance"
+    },
+    {
+      "interest": "Cosmetic Science",
+      "mentors_available": 0,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Cosmetic%20Science"
+    },
+    {
+      "interest": "Food Technology",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Food%20Technology"
+    },
+    {
+      "interest": "Teaching & Academia",
+      "mentors_available": 0,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Teaching%20%26%20Academia"
+    },
+    {
+      "interest": "Studying Abroad",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Studying%20Abroad"
+    },
+    {
+      "interest": "Working Abroad",
+      "mentors_available": 3,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Working%20Abroad"
+    }
+  ],
+  "meta": {
+    "api_version": "1.0",
+    "request_id": "4551a57a-b3c5-4214-b824-89d1ebe193d7",
+    "generated_at": "2026-11-09T12:31:55.822Z"
+  }
+}

@@ -18,6 +18,7 @@ flowchart TB
         intern["Team 17 internships<br/>GET /partners/team17/internships"]
         inbox["Events and Clubs webhook<br/>POST /webhooks/events-clubs"]
         lab["Week 06 lab routes<br/>/api/*"]
+        pub["Mentor counts for other teams<br/>GET /api/mentors, counts only"]
     end
 
     db[("Cloudflare D1 database<br/>SQLite")]
@@ -27,10 +28,12 @@ flowchart TB
     idp -.->|"will sign users in<br/>contract not published"| ui
     ui -->|"Bearer token<br/>same site only"| mw
     ec -.->|"signed alumni.event<br/>draft contract"| mw
-    mw --> login & api & intern & inbox & lab
+    t17 -.->|"GET /api/mentors<br/>handover sent"| mw
+    mw --> login & api & intern & inbox & lab & pub
     api --> db
     inbox --> db
     lab --> db
+    pub --> db
     intern -->|"GET /api/placements<br/>10 second limit"| t17
     lab <-->|"status checks and<br/>signed webhooks"| t17
     api -.->|"alumni.connection_created<br/>queued, not sent yet"| hub
@@ -60,10 +63,11 @@ never talks to Team 17 directly: our Worker calls them and checks their answer f
 | [`src/routes/events-clubs.ts`](src/routes/events-clubs.ts) | Receiving signed alumni events from Events and Clubs | FR-11 |
 | [`src/routes/demo-auth.ts`](src/routes/demo-auth.ts) | Demo sign-in, until MFU Identity publishes its tokens | Assumption 1 |
 | [`src/routes/partner-internships.ts`](src/routes/partner-internships.ts) | Team 17's open internships, checked and linked to our mentors | Integration |
+| [`src/routes/partner-mentors.ts`](src/routes/partner-mentors.ts) | Public mentor counts by field, for Team 17's internship pages. See the [handover](handover/README.md) | Integration |
 | [`src/app.html`](src/app.html) | The web app: sign-in, find a mentor, profile and request, requests, my profile, internships | NFR-07 |
 | [`src/docs.html`](src/docs.html) | API reference, with a console for trying every route | Section 11 |
 | [`migrations/0002_alumni_network.sql`](migrations/0002_alumni_network.sql) | The database: tables, rules, triggers and the faculty and interest lists | Section 8 |
-| [`test/`](test/) | 283 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
+| [`test/`](test/) | 297 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
 | [`scripts/`](scripts/) | The live demo, seed data, and the Team 17 and security evidence runs | |
 
 ## The data
@@ -199,6 +203,7 @@ many accepts at once and checks that capacity always holds
 | **The web app is one HTML page with plain JavaScript, served by the same Worker** | No build step, same site so no CORS, and a strict Content-Security-Policy is possible | About 1,200 lines in one file, with no framework to organise them |
 | **Demo sign-in until MFU Identity publishes its tokens** | The browser must never hold `JWT_SECRET`, and Identity hasn't published its contract (PRD Assumption 1) | Anyone with the passcode can sign in as any demo person. Only [`auth.ts`](src/lib/auth.ts) changes when Identity arrives |
 | **Our Worker calls Team 17, not the browser** | Keeps the page's policy at "this site only", and checks every listing before students see it | One more hop. Team 17 can take about 3 seconds to start up |
+| **Other teams get counts, not profiles** | Team 17 only needs to know whether mentors exist in a field. Names and contact details stay behind MFU sign-in and consent | They can't show who the mentors are. Students follow the link to our app for that |
 | **Events queued in the same transaction as the accept** | If sending fails later, the event isn't lost (the outbox pattern) | Sending isn't built yet, so events wait in the table |
 
 ## Built and planned
@@ -217,7 +222,7 @@ Against the PRD's "MVP is complete when" list (section 17):
 | AI suggestions within 5 seconds, with a rule-based fallback | ❌ Not built (FR-09) |
 | `alumni.connection_created` reaches the Notification Hub through the outbox | ⚠️ Queued, not sent (FR-10). Forged inbound webhooks are refused ✅ |
 | Alumni events from Events and Clubs appear for matching students | ⚠️ Received, checked and stored. Not shown to students yet (FR-11) |
-| All 11 planned tests pass | ⚠️ 10 fully and test 6 half (sending isn't built), out of 283 tests. Run before each deploy, not in CI |
+| All 11 planned tests pass | ⚠️ 10 fully and test 6 half (sending isn't built), out of 297 tests. Run before each deploy, not in CI |
 | Deployed at 0 THB, with runbooks | ✅ Deployed on Cloudflare's free plan. ❌ No runbooks |
 
 Also not built: the OpenAPI document (the `/docs` page covers every route instead), and real Identity

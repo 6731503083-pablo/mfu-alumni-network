@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "Team 19 to Team 17 Mentor Availability",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Live requests against Team 19's public Mentor Availability API. No secrets or authentication required."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://alumni-network-integration.phyo2lay.workers.dev"
+    }
+  ],
+  "item": [
+    {
+      "name": "Mentors for a Team 17 category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Expect 200 with Software Development's count and link.",
+        "url": {
+          "raw": "{{base_url}}/api/mentors?category=Engineering",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "mentors"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "Engineering"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Mentors for one of our interests",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Expect 200 with one item.",
+        "url": {
+          "raw": "{{base_url}}/api/mentors?interest=UX/UI Design",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "mentors"
+          ],
+          "query": [
+            {
+              "key": "interest",
+              "value": "UX/UI Design"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "All interests",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Expect 200 with all 17 interests.",
+        "url": {
+          "raw": "{{base_url}}/api/mentors",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "mentors"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Unknown category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Expect 400 VALIDATION_ERROR with fields.category.",
+        "url": {
+          "raw": "{{base_url}}/api/mentors?category=Cooking",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "mentors"
+          ],
+          "query": [
+            {
+              "key": "category",
+              "value": "Cooking"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Team 19 Mentor Availability API",
+    "version": "1.0",
+    "description": "How many MFU alumni can take a mentee in each field, with a link to our directory filtered to it. Public and read-only. Counts only: no names, IDs or contact details. Provided by Team 19 (MFU Alumni Network) for Team 17 (Internship Management)."
+  },
+  "servers": [
+    {
+      "url": "https://alumni-network-integration.phyo2lay.workers.dev"
+    }
+  ],
+  "paths": {
+    "/api/mentors": {
+      "get": {
+        "operationId": "listMentorAvailability",
+        "summary": "Count alumni who can mentor, by interest",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "A Team 17 listing category, in any case. Maps to our interests: Design to UX/UI Design, Engineering to Software Development, Data to Data & AI, Marketing to Marketing. Send category or interest, not both.",
+            "schema": {
+              "type": "string",
+              "maxLength": 60
+            },
+            "example": "Engineering"
+          },
+          {
+            "name": "interest",
+            "in": "query",
+            "required": false,
+            "description": "One of our interests. Send category or interest, not both. With neither, every interest is listed.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Software Development",
+                "Data & AI",
+                "Cybersecurity",
+                "UX/UI Design",
+                "Product Management",
+                "Entrepreneurship",
+                "Marketing",
+                "Finance",
+                "Hospitality & Tourism",
+                "Healthcare",
+                "Nursing Practice",
+                "Law & Compliance",
+                "Cosmetic Science",
+                "Food Technology",
+                "Teaching & Academia",
+                "Studying Abroad",
+                "Working Abroad"
+              ]
+            },
+            "example": "Software Development"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The counts.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Same as meta.request_id.",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "description": "Always *.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MentorAvailability"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "interest": "Software Development",
+                      "mentors_available": 1,
+                      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Software%20Development"
+                    }
+                  ],
+                  "meta": {
+                    "api_version": "1.0",
+                    "request_id": "ba1b94f0-752a-4d78-b4da-aef57bdc9246",
+                    "generated_at": "2026-11-09T12:31:55.312Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "An unknown category, interest or parameter, or both filters at once.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Some fields are invalid",
+                  "code": "VALIDATION_ERROR",
+                  "fields": {
+                    "category": "Unknown category. Use Design, Engineering, Data or Marketing"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An unexpected failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Something went wrong",
+                  "code": "INTERNAL_ERROR"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MentorAvailability": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "interest",
+                "mentors_available",
+                "find_mentors_url"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "interest": {
+                  "type": "string",
+                  "description": "Our interest name."
+                },
+                "mentors_available": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Alumni in this field who can take a mentee now: profile on, open to mentoring, and with room left."
+                },
+                "find_mentors_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Opens our directory filtered to this interest, after the student signs in."
+                }
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "required": [
+              "api_version",
+              "request_id",
+              "generated_at"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "api_version": {
+                "type": "string",
+                "const": "1.0"
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique per call, and logged on our side."
+              },
+              "generated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error",
+          "code"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "examples": [
+              "VALIDATION_ERROR",
+              "INTERNAL_ERROR"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "On a 400, a message per field."
+          }
+        }
+      }
+    }
+  }
+}

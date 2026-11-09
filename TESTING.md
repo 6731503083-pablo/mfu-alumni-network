@@ -5,7 +5,7 @@ are from 9 November 2026.
 
 | Kind | What it covers | Run it | Result | Evidence |
 |---|---|---|---|---|
-| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **283 of 283 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-09.txt) |
+| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **297 of 297 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-09.txt) |
 | Type check | `src` and `test` | `npm run typecheck` | No errors | |
 | End to end, live | The presentation's five steps to a mentor, plus consent withdrawal, security and admin, against the deployed API | `npm run demo` | **35 of 35 checks pass** | [live run](evidence/demo-run-live-2026-11-09.txt) |
 | Security, live | 40 attacks and privacy checks against the deployed site. It writes nothing to the live database | `npm run evidence:security` | **40 of 40 pass** | [live run](evidence/security/live-security-checks-2026-11-09.txt), [SECURITY.md](SECURITY.md) |
@@ -21,6 +21,7 @@ are from 9 November 2026.
 | [`test/auth.test.ts`](test/auth.test.ts) | 56 | Every protected route refuses a missing, forged, expired or unsigned (`alg: none`) token, and a role matrix covers student, alumni, admin and an unknown role on every Mentoring API route |
 | [`test/app.test.ts`](test/app.test.ts) | 24 | Demo sign-in (passcode, fixed roles, demo-only IDs), demo admin limits, `GET /alumni/me`, admin read access, and `/app`'s Content-Security-Policy nonce, no HTML parsing, reference data and no secrets |
 | [`test/partner-internships.test.ts`](test/partner-internships.test.ts) | 24 | Team 17 integration against a fake Team 17: field mapping, forwarded filters, broken listings, unsafe links, 503, timeout and bad responses |
+| [`test/partner-mentors.test.ts`](test/partner-mentors.test.ts) | 14 | The public mentor counts for other teams: only alumni who can take a mentee are counted, no name, ID or contact detail ever appears, Team 17's categories map to our interests, bad queries are refused, and any site may read it |
 | [`test/events-clubs.test.ts`](test/events-clubs.test.ts) | 23 | The signed Events & Clubs webhook: signature checks, a missing secret, retries stored once, and malformed events |
 | [`test/docs-and-lab.test.ts`](test/docs-and-lab.test.ts) | 20 | The docs page has a console for every route and no secrets, the seed lists, error shapes, security headers on every answer, the HTTPS redirect, and the A5 lab routes |
 | [`test/connections-admin.test.ts`](test/connections-admin.test.ts) | 10 | Ending a connection (either party only) and admin deactivation |

@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "interest": "Software Development",
+      "mentors_available": 1,
+      "find_mentors_url": "https://alumni-network-integration.phyo2lay.workers.dev/app#/mentors/Software%20Development"
+    }
+  ],
+  "meta": {
+    "api_version": "1.0",
+    "request_id": "ba1b94f0-752a-4d78-b4da-aef57bdc9246",
+    "generated_at": "2026-11-09T12:31:55.312Z"
+  }
+}

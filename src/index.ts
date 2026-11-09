@@ -9,6 +9,7 @@ import { alumni } from './routes/alumni';
 import { connections } from './routes/connections';
 import { demoAuth } from './routes/demo-auth';
 import { partnerInternships } from './routes/partner-internships';
+import { partnerMentors } from './routes/partner-mentors';
 import { eventsClubs } from './routes/events-clubs';
 import { requests } from './routes/requests';
 import type { AppEnv } from './types';
@@ -67,6 +68,7 @@ app.get('/', (c) =>
       'PATCH /admin/alumni/{id}/deactivate',
       'POST /webhooks/events-clubs',
       'GET /partners/team17/internships',
+      'GET /api/mentors',
       'GET /api/integration/status',
       'GET /api/partner/status',
       'POST /api/webhooks/partner',
@@ -202,5 +204,8 @@ app.route('/webhooks/events-clubs', eventsClubs);
 
 // Team 17's internship listings, for students looking for a mentor in that field.
 app.route('/partners/team17', partnerInternships);
+
+// For other teams: how many alumni can mentor in each field. Counts only, no personal data.
+app.route('/api/mentors', partnerMentors);
 
 export default app;

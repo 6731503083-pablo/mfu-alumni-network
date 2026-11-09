@@ -274,6 +274,7 @@
         <li><a href="#deactivate">Deactivate a profile</a></li>
         <li><a href="#events-clubs">Receive an alumni event</a></li>
         <li><a href="#team17-internships">Browse Team 17’s internships</a></li>
+        <li><a href="#mentors">Count mentors by field, for other teams</a></li>
       </ul>
     </div>
     <div>
@@ -839,6 +840,43 @@
             <div class="field"><label for="i-category">category</label><input id="i-category" type="text" data-query="category" spellcheck="false" placeholder="Engineering"></div>
             <div class="field"><label for="i-mode">work_mode</label><input id="i-mode" type="text" data-query="work_mode" spellcheck="false" placeholder="remote"></div>
             <div class="field"><label for="i-limit">limit</label><input id="i-limit" type="text" inputmode="numeric" data-query="limit" placeholder="10"></div>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="mentors">
+        <div class="doc">
+          <h3>Count mentors by field, for other teams</h3>
+          <p class="route"><span class="method method-get">GET</span> /api/mentors</p>
+          <p>Public and read-only, with no token, so another team can show it on their own site. Team 17 calls it from their internship pages, the way we show their internships. For each interest it gives how many alumni can take a mentee right now (profile on, open to mentoring, with room left), and a link that opens our directory filtered to that interest.</p>
+          <p class="note">Counts only: no names, IDs or contact details, so no alumni’s personal data leaves this service. Any website may read it (<code>Access-Control-Allow-Origin: *</code>). Each answer has a <code>request_id</code>, also in the <code>X-Request-Id</code> header and our log, so both teams can match a call.</p>
+          <h4>Query</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Parameter</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>category</code><span class="where">Optional</span></td><td>A Team 17 category: Design, Engineering, Data or Marketing, in any case. Answers with our matching interests.</td></tr>
+              <tr><td><code>interest</code><span class="where">Optional</span></td><td>One of our interests, such as <code>Software Development</code>. Send <code>category</code> or <code>interest</code>, not both. With neither, every interest is listed.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The counts.<code class="shape">{ data: [{ interest, mentors_available, find_mentors_url }], meta: { api_version, request_id, generated_at } }</code></td></tr>
+              <tr><td class="status s4">400</td><td>An unknown category, interest or parameter, or both filters at once.<code class="shape">{ error, code, fields }</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/api/mentors" aria-label="Try GET /api/mentors" autocomplete="off">
+          <div class="field-grid">
+            <div class="field"><label for="m-category">category</label><input id="m-category" type="text" data-query="category" spellcheck="false" placeholder="Engineering"></div>
+            <div class="field"><label for="m-interest">interest</label><input id="m-interest" type="text" data-query="interest" spellcheck="false" placeholder="Software Development"></div>
           </div>
           <pre class="curl"><code></code></pre>
           <div class="actions">

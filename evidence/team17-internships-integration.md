@@ -94,6 +94,16 @@ with **Try again**:
 | A link points off Team 17's https site | `details_url: null` | `drops a details link to …` (3 cases) |
 | Our query is invalid | 400, and Team 17 isn't called | `rejects … without calling Team 17` (4 cases) |
 
+## The other direction: our API for Team 17
+
+So the integration works both ways, we gave Team 17 a public **Mentor Availability API** on
+9 November, laid out like their handover: [`handover/README.md`](../handover/README.md), with an
+OpenAPI file, a Postman collection and real responses. `GET /api/mentors?category=Engineering` takes
+their listing's own category and answers how many alumni can mentor in that field, with a link to our
+directory filtered to it. It returns counts only, with no personal data.
+
+Status: live and tested (14 tests). Waiting for Team 17 to call it from their app.
+
 ## Earlier integration with Team 17 (A5, Week 06)
 
 These routes are still live:

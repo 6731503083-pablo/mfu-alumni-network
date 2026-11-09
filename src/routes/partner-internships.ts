@@ -12,7 +12,7 @@ const PARTNER = 'Team 17 Internship Management';
 const TIMEOUT_MS = 10_000;
 
 // Our interests that fit each Team 17 category, for "Find a mentor for this".
-const MENTOR_INTERESTS: Record<string, string[]> = {
+export const MENTOR_INTERESTS: Record<string, string[]> = {
   design: ['UX/UI Design'],
   engineering: ['Software Development'],
   data: ['Data & AI'],

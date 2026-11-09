@@ -118,3 +118,10 @@ forwards only the filters their contract accepts, checks each listing with zod a
 keeps `details_url` only if it's https on their origin, and maps their category to our interests
 (`mentor_interests`) for the web app's "Find a mentor for this". Their cold start can take about 3
 seconds, and the route gives them 10. The tests mock `fetch`, so they never call Team 17.
+
+The other direction: `GET /api/mentors` (`src/routes/partner-mentors.ts`) is public, with no token
+and `Access-Control-Allow-Origin: *`, so Team 17 can show mentor counts on their internship pages. It
+accepts their `category` through the same `MENTOR_INTERESTS` map. It must return counts and links
+only, never a name, ID or contact detail (a test checks). Its links, `/app#/mentors/<interest>`, open
+the directory filtered after sign-in. The handover for Team 17 is in `handover/`, and its OpenAPI
+file, Postman collection and examples must change with the route.

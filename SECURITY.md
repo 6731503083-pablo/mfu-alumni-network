@@ -11,7 +11,7 @@ No real person's details are stored.
 
 | Evidence | What it shows | Result |
 |---|---|---|
-| `npm test` | 283 automated tests. The ones cited below cover security and privacy | **283 of 283 pass** ([report](evidence/tests/automated-test-report-2026-11-09.txt)) |
+| `npm test` | 297 automated tests. The ones cited below cover security and privacy | **297 of 297 pass** ([report](evidence/tests/automated-test-report-2026-11-09.txt)) |
 | `npm run evidence:security` | 40 attacks and privacy checks against the **live** site. The IDs H1 to E1 below refer to it. It writes nothing to the live database | **40 of 40 pass** ([live run](evidence/security/live-security-checks-2026-11-09.txt)) |
 | Live headers | The real response headers from the live site, captured with curl | [live-headers-2026-11-09.txt](evidence/security/live-headers-2026-11-09.txt) |
 | Failed, then fixed | Three security problems we found. Each one's test failed on the old code and passes on the fix | [reveal log](evidence/tests/red-green-reveal-log.txt), [demo admin](evidence/tests/red-green-demo-admin.txt), [headers](evidence/tests/red-green-security-headers.txt) |
@@ -43,18 +43,19 @@ No real person's details are stored.
 
 | Control | What it does | Code | Proven by |
 |---|---|---|---|
-| Content-Security-Policy | The web app gets a new nonce on every response. Only our own `<script>` and `<style>` tags carry it, so injected code can't run. No inline handlers, no framing, and the page can only call our own site | [index.ts:85-100](src/index.ts#L85-L100) | [app.test.ts:157](test/app.test.ts#L157), [app.test.ts:171](test/app.test.ts#L171), live H1 |
+| Content-Security-Policy | The web app gets a new nonce on every response. Only our own `<script>` and `<style>` tags carry it, so injected code can't run. No inline handlers, no framing, and the page can only call our own site | [index.ts:87-102](src/index.ts#L87-L102) | [app.test.ts:157](test/app.test.ts#L157), [app.test.ts:171](test/app.test.ts#L171), live H1 |
 | No HTML from data | The page builds everything with `createElement` and text nodes, so a name or bio is always shown as text | [app.html:324-340](src/app.html#L324-L340) | [app.test.ts:178](test/app.test.ts#L178), [alumni.test.ts:465](test/alumni.test.ts#L465) |
-| Security headers | Every answer, errors included, carries HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer` and `Cache-Control: no-store`. The last keeps profiles and contact details out of caches | [index.ts:27-44](src/index.ts#L27-L44) | [docs-and-lab.test.ts:88](test/docs-and-lab.test.ts#L88), [red-green](evidence/tests/red-green-security-headers.txt), live H2 to H5 |
-| HTTPS only | Browsers always use HTTPS here, because `.dev` is on their HSTS preload list. Other clients asking for `http://` get a 308 redirect to `https://` | [index.ts:28-34](src/index.ts#L28-L34) | [docs-and-lab.test.ts:106](test/docs-and-lab.test.ts#L106), live H6 |
+| Security headers | Every answer, errors included, carries HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer` and `Cache-Control: no-store`. The last keeps profiles and contact details out of caches | [index.ts:28-45](src/index.ts#L28-L45) | [docs-and-lab.test.ts:88](test/docs-and-lab.test.ts#L88), [red-green](evidence/tests/red-green-security-headers.txt), live H2 to H5 |
+| HTTPS only | Browsers always use HTTPS here, because `.dev` is on their HSTS preload list. Other clients asking for `http://` get a 308 redirect to `https://` | [index.ts:29-35](src/index.ts#L29-L35) | [docs-and-lab.test.ts:106](test/docs-and-lab.test.ts#L106), live H6 |
 
 ### Integrations, secrets and errors
 
 | Control | What it does | Code | Proven by |
 |---|---|---|---|
-| Signed webhooks | Events & Clubs and Team 17 webhooks must carry an HMAC-SHA256 of the raw body, compared in constant time. A body changed after signing fails | [hmac.ts](src/lib/hmac.ts), [events-clubs.ts:34-39](src/routes/events-clubs.ts#L34-L39), [index.ts:125](src/index.ts#L125) | [events-clubs.test.ts:79-104](test/events-clubs.test.ts#L79-L104), live W1 to W3 |
+| Signed webhooks | Events & Clubs and Team 17 webhooks must carry an HMAC-SHA256 of the raw body, compared in constant time. A body changed after signing fails | [hmac.ts](src/lib/hmac.ts), [events-clubs.ts:34-39](src/routes/events-clubs.ts#L34-L39), [index.ts:127](src/index.ts#L127) | [events-clubs.test.ts:79-104](test/events-clubs.test.ts#L79-L104), live W1 to W3 |
 | Replays stored once | A retried webhook with the same event ID isn't stored twice | [events-clubs.ts:57-65](src/routes/events-clubs.ts#L57-L65), [0001_init.sql:10](migrations/0001_init.sql#L10) | [events-clubs.test.ts:56](test/events-clubs.test.ts#L56), [events-clubs.test.ts:66](test/events-clubs.test.ts#L66) |
 | Partner data checked | Each Team 17 listing is checked against their contract, and broken ones are skipped. Their call has a 10-second limit. Our query is checked before we call them, and we send them no personal data, only the search filters | [partner-internships.ts:78-90](src/routes/partner-internships.ts#L78-L90), [partner-internships.ts:116-142](src/routes/partner-internships.ts#L116-L142) | [partner-internships.test.ts:118-185](test/partner-internships.test.ts#L118-L185) |
+| Public counts, no profiles | `GET /api/mentors` is open to other teams' websites with no sign-in, so it returns counts and links only: no names, IDs or contact details | [partner-mentors.ts](src/routes/partner-mentors.ts) | [partner-mentors.test.ts](test/partner-mentors.test.ts) |
 | Secrets kept out | Live secrets are Cloudflare Worker secrets. `.dev.vars` and `.demo.vars` are git-ignored. Tests use fixed fake secrets, and the pages contain none | [.gitignore](.gitignore) | [docs-and-lab.test.ts:38](test/docs-and-lab.test.ts#L38), [app.test.ts:192](test/app.test.ts#L192) |
 | Errors reveal nothing internal | Every error has one JSON shape. An unexpected failure answers "Something went wrong", and the detail goes only to the Worker's log | [errors.ts:24-34](src/lib/errors.ts#L24-L34) | [docs-and-lab.test.ts:74](test/docs-and-lab.test.ts#L74), live E1 |
 | Few dependencies | Two runtime libraries, Hono and zod, with no known vulnerabilities | [package.json](package.json) | `npm audit`: 0 |
@@ -70,8 +71,9 @@ come from it.
 | **A record of consent** (section 19, BR-02) | The server records when consent was given and for which purpose version (`v1`). Clients can't set either. The database refuses consent without that record, and consent to share an empty field | [alumni.ts:220-225](src/routes/alumni.ts#L220-L225), [0002:48-56](migrations/0002_alumni_network.sql#L48-L56) | [alumni.test.ts:142](test/alumni.test.ts#L142), [alumni.test.ts:155](test/alumni.test.ts#L155), live P5 |
 | **Withdraw at any time** (section 19, BR-03) | Switching a detail off hides it from connected students straight away, because consent is checked on every view rather than copied when the request is accepted | [alumni.ts:85-87](src/routes/alumni.ts#L85-L87) | [alumni.test.ts:370](test/alumni.test.ts#L370), step 6 of the [live demo run](evidence/demo-run-live-2026-11-09.txt), manual check H6 |
 | **Collect and show only what's needed** (section 22) | Search and other people's profile views use a fixed column list with no contact or consent fields. Admins get the public view only. Request lists never include contact details. Team 17 receives no personal data, and queued events carry IDs only | [alumni.ts:22-24](src/routes/alumni.ts#L22-L24), [requests.ts:105-113](src/routes/requests.ts#L105-L113) | [alumni.test.ts:309](test/alumni.test.ts#L309), [app.test.ts:129](test/app.test.ts#L129), [requests.test.ts:205](test/requests.test.ts#L205), live P1 to P4 |
+| **Share only counts with other teams** (section 22) | The endpoint other teams call, `GET /api/mentors`, returns how many alumni can mentor in each field, never who they are | [partner-mentors.ts](src/routes/partner-mentors.ts) | [partner-mentors.test.ts](test/partner-mentors.test.ts) |
 | **A record of who saw what** (BR-10) | Every contact detail a student can see is logged once per connection: when the request is accepted, or the first time they see a detail the alumni agreed to share later. Database triggers refuse any edit or delete of the log | [requests.ts:88-104](src/routes/requests.ts#L88-L104), [alumni.ts:62-82](src/routes/alumni.ts#L62-L82), [0002:162-172](migrations/0002_alumni_network.sql#L162-L172) | [requests.test.ts:303](test/requests.test.ts#L303), [alumni.test.ts:388](test/alumni.test.ts#L388), [requests.test.ts:587](test/requests.test.ts#L587), [red-green](evidence/tests/red-green-reveal-log.txt), live P6 to P8 |
-| **Say what the data is for** (section 23) | The profile editor says who sees each detail and when, and shows the date and purpose version of the alumni's consent | [app.html:1039-1045](src/app.html#L1039-L1045) | Manual checks M09 and M23 |
+| **Say what the data is for** (section 23) | The profile editor says who sees each detail and when, and shows the date and purpose version of the alumni's consent | [app.html:1051-1057](src/app.html#L1051-L1057) | Manual checks M09 and M23 |
 | **Right of access** (section 30) | An alumni sees everything stored about them in My profile, including their consent switches and record. A student sees every request they sent | [alumni.ts:329-337](src/routes/alumni.ts#L329-L337) | [app.test.ts:110](test/app.test.ts#L110) |
 | **No sensitive data** (section 26, BR-07) | The database has no fields for religion, health, ethnicity or similar | [0002:17-57](migrations/0002_alumni_network.sql#L17-L57) | |
 | **Keep data secure** (section 37) | Section 1 of this page | | |
@@ -101,7 +103,7 @@ Mapped to the [OWASP Top 10 (2021)](https://owasp.org/Top10/).
 | SQL injection (A03) | Bound values only, and strict filters | Live I1 to I4 |
 | Stored cross-site scripting (A03) | The API returns JSON, the page only ever inserts text, and the CSP blocks any script without the nonce | Live H1, [alumni.test.ts:465](test/alumni.test.ts#L465), [app.test.ts:178](test/app.test.ts#L178) |
 | Clickjacking | `frame-ancestors 'none'` and `X-Frame-Options: DENY` | Live H1 to H5 |
-| Cross-site request forgery | Tokens travel in the `Authorization` header, not cookies, so another site can't make a browser send them. The API sends no CORS headers, so other sites can't read its answers | [Live headers](evidence/security/live-headers-2026-11-09.txt): no cookies, no `Access-Control-Allow-Origin` |
+| Cross-site request forgery | Tokens travel in the `Authorization` header, not cookies, so another site can't make a browser send them. Only the public mentor counts (`GET /api/mentors`) allow other sites to read them, and they hold no personal data | [Live headers](evidence/security/live-headers-2026-11-09.txt): no cookies, and no `Access-Control-Allow-Origin` on any other route |
 | Eavesdropping (A02) | HTTPS only, with HSTS | Live H6 |
 | Two requests at once getting past a limit (A04) | One-statement checks and a transaction | [requests.test.ts "racing requests"](test/requests.test.ts#L397) |
 | Forged or replayed webhooks (A08) | HMAC signatures and unique event IDs | Live W1 to W3, [events-clubs.test.ts](test/events-clubs.test.ts) |
@@ -128,7 +130,7 @@ Mapped to the [OWASP Top 10 (2021)](https://owasp.org/Top10/).
 ## 5. Check it yourself
 
 ```bash
-npm test                      # 283 tests
+npm test                      # 297 tests
 npm run evidence:security     # 40 checks against the live site. Writes nothing there
 npm audit --omit=dev          # known vulnerabilities in runtime libraries
 ```

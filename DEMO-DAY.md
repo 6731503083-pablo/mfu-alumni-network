@@ -15,7 +15,7 @@ Run these in `alumni-network/`, in this order:
 | # | Do | Expect |
 |---|---|---|
 | 1 | `git pull` and `npm install` | Up to date |
-| 2 | `npm test` | 283 pass, in about 2 seconds |
+| 2 | `npm test` | 297 pass, in about 2 seconds |
 | 3 | `npm run evidence:team17` | `200`. This also confirms Team 17 is online. If it isn't, message Team 17 |
 | 4 | `npm run evidence:security` | 40 of 40 pass |
 | 5 | `npm run demo` | 35 of 35 checks pass. It creates a throwaway alumni and turns it off at the end |
@@ -57,11 +57,11 @@ through **Internships**, then **Find a mentor for this**.
 
 ### A visible change, deployed (rehearsed: about 20 seconds)
 
-1. Open [`src/app.html`](src/app.html#L576), line 576, the sign-in page's tagline. Change the text.
+1. Open [`src/app.html`](src/app.html#L588), line 588, the sign-in page's tagline. Change the text.
 2. Run it:
 
    ```bash
-   npm test          # 283 pass, about 2 seconds
+   npm test          # 297 pass, about 2 seconds
    npm run deploy    # about 9 seconds
    ```
 
@@ -113,6 +113,7 @@ The "Who" column suggests someone by PRD role. Swap as you like.
 | What isn't built? | Erasure, AI matching, sending queued events, and the OpenAPI file | [ARCHITECTURE.md](ARCHITECTURE.md#built-and-planned) | Product Manager |
 | Who did what? | The team table | [PROCESS.md](PROCESS.md#team) | Product Manager |
 | How did you use AI, and how did you check it? | Claude Code wrote most of the code. Tests, live checks and reviews checked it, and we list what it got wrong | [PROCESS.md](PROCESS.md#ai-usage) | Delivery and Document |
+| Can other teams use your API? | Yes. Team 17 has a public endpoint with counts only, plus a handover laid out like theirs. Show `curl "$B/api/mentors?category=Engineering"` | [handover/README.md](handover/README.md) | Delivery and Document |
 | What would you do next? | Rate limiting, erasure, and switching to MFU Identity | [SECURITY.md, section 4](SECURITY.md#4-known-gaps) | Product Manager |
 
 ## If something breaks

@@ -1,0 +1,7 @@
+{
+  "error": "Some fields are invalid",
+  "code": "VALIDATION_ERROR",
+  "fields": {
+    "category": "Unknown category. Use Design, Engineering, Data or Marketing"
+  }
+}
