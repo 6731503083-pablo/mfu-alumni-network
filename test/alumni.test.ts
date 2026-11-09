@@ -458,7 +458,8 @@ describe('GET /alumni/:id (API-02)', () => {
   it('returns 404 for an unknown ID', async () => {
     const res = await call('GET', '/alumni/no-such-id', { as: await makePerson('student') });
     expect(res.status).toBe(404);
-    expect(res.json.code).toBe('NOT_FOUND');
+    expect(res.json).toEqual({ error: 'Alumni not found', code: 'NOT_FOUND' });
+    expect(res.text).not.toMatch(/stack|at \S+\(/i);
   });
 
   // PRD test 10, API half: the docs console and any client must still render this as text.

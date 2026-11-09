@@ -82,6 +82,23 @@ describe('errors', () => {
     expect(res.status).toBe(500);
     expect(res.json).toEqual({ error: 'Something went wrong', code: 'INTERNAL_ERROR' });
   });
+
+  it('reports malformed JSON with the standard validation error shape', async () => {
+    const res = await call('POST', '/mentoring-requests', {
+      as: await makePerson('student'),
+      rawBody: '{"alumni_id":',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.json).toEqual({
+      error: 'Some fields are invalid',
+      code: 'VALIDATION_ERROR',
+      fields: { body: 'Send a valid JSON body' },
+    });
+    expect(res.text).not.toMatch(/stack|at \S+\(/i);
+    expect(res.text).not.toContain(env.JWT_SECRET);
+  });
 });
 
 // OWASP's REST Security Cheat Sheet headers, on every kind of answer the Worker gives.

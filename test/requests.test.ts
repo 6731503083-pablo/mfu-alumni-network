@@ -511,7 +511,11 @@ describe('PATCH /mentoring-requests/:id (API-06)', () => {
       const res = await respond(actor, requestId, to);
 
       expect(res.status).toBe(409);
-      expect(res.json.code).toBe('INVALID_STATE');
+      expect(res.json).toEqual({
+        error: `This request is already ${from}, so it can't change`,
+        code: 'INVALID_STATE',
+      });
+      expect(res.text).not.toMatch(/stack|at \S+\(/i);
     });
 
     it.each(['pending', 'ended', 'ACCEPTED', 7, null])('rejects the status %j', async (status) => {
@@ -579,6 +583,8 @@ describe('PATCH /mentoring-requests/:id (API-06)', () => {
     it('returns 404 for an unknown request', async () => {
       const res = await respond(await makeAlumni(), 'no-such-id', 'accepted');
       expect(res.status).toBe(404);
+      expect(res.json).toEqual({ error: 'Request not found', code: 'NOT_FOUND' });
+      expect(res.text).not.toMatch(/stack|at \S+\(/i);
     });
   });
 });
