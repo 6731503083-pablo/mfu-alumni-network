@@ -16,12 +16,13 @@ Run these in `alumni-network/`, in this order:
 |---|---|---|
 | 1 | `git pull` and `npm install` | Up to date |
 | 2 | `npm test` | 297 pass, in about 2 seconds |
-| 3 | `npm run evidence:team17` | `200`. This also confirms Team 17 is online. If it isn't, message Team 17 |
-| 4 | `npm run evidence:security` | 40 of 40 pass |
-| 5 | `npm run demo` | 35 of 35 checks pass. It creates a throwaway alumni and turns it off at the end |
-| 6 | A team member does the human re-check, H1 to H10, by hand at the end of the [manual log](evidence/tests/manual-test-log.md), and fills in the last two columns | All pass |
-| 7 | `npm run demo:reset` | Frees Su Myat and Ko Min, and puts the seed alumni's details and consent back |
-| 8 | Open the tabs: [the web app](https://alumni-network-integration.phyo2lay.workers.dev/app) (signed out), [the repo](https://github.com/6731503083-pablo/mfu-alumni-network), [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), and VS Code with this folder | |
+| 3 | `npm run typecheck` | No TypeScript errors |
+| 4 | `npm run evidence:team17` | `200`. This also confirms Team 17 is online. If it isn't, message Team 17 |
+| 5 | `npm run evidence:security` | 40 of 40 pass |
+| 6 | `npm run demo` | 35 of 35 checks pass. It creates a throwaway alumni and turns it off at the end |
+| 7 | A team member does the human re-check, H1 to H10, by hand at the end of the [manual log](evidence/tests/manual-test-log.md), and fills in the last two columns | All pass |
+| 8 | `npm run demo:reset` | Frees Su Myat and Ko Min, and puts the seed alumni's details and consent back |
+| 9 | Open the tabs: [the web app](https://alumni-network-integration.phyo2lay.workers.dev/app) (signed out), [the repo](https://github.com/6731503083-pablo/mfu-alumni-network), [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), and VS Code with this folder | |
 
 ## The demo
 
@@ -63,6 +64,7 @@ through **Internships**, then **Find a mentor for this**.
 
    ```bash
    npm test          # 297 pass, about 2 seconds
+   npm run typecheck # no TypeScript errors
    npm run deploy    # about 9 seconds
    ```
 
