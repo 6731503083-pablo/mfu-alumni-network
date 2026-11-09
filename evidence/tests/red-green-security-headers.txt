@@ -1,0 +1,43 @@
+Red-green: security headers on every response, and HTTPS only on the live host
+Found on 9 November 2026 while collecting security evidence: the live API's JSON answers and /docs
+carried no security headers, and plain http:// was served (browsers never use it, because .dev is
+HSTS-preloaded, but scripts and servers could).
+
+================================================================================
+BEFORE the fix: commit bd8c24b, with the new security-header tests added to test/docs-and-lab.test.ts
+Run: npx vitest run test/docs-and-lab.test.ts -t 'security headers'   (2026-11-09T07:26:02Z)
+
+     × are sent on the web app 8ms
+     × are sent on the docs page 1ms
+     × are sent on an API answer 1ms
+     × are sent on a refused request 1ms
+     × are sent on a validation error 1ms
+     × are sent on an unknown route 0ms
+     × sends plain HTTP on the live host to HTTPS, keeping the method and path 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/docs-and-lab.test.ts > security headers > are sent on the web app
+ FAIL  test/docs-and-lab.test.ts > security headers > are sent on the docs page
+ FAIL  test/docs-and-lab.test.ts > security headers > are sent on an API answer
+ FAIL  test/docs-and-lab.test.ts > security headers > are sent on a refused request
+ FAIL  test/docs-and-lab.test.ts > security headers > are sent on a validation error
+ FAIL  test/docs-and-lab.test.ts > security headers > are sent on an unknown route
+AssertionError: expected null to be 'max-age=31536000' // Object.is equality
+ FAIL  test/docs-and-lab.test.ts > security headers > sends plain HTTP on the live host to HTTPS, keeping the method and path
+AssertionError: expected 404 to be 308 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed | 12 skipped (20)
+
+================================================================================
+AFTER the fix: the middleware at the top of src/index.ts
+Run: npx vitest run test/docs-and-lab.test.ts -t 'security headers'   (2026-11-09T07:26:23Z)
+
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on the web app 6ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on the docs page 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on an API answer 0ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on a refused request 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on a validation error 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on an unknown route 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > sends plain HTTP on the live host to HTTPS, keeping the method and path 0ms
+ ✓ test/docs-and-lab.test.ts > security headers > leaves plain HTTP alone on a local server 1ms
+ Test Files  1 passed (1)
+      Tests  8 passed | 12 skipped (20)

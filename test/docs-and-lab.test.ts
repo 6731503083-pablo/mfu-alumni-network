@@ -1,4 +1,4 @@
-import { env } from 'cloudflare:test';
+import { SELF, env } from 'cloudflare:test';
 import { describe, expect, it, vi } from 'vitest';
 
 import app from '../src/index';
@@ -81,6 +81,40 @@ describe('errors', () => {
     silenceExpectedLog.mockRestore();
     expect(res.status).toBe(500);
     expect(res.json).toEqual({ error: 'Something went wrong', code: 'INTERNAL_ERROR' });
+  });
+});
+
+// OWASP's REST Security Cheat Sheet headers, on every kind of answer the Worker gives.
+describe('security headers', () => {
+  it.each([
+    ['the web app', 'GET', '/app', 200],
+    ['the docs page', 'GET', '/docs', 200],
+    ['an API answer', 'GET', '/', 200],
+    ['a refused request', 'GET', '/alumni', 401],
+    ['a validation error', 'POST', '/auth/demo-login', 400],
+    ['an unknown route', 'GET', '/nope', 404],
+  ])('are sent on %s', async (_label, method, path, status) => {
+    const res = await call(method, path, method === 'POST' ? { body: {} } : {});
+    expect(res.status).toBe(status);
+    expect(res.headers.get('Strict-Transport-Security')).toBe('max-age=31536000');
+    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(res.headers.get('X-Frame-Options')).toBe('DENY');
+    expect(res.headers.get('Referrer-Policy')).toBe('no-referrer');
+    expect(res.headers.get('Cache-Control')).toBe('no-store');
+  });
+
+  it('sends plain HTTP on the live host to HTTPS, keeping the method and path', async () => {
+    const res = await SELF.fetch('http://alumni-network-integration.phyo2lay.workers.dev/alumni?country=MM', {
+      method: 'POST',
+      redirect: 'manual',
+    });
+    expect(res.status).toBe(308);
+    expect(res.headers.get('Location')).toBe('https://alumni-network-integration.phyo2lay.workers.dev/alumni?country=MM');
+  });
+
+  it('leaves plain HTTP alone on a local server', async () => {
+    const res = await SELF.fetch('http://localhost:8787/api/integration/status');
+    expect(res.status).toBe(200);
   });
 });
 

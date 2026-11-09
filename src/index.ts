@@ -25,7 +25,24 @@ app.onError(handleError);
 app.notFound((c) => c.json({ error: 'Not found', code: 'NOT_FOUND' }, 404));
 
 app.use('*', async (c, next) => {
+  // Browsers already use HTTPS here (.dev is on their HSTS preload list). This catches scripts and
+  // servers. A local `wrangler dev` stays on plain HTTP.
+  const url = new URL(c.req.url);
+  if (url.protocol === 'http:' && url.hostname.endsWith('.workers.dev')) {
+    url.protocol = 'https:';
+    return c.redirect(url.toString(), 308);
+  }
+
   await next();
+
+  // OWASP's REST Security Cheat Sheet headers, on every answer, errors included. no-store keeps
+  // profiles and contact details out of browser and proxy caches.
+  c.header('Strict-Transport-Security', 'max-age=31536000');
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-Frame-Options', 'DENY');
+  c.header('Referrer-Policy', 'no-referrer');
+  c.header('Cache-Control', 'no-store');
+
   // JSON responses only: /docs is HTML.
   if (c.res.headers.get('Content-Type')?.startsWith('application/json')) {
     c.header('Content-Type', 'application/json; charset=UTF-8');
@@ -80,8 +97,6 @@ app.get('/app', (c) => {
       "frame-ancestors 'none'",
     ].join('; '),
   );
-  c.header('X-Content-Type-Options', 'nosniff');
-  c.header('Referrer-Policy', 'no-referrer');
   return c.html(appHtml.replace(/<(script|style)\b/g, `<$1 nonce="${nonce}"`));
 });
 
