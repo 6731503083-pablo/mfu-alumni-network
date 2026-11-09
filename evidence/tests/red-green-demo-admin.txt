@@ -1,0 +1,83 @@
+# BEFORE the fix: code at 7ac1d4d, with the tests from fix commit 67079bf (test/app.test.ts)
+# command: npx vitest run test/app.test.ts --reporter=verbose -t "demo admin|marks its tokens|asking to be"
+# run at 2026-11-09T07:17:18Z
+
+ RUN  v4.1.12 /private/tmp/claude-501/-Users-phyophyolay-Documents-MFU-Projects-platform/b44b0a2e-50ef-4d91-9368-7185da20c1c9/scratchpad/wt-demo-admin
+ × test/app.test.ts > POST /auth/demo-login > marks its tokens as demo tokens 10ms
+   → expected { sub: 'demo-admin', …(3) } to match object { sub: 'demo-admin', …(2) }
+(2 matching properties omitted from actual)
+ × test/app.test.ts > POST /auth/demo-login > refuses a student ID asking to be admin 1ms
+   → expected 200 to be 400 // Object.is equality
+ × test/app.test.ts > POST /auth/demo-login > refuses an alumni ID asking to be a student 1ms
+   → expected 200 to be 400 // Object.is equality
+ ✓ test/app.test.ts > a demo admin > can turn off a demo profile 4ms
+ × test/app.test.ts > a demo admin > cannot turn off a real profile 3ms
+   → expected 200 to be 403 // Object.is equality
+ ✓ test/app.test.ts > a demo admin > still gets 404 for an unknown profile 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/app.test.ts > POST /auth/demo-login > marks its tokens as demo tokens
+AssertionError: expected { sub: 'demo-admin', …(3) } to match object { sub: 'demo-admin', …(2) }
+(2 matching properties omitted from actual)
+- Expected
++ Received
+  {
+-   "demo": true,
+    "role": "admin",
+    "sub": "demo-admin",
+  }
+ ❯ test/app.test.ts:42:44
+     40|   it('marks its tokens as demo tokens', async () => {
+     41|     const res = await demoLogin({ passcode: PASSCODE, role: 'admin', u…
+     42|     expect(decode(res.json.token).payload).toMatchObject({ sub: 'demo-…
+       |                                            ^
+     43|   });
+     44|
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+ FAIL  test/app.test.ts > POST /auth/demo-login > refuses a student ID asking to be admin
+ FAIL  test/app.test.ts > POST /auth/demo-login > refuses an alumni ID asking to be a student
+AssertionError: expected 200 to be 400 // Object.is equality
+- Expected
++ Received
+- 400
++ 200
+ ❯ test/app.test.ts:54:24
+     52|   ])('refuses %s', async (_label, fields, badField) => {
+     53|     const res = await demoLogin({ passcode: PASSCODE, ...fields });
+     54|     expect(res.status).toBe(400);
+       |                        ^
+     55|     expect(res.json.fields).toHaveProperty(badField);
+     56|   });
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+ FAIL  test/app.test.ts > a demo admin > cannot turn off a real profile
+AssertionError: expected 200 to be 403 // Object.is equality
+- Expected
++ Received
+- 403
++ 200
+ ❯ test/app.test.ts:91:24
+     89|     const real = await makeAlumni();
+     90|     const res = await call('PATCH', `/admin/alumni/${real.profileId}/d…
+     91|     expect(res.status).toBe(403);
+       |                        ^
+     92|     expect(res.json.code).toBe('DEMO_ADMIN_LIMITED');
+     93|     const [row] = await rows('SELECT is_active FROM alumni_profiles WH…
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed | 18 skipped (24)
+   Start at  14:17:19
+   Duration  840ms (transform 173ms, setup 396ms, import 8ms, tests 20ms, environment 0ms)
+
+# AFTER the fix: current code (e3c6492), same tests
+# run at 2026-11-09T07:17:20Z
+
+ RUN  v4.1.12 /Users/phyophyolay/Documents/MFU_Projects/platform/alumni-network
+ ✓ test/app.test.ts > POST /auth/demo-login > marks its tokens as demo tokens 4ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses a student ID asking to be admin 1ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses an alumni ID asking to be a student 0ms
+ ✓ test/app.test.ts > a demo admin > can turn off a demo profile 4ms
+ ✓ test/app.test.ts > a demo admin > cannot turn off a real profile 4ms
+ ✓ test/app.test.ts > a demo admin > still gets 404 for an unknown profile 1ms
+ Test Files  1 passed (1)
+      Tests  6 passed | 18 skipped (24)
+   Start at  14:17:20
+   Duration  815ms (transform 170ms, setup 374ms, import 8ms, tests 14ms, environment 0ms)

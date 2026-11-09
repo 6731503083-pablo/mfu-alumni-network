@@ -1,0 +1,46 @@
+# BEFORE the fix: code at 4696391, with the tests from fix commit bd95c01 (test/alumni.test.ts)
+# command: npx vitest run test/alumni.test.ts --reporter=verbose -t "logs a field consented after connecting|does not log anything when a stranger"
+# run at 2026-11-09T07:17:16Z
+
+ RUN  v4.1.12 /private/tmp/claude-501/-Users-phyophyolay-Documents-MFU-Projects-platform/b44b0a2e-50ef-4d91-9368-7185da20c1c9/scratchpad/wt-reveal-log
+ × test/alumni.test.ts > GET /alumni/:id (API-02) > logs a field consented after connecting, once, when the student first sees it 14ms
+   → expected [ { …(2) } ] to deeply equal [ { …(2) }, { …(2) } ]
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > does not log anything when a stranger views a profile 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/alumni.test.ts > GET /alumni/:id (API-02) > logs a field consented after connecting, once, when the student first sees it
+AssertionError: expected [ { …(2) } ] to deeply equal [ { …(2) }, { …(2) } ]
+- Expected
++ Received
+  [
+    {
+      "field_name": "contact_email",
+      "viewer_id": "student-34e4ccec-97cb-42e5-96f7-e993813ae313",
+    },
+-   {
+-     "field_name": "contact_line",
+-     "viewer_id": "student-34e4ccec-97cb-42e5-96f7-e993813ae313",
+-   },
+  ]
+ ❯ test/alumni.test.ts:405:28
+    403|     expect(first.json.contact).toEqual({ email: 'aung@example.com', li…
+    404|     await call('GET', `/alumni/${alumni.profileId}`, { as: student });
+    405|     expect(await logged()).toEqual([
+       |                            ^
+    406|       { field_name: 'contact_email', viewer_id: student.id },
+    407|       { field_name: 'contact_line', viewer_id: student.id },
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed | 63 skipped (65)
+   Start at  14:17:16
+   Duration  842ms (transform 174ms, setup 393ms, import 16ms, tests 18ms, environment 0ms)
+
+# AFTER the fix: current code (e3c6492), same tests
+# run at 2026-11-09T07:17:17Z
+
+ RUN  v4.1.12 /Users/phyophyolay/Documents/MFU_Projects/platform/alumni-network
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > logs a field consented after connecting, once, when the student first sees it 12ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > does not log anything when a stranger views a profile 3ms
+ Test Files  1 passed (1)
+      Tests  2 passed | 63 skipped (65)
+   Start at  14:17:17
+   Duration  814ms (transform 171ms, setup 373ms, import 12ms, tests 15ms, environment 0ms)

@@ -437,7 +437,7 @@
       // Not JSON: the status explains it.
     }
     if (res.status === 401 && session) {
-      saveSession(null);
+      endSession();
       toast('Your sign-in has expired. Sign in again.', true);
       go('#/');
       throw new Problem(401, 'UNAUTHENTICATED', 'Sign in again.');
@@ -446,9 +446,16 @@
     return json;
   }
 
-  function signOut() {
+  /** Forgets everything about the person who was signed in, so nothing carries over to the next one. */
+  function endSession() {
     saveSession(null);
     toastBox.hidden = true;
+    Object.assign(filters, { role: '', faculty: '', country: '', year: '', interests: [], open: null });
+    Object.assign(internshipFilters, { q: '', category: '', work_mode: '' });
+  }
+
+  function signOut() {
+    endSession();
     go('#/');
   }
 
