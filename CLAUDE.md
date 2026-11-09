@@ -66,8 +66,11 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
    twice. The A5 receiver treats any insert error as a duplicate, so a signed event with no `id` or
    `type` gets `duplicate: true` and isn't stored. This is known and documented on the docs page.
 8. **Secrets live only in `.dev.vars`** locally and `wrangler secret` when deployed, never committed.
-9. **Demo sign-in only signs `demo-` IDs.** `POST /auth/demo-login` must never issue a token for an ID
-   a real Identity user could have. Delete the route when Identity publishes its contract.
+9. **Demo sign-in only signs `demo-` IDs, and the ID fixes the role.** `POST /auth/demo-login` must
+   never issue a token for an ID a real Identity user could have, and `demo-student-…` can't ask to be
+   admin. Its tokens carry `demo: true` (`user.demo`), and a demo admin can only deactivate profiles
+   whose `identity_user_id` starts with `demo-`. The passcode check has no rate limit. Delete the
+   route when Identity publishes its contract.
 10. **The web app never parses API text as HTML.** `src/app.html` builds the page with
     `createElement` and text nodes, and has no inline event handlers. `/app` sends a
     Content-Security-Policy with a new nonce per response, and only the page's own `<script>` and

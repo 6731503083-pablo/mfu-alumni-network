@@ -348,14 +348,14 @@
         <div class="doc">
           <h3>Sign in with the demo passcode</h3>
           <p class="route"><span class="method method-post">POST</span> /auth/demo-login</p>
-          <p>How the web app at <a href="/app">/app</a> signs people in until the Identity service publishes its login. It returns a two-hour token for a demo account, so the browser never needs <code>JWT_SECRET</code>. It only signs in IDs that start with <code>demo-</code>, so it can't be used to act as a real user.</p>
+          <p>How the web app at <a href="/app">/app</a> signs people in until the Identity service publishes its login. It returns a two-hour token for a demo account, so the browser never needs <code>JWT_SECRET</code>. It only signs in IDs that start with <code>demo-</code>, so it can't be used to act as a real user. Its tokens carry <code>demo: true</code>, and a demo admin can only turn off demo profiles.</p>
           <h4>Body</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
             <tbody>
               <tr><td><code>passcode</code><span class="where">Required</span></td><td>The demo passcode, set as the <code>DEMO_PASSCODE</code> secret.</td></tr>
               <tr><td><code>role</code><span class="where">Required</span></td><td><code>student</code>, <code>alumni</code> or <code>admin</code>.</td></tr>
-              <tr><td><code>user_id</code><span class="where">Required</span></td><td>An ID that starts with <code>demo-</code>, such as <code>demo-student-su-myat</code>.</td></tr>
+              <tr><td><code>user_id</code><span class="where">Required</span></td><td>A demo ID that matches the role: <code>demo-student-…</code>, <code>demo-alumni-…</code> or <code>demo-admin</code>. A student ID can't ask to be admin.</td></tr>
             </tbody>
           </table>
           <h4>Responses</h4>
@@ -736,6 +736,7 @@
             <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
             <tbody>
               <tr><td class="status s2">200</td><td>The profile is deactivated.<code class="shape">{ id, is_active: false }</code></td></tr>
+              <tr><td class="status s4">403</td><td><code>DEMO_ADMIN_LIMITED</code>: a demo admin, signed in through <code>POST /auth/demo-login</code>, tried to turn off a profile that isn't a demo one.</td></tr>
               <tr><td class="status s4">404</td><td>There's no profile with this ID.</td></tr>
             </tbody>
           </table>

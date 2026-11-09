@@ -3,7 +3,7 @@ import { decode } from 'hono/jwt';
 import { describe, expect, it } from 'vitest';
 
 import app from '../src/index';
-import { call, connect, makeAlumni, makePerson, nowSeconds, rows } from './helpers';
+import { call, connect, makeAlumni, makePerson, nowSeconds, rows, tokenFor } from './helpers';
 
 const PASSCODE = 'test-demo-passcode';
 
@@ -37,9 +37,16 @@ describe('POST /auth/demo-login', () => {
     expect(res.json).not.toHaveProperty('token');
   });
 
+  it('marks its tokens as demo tokens', async () => {
+    const res = await demoLogin({ passcode: PASSCODE, role: 'admin', user_id: 'demo-admin' });
+    expect(decode(res.json.token).payload).toMatchObject({ sub: 'demo-admin', role: 'admin', demo: true });
+  });
+
   it.each([
     ['an account outside the demo- prefix', { role: 'student', user_id: 'student-1' }, 'user_id'],
     ['a real-looking user ID', { role: 'admin', user_id: '6731503083' }, 'user_id'],
+    ['a student ID asking to be admin', { role: 'admin', user_id: 'demo-student-su-myat' }, 'user_id'],
+    ['an alumni ID asking to be a student', { role: 'student', user_id: 'demo-alumni-li-wei' }, 'user_id'],
     ['an unknown role', { role: 'superuser', user_id: 'demo-x1' }, 'role'],
     ['a missing passcode', { role: 'student', user_id: 'demo-student-1', passcode: undefined }, 'passcode'],
   ])('refuses %s', async (_label, fields, badField) => {
@@ -60,6 +67,36 @@ describe('POST /auth/demo-login', () => {
     );
     expect(res.status).toBe(503);
     expect(((await res.json()) as { code: string }).code).toBe('DEMO_LOGIN_NOT_CONFIGURED');
+  });
+});
+
+describe('a demo admin', () => {
+  async function demoAdminToken() {
+    const res = await demoLogin({ passcode: PASSCODE, role: 'admin', user_id: 'demo-admin' });
+    return res.json.token as string;
+  }
+
+  it('can turn off a demo profile', async () => {
+    const demoAlumni = await call('PATCH', '/alumni/me', {
+      as: await tokenFor('alumni', `demo-alumni-${crypto.randomUUID().slice(0, 8)}`),
+      body: { display_name: 'Demo Profile', grad_year: 2020, faculty_id: 7 },
+    });
+    const res = await call('PATCH', `/admin/alumni/${demoAlumni.json.id}/deactivate`, { as: await demoAdminToken() });
+    expect(res.status).toBe(200);
+  });
+
+  it('cannot turn off a real profile', async () => {
+    const real = await makeAlumni();
+    const res = await call('PATCH', `/admin/alumni/${real.profileId}/deactivate`, { as: await demoAdminToken() });
+    expect(res.status).toBe(403);
+    expect(res.json.code).toBe('DEMO_ADMIN_LIMITED');
+    const [row] = await rows('SELECT is_active FROM alumni_profiles WHERE id = ?', real.profileId);
+    expect(row.is_active).toBe(1);
+  });
+
+  it('still gets 404 for an unknown profile', async () => {
+    const res = await call('PATCH', '/admin/alumni/no-such-id/deactivate', { as: await demoAdminToken() });
+    expect(res.status).toBe(404);
   });
 });
 

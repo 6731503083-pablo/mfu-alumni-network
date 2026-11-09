@@ -9,12 +9,24 @@ import type { AppEnv } from '../types';
 
 const TOKEN_LIFETIME_SECONDS = 2 * 3600;
 
-const loginBody = z.strictObject({
-  passcode: z.string().min(1).max(200),
-  role: z.enum(['student', 'alumni', 'admin']),
-  // Only demo accounts. Real users will come from the Identity service, which this can't impersonate.
-  user_id: z.string().regex(/^demo-[a-z0-9-]{1,60}$/, 'Demo sign-in only works for IDs that start with demo-'),
-});
+// Each demo ID fixes its role, so a student account can't ask to be admin. Only demo IDs: real
+// users will come from the Identity service, which this can't impersonate.
+const ID_PATTERN = {
+  student: /^demo-student-[a-z0-9-]{1,50}$/,
+  alumni: /^demo-alumni-[a-z0-9-]{1,50}$/,
+  admin: /^demo-admin(-[a-z0-9-]{1,50})?$/,
+} as const;
+
+const loginBody = z
+  .strictObject({
+    passcode: z.string().min(1).max(200),
+    role: z.enum(['student', 'alumni', 'admin']),
+    user_id: z.string().max(80),
+  })
+  .refine((body) => ID_PATTERN[body.role].test(body.user_id), {
+    path: ['user_id'],
+    message: 'Use a demo ID for this role: demo-student-…, demo-alumni-… or demo-admin',
+  });
 
 async function sha256Hex(text: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
@@ -44,6 +56,8 @@ demoAuth.post('/demo-login', async (c) => {
 
   const now = Math.floor(Date.now() / 1000);
   const exp = now + TOKEN_LIFETIME_SECONDS;
-  const token = await sign({ sub: userId, role, iat: now, exp }, c.env.JWT_SECRET, 'HS256');
+  // `demo: true` lets routes limit what demo accounts can touch. A demo admin, for one, can only
+  // turn off demo profiles.
+  const token = await sign({ sub: userId, role, demo: true, iat: now, exp }, c.env.JWT_SECRET, 'HS256');
   return c.json({ token, expires_at: new Date(exp * 1000).toISOString(), user: { id: userId, role } });
 });

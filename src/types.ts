@@ -14,6 +14,7 @@ export type Bindings = {
 
 export type Role = 'student' | 'alumni' | 'admin';
 
-export type User = { id: string; role: Role };
+/** `demo` is set on tokens from POST /auth/demo-login, which can only act on demo data. */
+export type User = { id: string; role: Role; demo: boolean };
 
 export type AppEnv = { Bindings: Bindings; Variables: { user: User } };

@@ -43,7 +43,7 @@ async function authenticate(c: Context<AppEnv>): Promise<User> {
   const id = claims.sub ?? claims.user_id;
   if (typeof id !== 'string' || !id) throw unauthenticated('The token has no user ID');
 
-  return { id, role: claims.role as Role };
+  return { id, role: claims.role as Role, demo: claims.demo === true };
 }
 
 /** Lets a request through only with a valid token whose role is allowed on this route. */
