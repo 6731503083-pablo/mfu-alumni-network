@@ -56,11 +56,11 @@ describe('test setup', () => {
 });
 
 describe('reference data', () => {
-  it('seeds the 11 schools and 17 interests from the data design', async () => {
-    expect(await rows('SELECT id FROM faculties')).toHaveLength(11);
+  it("seeds MFU's 15 current schools and the data design's 17 interests", async () => {
+    expect(await rows('SELECT id FROM faculties')).toHaveLength(15);
     expect(await rows('SELECT id FROM interests')).toHaveLength(17);
     const [faculty] = await rows('SELECT name FROM faculties WHERE id = 7');
-    expect(faculty.name).toBe('School of Information Technology');
+    expect(faculty.name).toBe('School of Applied Digital Technology');
   });
 });
 

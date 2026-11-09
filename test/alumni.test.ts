@@ -22,7 +22,7 @@ describe('PATCH /alumni/me (API-03)', () => {
       display_name: 'Aung Kyaw',
       grad_year: 2021,
       faculty_id: 7,
-      faculty: 'School of Information Technology',
+      faculty: 'School of Applied Digital Technology',
       is_open_to_mentoring: false,
       mentee_capacity: 3,
       is_active: true,

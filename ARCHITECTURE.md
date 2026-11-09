@@ -65,8 +65,10 @@ never talks to Team 17 directly: our Worker calls them and checks their answer f
 | [`src/routes/partner-internships.ts`](src/routes/partner-internships.ts) | Team 17's open internships, checked and linked to our mentors | Integration |
 | [`src/routes/partner-mentors.ts`](src/routes/partner-mentors.ts) | Public mentor counts by field, for Team 17's internship pages. See the [handover](handover/README.md) | Integration |
 | [`src/app.html`](src/app.html) | The web app: sign-in, find a mentor, profile and request, requests, my profile, internships | NFR-07 |
+| [`src/app-ui-helpers.ts`](src/app-ui-helpers.ts) | The web app's shared helpers for building the page from text nodes, put into `/app` by [`index.ts`](src/index.ts) | NFR-07 |
 | [`src/docs.html`](src/docs.html) | API reference, with a console for trying every route | Section 11 |
 | [`migrations/0002_alumni_network.sql`](migrations/0002_alumni_network.sql) | The database: tables, rules, triggers and the faculty and interest lists | Section 8 |
+| [`migrations/0003_current_mfu_schools.sql`](migrations/0003_current_mfu_schools.sql) | Brings the schools up to MFU's current 15: the PRD's 11 had an old name and four missing | Section 8 |
 | [`test/`](test/) | 297 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
 | [`scripts/`](scripts/) | The live demo, seed data, and the Team 17 and security evidence runs | |
 

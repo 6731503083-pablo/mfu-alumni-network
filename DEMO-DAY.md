@@ -58,7 +58,7 @@ through **Internships**, then **Find a mentor for this**.
 
 ### A visible change, deployed (rehearsed: about 20 seconds)
 
-1. Open [`src/app.html`](src/app.html#L644), line 644, the sign-in page's tagline. Change the text.
+1. Open [`src/app.html`](src/app.html#L600), line 600, the sign-in page's tagline. Change the text.
 2. Run it:
 
    ```bash
