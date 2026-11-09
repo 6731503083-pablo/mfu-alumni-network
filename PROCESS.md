@@ -8,16 +8,22 @@ and [SECURITY.md](SECURITY.md).
 
 Team 19, Pod 5. Roles are from the PRD. Student IDs are left out because this repo is public.
 
-| Member | Nickname | Role | Contributions |
+| Member | Nickname | Role | What the role covers in the PRD |
 |---|---|---|---|
-| Phyo Sithu | Phyo Si | Frontend UX/UI | The group's PRD, Data and Query Design and presentation, in the frontend UX/UI role |
-| Phyo Wai Yan Lin Zaw | Phyo Phyo Lay | Backend API and Database | The code in this repo: the Week 06 integration with Team 17 (A5), the Mentoring API and its database, the web app (following the presentation's screens), deployment, the Team 17 internships integration, and the test and security evidence |
-| Nyan Linn Htet | Neon | Quality and Security | The group's PRD, Data and Query Design and presentation, in the quality and security role |
-| Khun Be Be R Zar Ni | Erik | Delivery and Document | The group's PRD, Data and Query Design and presentation, in the delivery and documentation role |
-| Aye Min Aung | Ryan | Product Manager | The group's PRD, Data and Query Design and presentation, in the product manager role |
+| Phyo Sithu | Phyo Si | Frontend UX/UI | The three screens: find a mentor, the mentoring request, and the profile and consent manager. All usable on a phone from 360 px wide, with loading, empty and error states (NFR-07) |
+| Phyo Wai Yan Lin Zaw | Phyo Phyo Lay | Backend API and Database | The nine API endpoints (section 11), the data model (section 8), the accept transaction (FR-06), and the webhooks with other teams (FR-10, FR-11) |
+| Nyan Linn Htet | Neon | Quality and Security | The 11 planned tests (section 14), security and privacy (section 12), and the unauthorised-access test group |
+| Khun Be Be R Zar Ni | Erik | Delivery and Document | The API contract for other teams (section 11), the deployment plan and the seven runbooks (section 14) |
+| Aye Min Aung | Ryan | Product Manager | Scope (section 2), the user journey (section 4), risks (section 16) and the acceptance criteria (section 17) |
 
 All five are named on the group's PRD (v1.0, August 2026), Data and Query Design (Week 04) and
-presentation. Those documents are outside this repo.
+presentation. Those documents are outside this repo. The PRD also records that the group reviewed an
+earlier draft together (failure analysis and an architecture challenge), which led to its consent,
+outbox and security fixes.
+
+The code in this repo is Phyo Phyo Lay's, in the backend role: the Week 06 integration with Team 17
+(A5), the Mentoring API and its database, the web app (following the presentation's screens),
+deployment, the Team 17 internships integration, and the test and security evidence.
 
 ## How the work went
 
