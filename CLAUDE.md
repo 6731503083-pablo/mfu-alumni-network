@@ -40,6 +40,7 @@ npm test                         # Vitest inside the Workers runtime, with its o
 npm run typecheck                # checks src and test
 npm run demo:seed                # upserts six fictional "(demo)" alumni on BASE_URL (default: live)
 npm run demo                     # happy path end to end on BASE_URL, exits 1 if a check fails
+npm run evidence:security        # 40 security and PDPA checks on BASE_URL, writes nothing there
 ```
 
 The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev.vars` (when
@@ -75,6 +76,11 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
     `createElement` and text nodes, and has no inline event handlers. `/app` sends a
     Content-Security-Policy with a new nonce per response, and only the page's own `<script>` and
     `<style>` tags carry it. `test/app.test.ts` fails on `innerHTML` or an `on...=` attribute.
+11. **Every answer carries the security headers**, errors included: the first middleware in
+    `src/index.ts` adds HSTS, `nosniff`, `X-Frame-Options`, `Referrer-Policy` and
+    `Cache-Control: no-store`, and sends `http://` on `*.workers.dev` to `https://` (308). Local
+    `wrangler dev` stays on HTTP. `SECURITY.md` cites code by line number, so update it when the
+    cited code moves.
 
 ## Not built yet
 

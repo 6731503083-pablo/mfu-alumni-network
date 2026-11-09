@@ -17,7 +17,9 @@ A Cloudflare Worker with three parts:
 API docs, with a request console, are at
 [`/docs`](https://alumni-network-integration.phyo2lay.workers.dev/docs).
 
-See [TESTING.md](TESTING.md) for how the system is tested and where the results are.
+See [TESTING.md](TESTING.md) for how the system is tested and where the results are, and
+[SECURITY.md](SECURITY.md) for its security and PDPA controls, each with the test or live check that
+proves it.
 
 ## Web app
 

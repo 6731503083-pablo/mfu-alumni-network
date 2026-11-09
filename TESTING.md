@@ -5,9 +5,10 @@ are from 9 November 2026.
 
 | Kind | What it covers | Run it | Result | Evidence |
 |---|---|---|---|---|
-| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **275 of 275 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-09.txt) |
+| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **283 of 283 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-09.txt) |
 | Type check | `src` and `test` | `npm run typecheck` | No errors | |
 | End to end, live | The presentation's five steps to a mentor, plus consent withdrawal, security and admin, against the deployed API | `npm run demo` | **35 of 35 checks pass** | [live run](evidence/demo-run-live-2026-11-09.txt) |
+| Security, live | 40 attacks and privacy checks against the deployed site. It writes nothing to the live database | `npm run evidence:security` | **40 of 40 pass** | [live run](evidence/security/live-security-checks-2026-11-09.txt), [SECURITY.md](SECURITY.md) |
 | Partner, live | Our call to Team 17's internship API, with their request ID | `npm run evidence:team17` | 200 | [integration evidence](evidence/team17-internships-integration.md) |
 | Manual | The web app in a real browser, for every role and at phone width | [log](evidence/tests/manual-test-log.md) | **25 checks: 18 passed, 7 failed and were fixed** | [screenshots](evidence/screenshots/) |
 
@@ -21,7 +22,7 @@ are from 9 November 2026.
 | [`test/app.test.ts`](test/app.test.ts) | 24 | Demo sign-in (passcode, fixed roles, demo-only IDs), demo admin limits, `GET /alumni/me`, admin read access, and `/app`'s Content-Security-Policy nonce, no HTML parsing, reference data and no secrets |
 | [`test/partner-internships.test.ts`](test/partner-internships.test.ts) | 24 | Team 17 integration against a fake Team 17: field mapping, forwarded filters, broken listings, unsafe links, 503, timeout and bad responses |
 | [`test/events-clubs.test.ts`](test/events-clubs.test.ts) | 23 | The signed Events & Clubs webhook: signature checks, a missing secret, retries stored once, and malformed events |
-| [`test/docs-and-lab.test.ts`](test/docs-and-lab.test.ts) | 12 | The docs page has a console for every route and no secrets, the seed lists, error shapes, and the A5 lab routes |
+| [`test/docs-and-lab.test.ts`](test/docs-and-lab.test.ts) | 20 | The docs page has a console for every route and no secrets, the seed lists, error shapes, security headers on every answer, the HTTPS redirect, and the A5 lab routes |
 | [`test/connections-admin.test.ts`](test/connections-admin.test.ts) | 10 | Ending a connection (either party only) and admin deactivation |
 
 ### The PRD's 11 planned tests
@@ -42,14 +43,16 @@ are from 9 November 2026.
 
 ## Failed tests that led to fixes
 
-An automated security review flagged two real bugs on 9 November. For each one we wrote a test, ran it
-against the code **before** the fix (it failed), and then ran it against the fixed code (it passed).
-The before runs used a separate checkout of the old commit, with the fix's test file added.
+Three real security problems were found on 9 November: two by an automated security review, and one
+while collecting the [security evidence](SECURITY.md). For each one we wrote a test, ran it against
+the code **before** the fix (it failed), and then ran it against the fixed code (it passed). The
+first two before runs used a separate checkout of the old commit, with the fix's test file added.
 
 | Bug | Before | After | Evidence |
 |---|---|---|---|
 | A contact detail consented **after** a connection was made was shown to the student without a reveal-log row (BR-10) | 1 test failed | 2 of 2 pass (fix `bd95c01`) | [red-green-reveal-log.txt](evidence/tests/red-green-reveal-log.txt) |
 | Anyone with the demo passcode could get an admin token able to turn off **any** profile | 4 tests failed | 6 of 6 pass (fix `67079bf`) | [red-green-demo-admin.txt](evidence/tests/red-green-demo-admin.txt) |
+| The live API's answers and `/docs` had no security headers, and plain `http://` was served | 7 tests failed | 8 of 8 pass (fix `76a8ec0`) | [red-green-security-headers.txt](evidence/tests/red-green-security-headers.txt) |
 
 Manual testing found 7 more failures in the web app (M13 to M15, M18, M20, M21 and M23 in the
 [manual log](evidence/tests/manual-test-log.md)). All were fixed and checked again.
@@ -62,6 +65,9 @@ wrong role 403, a duplicate request 409, a broken webhook signature 401, and a T
 1. `npm test`: all pass.
 2. `npm run demo`: all 35 checks pass on the live site.
 3. `npm run evidence:team17`: 200, which also confirms Team 17 is online.
-4. A team member does the human re-check (H1 to H10) at the end of the manual log.
-5. Afterwards, `npm run demo:seed` resets the seed profiles' details and consent. It doesn't remove
-   requests or connections, so present the live happy path as **Ko Min**, who will have no history.
+4. `npm run evidence:security`: all 40 checks pass.
+5. A team member does the human re-check (H1 to H10) at the end of the manual log.
+6. Afterwards, `npm run demo:seed` resets the seed profiles' details and consent. It doesn't remove
+   requests or connections. Ko Min is already connected to Kyaw Zin Htet from live testing on
+   9 November, and the re-check connects Su Myat to him too. So for the live happy path, present as
+   **Ko Min** asking **Nattaya Srisuk** (search "พยาบาล"), who has no requests yet.

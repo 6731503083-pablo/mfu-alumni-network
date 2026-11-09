@@ -1,0 +1,68 @@
+MFU Alumni Network: security and PDPA checks
+https://alumni-network-integration.phyo2lay.workers.dev   2026-11-09T07:31:36.001Z   commit 76a8ec0
+
+1  Transport and headers
+  ✓ H1 web app: CSP allows only this response's nonce, no inline code, no framing   got: default-src 'none'; script-src 'nonce-…'; style-src 'nonce-…'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  ✓ H2 an API answer carries all five security headers   got: 200, all five
+  ✓ H3 a refused request (401) carries all five security headers   got: 401, all five
+  ✓ H4 the docs page carries all five security headers   got: 200, all five
+  ✓ H5 an unknown route (404) carries all five security headers   got: 404, all five
+  ✓ H6 plain http:// is sent to https:// (308)   got: 308 → https://alumni-network-integration.phyo2lay.workers.dev/app
+
+2  Sign-in (authentication)
+  ✓ A1 no token → 401   got: 401 UNAUTHENTICATED
+  ✓ A2 a token signed with a guessed secret → 401   got: 401 UNAUTHENTICATED
+  ✓ A3 a token that expired an hour ago → 401   got: 401 UNAUTHENTICATED
+  ✓ A4 an unsigned admin token (alg: none) → 401   got: 401 UNAUTHENTICATED
+  ✓ A5 a student's real token edited to say admin → 401   got: 401 UNAUTHENTICATED
+  ✓ A6 demo sign-in with a wrong passcode → 401   got: 401 INVALID_PASSCODE
+  ✓ A7 a demo student ID asking for the admin role → 400   got: 400 VALIDATION_ERROR
+  ✓ A8 a real-looking student ID → 400 (demo IDs only)   got: 400 VALIDATION_ERROR
+  ✓ A9 a demo admin token is marked demo and lasts two hours   got: 200, demo: true, lifetime 2 h
+
+3  Roles and ownership (authorisation)
+  ✓ R1 a student turning off a profile → 403   got: 403 FORBIDDEN
+  ✓ R2 an alumni turning off a profile → 403   got: 403 FORBIDDEN
+  ✓ R3 a student editing an alumni profile → 403   got: 403 FORBIDDEN
+  ✓ R4 an admin sending a mentoring request → 403   got: 403 FORBIDDEN
+  ✓ R5 a student cancelling another student's request → 403   got: 403 NOT_OWNER
+  ✓ R6 an alumni accepting a request sent to someone else → 403   got: 403 NOT_OWNER
+
+4  Input checks (SQL injection, mass assignment, unsafe links)
+  ✓ I1 role filter ' OR '1'='1 is plain text: 0 matches, not all 7   got: 200, 0 matches
+  ✓ I2 role filter with DROP TABLE is plain text, and the table is still there   got: 0 matches, then 7 profiles
+  ✓ I3 country filter with SQL → 400   got: 400 VALIDATION_ERROR
+  ✓ I4 faculty filter with SQL → 400   got: 400 VALIDATION_ERROR
+  ✓ I5 an unknown search parameter (is_active=0) → 400   got: 400 VALIDATION_ERROR
+  ✓ I6 setting is_active, identity_user_id or consent_timestamp → 400, and nothing is saved   got: 400 VALIDATION_ERROR on consent_timestamp, identity_user_id, is_active; profile afterwards: 404
+  ✓ I7 a javascript: LinkedIn link → 400   got: 400 VALIDATION_ERROR
+
+5  Privacy and PDPA
+  ✓ P1 student search: 7 profiles, no contact or consent fields   got: none
+  ✓ P2 admin search: no contact or consent fields   got: none
+  ✓ P3 a student not connected to Aung Ko Ko (demo), who shares an email, sees no contact   got: 200, contact: false
+  ✓ P4 an admin opening Aung Ko Ko (demo) sees no contact   got: 200, contact: false
+  ✓ P5 all 6 profiles sharing something have a dated, versioned consent record   got: 0 without
+        Aung Ko Ko (demo): shares email, recorded 2026-11-09T06:41:15.569Z, purpose v1
+        Ei Mon Thant (demo): shares email + linkedin, recorded 2026-11-09T07:13:14.413Z, purpose v1
+        Kyaw Zin Htet (demo): shares email, recorded 2026-11-09T06:41:14.483Z, purpose v1
+        Li Wei (demo): shares email, recorded 2026-11-09T06:41:15.006Z, purpose v1
+        May Thu Kyaw (demo): shares email + linkedin, recorded 2026-11-09T06:41:15.191Z, purpose v1
+        Nattaya Srisuk (demo): shares email + line, recorded 2026-11-09T06:41:14.710Z, purpose v1
+  ✓ P6 live reveal log has its append-only triggers   got: contact_reveal_log_no_delete, contact_reveal_log_no_update
+        live reveal log, newest first:
+        2026-11-09T07:18:42.531Z  demo-student-ko-min saw contact_email
+        2026-11-09T07:03:21.306Z  demo-student-mw8wzul3 saw contact_email
+        2026-11-09T06:41:19.673Z  demo-student-mw8w7l10 saw contact_email
+  ✓ P7 editing a reveal-log row is refused by the database (local)   got: APPEND_ONLY: contact_reveal_log rows cannot be modified: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)
+  ✓ P8 deleting a reveal-log row is refused by the database (local)   got: APPEND_ONLY: contact_reveal_log rows cannot be deleted: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)
+
+6  Signed webhooks
+  ✓ W1 Events & Clubs webhook with no signature → 401   got: 401 INVALID_SIGNATURE
+  ✓ W2 Events & Clubs webhook with a made-up signature → 401   got: 401 INVALID_SIGNATURE
+  ✓ W3 Team 17 webhook receiver with no signature → 401   got: 401 invalid signature
+
+7  Errors
+  ✓ E1 an unknown route answers JSON with no internal detail   got: {"error":"Not found","code":"NOT_FOUND"}
+
+✓ All 40 checks passed

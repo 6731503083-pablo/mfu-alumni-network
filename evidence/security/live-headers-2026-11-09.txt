@@ -1,0 +1,49 @@
+Live response headers, 2026-11-09T07:31:54Z, commit 76a8ec0
+Captured with curl -sS -o /dev/null -D - <url>. Date, cf-ray, alt-svc, nel, report-to and server-timing lines removed.
+
+$ curl -D - https://alumni-network-integration.phyo2lay.workers.dev/app
+HTTP/2 200 
+content-type: text/html; charset=UTF-8
+cache-control: no-store
+strict-transport-security: max-age=31536000
+content-security-policy: default-src 'none'; script-src 'nonce-95ef4a5d053541a5b14e14c1a9a42a99'; style-src 'nonce-95ef4a5d053541a5b14e14c1a9a42a99'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+server: cloudflare
+
+$ curl -D - https://alumni-network-integration.phyo2lay.workers.dev/docs
+HTTP/2 200 
+content-type: text/html; charset=UTF-8
+cache-control: no-store
+strict-transport-security: max-age=31536000
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+server: cloudflare
+
+$ curl -D - https://alumni-network-integration.phyo2lay.workers.dev/
+HTTP/2 200 
+content-type: application/json; charset=UTF-8
+cache-control: no-store
+strict-transport-security: max-age=31536000
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+server: cloudflare
+
+$ curl -D - https://alumni-network-integration.phyo2lay.workers.dev/alumni
+HTTP/2 401 
+content-type: application/json; charset=UTF-8
+cache-control: no-store
+strict-transport-security: max-age=31536000
+www-authenticate: Bearer
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+server: cloudflare
+
+$ curl -D - http://alumni-network-integration.phyo2lay.workers.dev/alumni?country=MM
+HTTP/1.1 308 Permanent Redirect
+Location: https://alumni-network-integration.phyo2lay.workers.dev/alumni?country=MM
+Server: cloudflare
