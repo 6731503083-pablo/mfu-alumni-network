@@ -67,7 +67,6 @@ wrong role 403, a duplicate request 409, a broken webhook signature 401, and a T
 3. `npm run evidence:team17`: 200, which also confirms Team 17 is online.
 4. `npm run evidence:security`: all 40 checks pass.
 5. A team member does the human re-check (H1 to H10) at the end of the manual log.
-6. Afterwards, `npm run demo:seed` resets the seed profiles' details and consent. It doesn't remove
-   requests or connections. Ko Min is already connected to Kyaw Zin Htet from live testing on
-   9 November, and the re-check connects Su Myat to him too. So for the live happy path, present as
-   **Ko Min** asking **Nattaya Srisuk** (search "พยาบาล"), who has no requests yet.
+6. Afterwards, `npm run demo:reset` ends Su Myat's and Ko Min's connections, cancels their pending
+   requests and puts the seed profiles back. Then present the live happy path as **Ko Min** asking
+   **Nattaya Srisuk** (search "พยาบาล"). [DEMO-DAY.md](DEMO-DAY.md) has the full script.

@@ -10,8 +10,9 @@ The group's **MFU Alumni Network** project (Team 19, Pod 5). This Worker holds t
   [`../06_integration_v2.md`](../06_integration_v2.md). They were submitted as evidence, so keep
   their behaviour unchanged.
 
-`ARCHITECTURE.md`, `PROCESS.md`, `TESTING.md` and `SECURITY.md` are the final evaluation's evidence
-(10 Nov 2026). Keep their counts, commit hashes and line links in step with the code.
+`ARCHITECTURE.md`, `PROCESS.md`, `TESTING.md`, `SECURITY.md` and `DEMO-DAY.md` are the final
+evaluation's evidence (10 Nov 2026). Keep their counts, commit hashes and line links in step with
+the code.
 
 `GET /docs` serves a hand-written API reference and request console from `src/docs.html`. Update it
 whenever a route changes (a test fails if a route has no console), and never put a secret in it.
@@ -41,7 +42,8 @@ npm run db:local                 # apply migrations to LOCAL D1
 npm run dev                      # wrangler dev on :8787, docs at /docs
 npm test                         # Vitest inside the Workers runtime, with its own test secrets
 npm run typecheck                # checks src and test
-npm run demo:seed                # upserts six fictional "(demo)" alumni on BASE_URL (default: live)
+npm run demo:seed                # upserts seven fictional "(demo)" alumni on BASE_URL (default: live)
+npm run demo:reset               # frees demo students Su Myat and Ko Min, then re-seeds
 npm run demo                     # happy path end to end on BASE_URL, exits 1 if a check fails
 npm run evidence:security        # 40 security and PDPA checks on BASE_URL, writes nothing there
 ```

@@ -23,6 +23,7 @@ API docs, with a request console, are at
 | [PROCESS.md](PROCESS.md) | The team, how the work went, the git history, and how we used AI |
 | [TESTING.md](TESTING.md) | How the system is tested and where the results are |
 | [SECURITY.md](SECURITY.md) | Security and PDPA controls, each with the test or live check that proves it |
+| [DEMO-DAY.md](DEMO-DAY.md) | The final evaluation's checklist, demo script, live change and expected questions |
 
 ## Web app
 
@@ -79,7 +80,8 @@ every response, so it doubles as an end-to-end test (exit code 1 if any check fa
 8. An admin deactivates the profile, which then returns 404 (skip this with `npm run demo -- --keep`).
 
 ```bash
-npm run demo:seed                               # six fictional "(demo)" alumni, safe to rerun
+npm run demo:seed                               # seven fictional "(demo)" alumni, safe to rerun
+npm run demo:reset                              # frees Su Myat and Ko Min to run the web app demo again
 npm run demo                                    # live site, signs tokens with .demo.vars
 BASE_URL=http://localhost:8787 npm run demo     # local `npm run dev`, signs with .dev.vars
 ```

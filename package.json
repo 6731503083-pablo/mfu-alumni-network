@@ -14,6 +14,7 @@
     "cf-typegen": "wrangler types",
     "demo": "node scripts/demo.mjs",
     "demo:seed": "node scripts/seed.mjs",
+    "demo:reset": "node scripts/reset.mjs",
     "evidence:team17": "node scripts/team17-evidence.mjs",
     "evidence:security": "node scripts/security-evidence.mjs"
   },
