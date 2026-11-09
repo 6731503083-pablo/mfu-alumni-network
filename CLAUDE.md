@@ -13,6 +13,12 @@ The group's **MFU Alumni Network** project (Team 19, Pod 5). This Worker holds t
 `GET /docs` serves a hand-written API reference and request console from `src/docs.html`. Update it
 whenever a route changes (a test fails if a route has no console), and never put a secret in it.
 
+`GET /app` serves the web app from `src/app.html`: one page of plain JavaScript with no build step.
+It signs people in through `POST /auth/demo-login` (`src/routes/demo-auth.ts`), which stands in for
+the Identity service. It adds `GET /alumni/me` and lets admins read public profiles (`GET /alumni`
+and `GET /alumni/{id}`), so admins can find profiles to deactivate. The faculty and interest lists
+in the page's `reference` JSON must match the database, and a test checks that.
+
 **Stack:** Cloudflare Workers · Hono · TypeScript · D1 (SQLite) · zod · Vitest.
 
 This differs from the PRD, which specifies Next.js and Supabase, and from the data design, which
@@ -54,12 +60,18 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
 4. **`contact_reveal_log` is append-only**, enforced by triggers. It is PDPA evidence.
 5. **Webhook signatures are verified with a timing-safe comparison** (`timingSafeEqual` in
    `src/lib/hmac.ts`). Never compare HMAC digests with `===`.
-6. **An empty secret must refuse requests.** `JWT_SECRET` and `EVENTS_CLUBS_WEBHOOK_SECRET` return 503
-   when unset, because an empty key would let anyone sign.
+6. **An empty secret must refuse requests.** `JWT_SECRET`, `EVENTS_CLUBS_WEBHOOK_SECRET` and
+   `DEMO_PASSCODE` return 503 when unset, because an empty key would let anyone sign or sign in.
 7. **`webhook_events.source_id` has a UNIQUE index** so a partner's retried delivery isn't stored
    twice. The A5 receiver treats any insert error as a duplicate, so a signed event with no `id` or
    `type` gets `duplicate: true` and isn't stored. This is known and documented on the docs page.
 8. **Secrets live only in `.dev.vars`** locally and `wrangler secret` when deployed, never committed.
+9. **Demo sign-in only signs `demo-` IDs.** `POST /auth/demo-login` must never issue a token for an ID
+   a real Identity user could have. Delete the route when Identity publishes its contract.
+10. **The web app never parses API text as HTML.** `src/app.html` builds the page with
+    `createElement` and text nodes, and has no inline event handlers. `/app` sends a
+    Content-Security-Policy with a new nonce per response, and only the page's own `<script>` and
+    `<style>` tags carry it. `test/app.test.ts` fails on `innerHTML` or an `on...=` attribute.
 
 ## Not built yet
 
@@ -68,8 +80,9 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
 - Showing stored alumni events to students (FR-11), and sending `alumni.event` out.
 - Erasure by anonymisation (BR-04).
 - Real Identity service tokens: `src/lib/auth.ts` verifies HS256 with `JWT_SECRET` until the contract
-  arrives (PRD Assumption 1). Only that file should need to change.
-- The OpenAPI document (PRD section 11), and CORS for a frontend on another domain.
+  arrives (PRD Assumption 1). When it does, change that file and delete `src/routes/demo-auth.ts`.
+- The OpenAPI document (PRD section 11). The web app is served from the same Worker, so there's no
+  CORS.
 
 The Events & Clubs payload in `src/routes/events-clubs.ts` is a draft: that team hasn't published one.
 

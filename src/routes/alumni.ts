@@ -266,8 +266,9 @@ alumni.patch('/me', requireRole('alumni'), async (c) => {
   return c.json(await loadOwnerProfile(db, profileId), existing ? 200 : 201);
 });
 
-// API-01. Search results never include contact details.
-alumni.get('/', requireRole('student', 'alumni'), async (c) => {
+// API-01. Search results never include contact details. Admins search too, to find profiles to
+// deactivate.
+alumni.get('/', requireRole('student', 'alumni', 'admin'), async (c) => {
   const query = parseQuery(c, searchQuery);
   const where = ['a.is_active = 1'];
   const params: (string | number)[] = [];
@@ -323,9 +324,21 @@ alumni.get('/', requireRole('student', 'alumni'), async (c) => {
   });
 });
 
+// The signed-in alumni's own profile, so the web app's profile manager can load it. Registered
+// before /:id so "me" isn't read as an ID.
+alumni.get('/me', requireRole('alumni'), async (c) => {
+  const db = c.env.DB;
+  const own = await db
+    .prepare('SELECT id FROM alumni_profiles WHERE identity_user_id = ?')
+    .bind(c.get('user').id)
+    .first<{ id: string }>();
+  if (!own) throw notFound('Your profile');
+  return c.json(await loadOwnerProfile(db, own.id));
+});
+
 // API-02. Three views: the owner sees everything, a connected student also sees consented contact
-// details, and everyone else sees public fields only.
-alumni.get('/:id', requireRole('student', 'alumni'), async (c) => {
+// details, and everyone else, admins included, sees public fields only.
+alumni.get('/:id', requireRole('student', 'alumni', 'admin'), async (c) => {
   const db = c.env.DB;
   const user = c.get('user');
   const id = c.req.param('id');

@@ -9,6 +9,7 @@ export type Bindings = {
   PARTNER_WEBHOOK_SECRET: string;
   JWT_SECRET: string;
   EVENTS_CLUBS_WEBHOOK_SECRET: string;
+  DEMO_PASSCODE: string;
 };
 
 export type Role = 'student' | 'alumni' | 'admin';

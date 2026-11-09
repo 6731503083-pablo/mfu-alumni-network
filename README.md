@@ -1,14 +1,30 @@
 # MFU Alumni Network API
 
-A Cloudflare Worker with two parts:
+A Cloudflare Worker with three parts:
 
+- **Web app** at `/app`: the presentation's three screens (find a mentor, requests, and the
+  alumni's profile and consent editor), plus admin's "turn off profile". Students, alumni and admin
+  sign in with demo accounts.
 - **Mentoring API:** the PRD's nine endpoints (API-01 to API-09). Students find alumni and ask for
   mentoring, and alumni decide what they share.
 - **Team 17 integration lab (A5):** one endpoint exposed to a partner, one endpoint called on a
   partner, a signed webhook receiver and sender, and one idempotent create endpoint.
 
-**Live:** <https://alumni-network-integration.phyo2lay.workers.dev>, with the API docs and a request
-console at [`/docs`](https://alumni-network-integration.phyo2lay.workers.dev/docs).
+**Live:** the web app is at <https://alumni-network-integration.phyo2lay.workers.dev/app>, and the
+API docs, with a request console, are at
+[`/docs`](https://alumni-network-integration.phyo2lay.workers.dev/docs).
+
+## Web app
+
+One HTML page, [`src/app.html`](src/app.html), with plain JavaScript and no build step. The Worker
+serves it with a strict Content-Security-Policy: every response gets a new nonce, and only the
+page's own `<script>` and `<style>` tags carry it. The page only ever sets API text as text, never
+as HTML. `test/app.test.ts` checks both.
+
+Until MFU's Identity service publishes its login (PRD Assumption 1), the app signs people in through
+`POST /auth/demo-login`. That route needs the `DEMO_PASSCODE` secret and only issues two-hour tokens
+for IDs that start with `demo-`, so the browser never holds `JWT_SECRET`. Delete the route when
+Identity arrives.
 
 ## Setup
 
@@ -20,8 +36,10 @@ npm run dev
 npm test
 ```
 
-Then open <http://localhost:8787/docs> for the API docs, with a console for trying each endpoint.
-To call the Mentoring API from there, paste `JWT_SECRET` from `.dev.vars` under "Sign in for testing".
+Then open <http://localhost:8787/app> for the web app, and sign in with `DEMO_PASSCODE` from
+`.dev.vars`. Run `BASE_URL=http://localhost:8787 npm run demo:seed` first, so there are alumni to
+find. <http://localhost:8787/docs> has the API docs, with a console for trying each endpoint. To call
+the Mentoring API from there, paste `JWT_SECRET` from `.dev.vars` under "Sign in for testing".
 
 `.dev.vars` needs these values:
 
@@ -30,6 +48,7 @@ WEBHOOK_SECRET=<a secret only you and Team 17 know>
 PARTNER_WEBHOOK_SECRET=<Team 17's secret for the webhook they receive from you>
 JWT_SECRET=<signs and verifies sign-in tokens until the Identity service publishes its contract>
 EVENTS_CLUBS_WEBHOOK_SECRET=<a secret only you and Events & Clubs know>
+DEMO_PASSCODE=<the passcode people type to sign in to the web app's demo accounts>
 ```
 
 ## Happy-path demo
@@ -130,9 +149,10 @@ npm test
 npm run db:remote                                # applies new migrations to the live database
 npx wrangler secret put JWT_SECRET
 npx wrangler secret put EVENTS_CLUBS_WEBHOOK_SECRET
+npx wrangler secret put DEMO_PASSCODE
 npm run deploy
 ```
 
-All four secrets are set on the live Worker. Secrets go in `wrangler secret put` or the Cloudflare
-dashboard, never in the repo. The live `JWT_SECRET` is kept locally in `.demo.vars` (git-ignored) for
-signing demo tokens.
+The live Worker needs all five secrets. Secrets go in `wrangler secret put` or the Cloudflare
+dashboard, never in the repo. The live `JWT_SECRET` and `DEMO_PASSCODE` are kept locally in
+`.demo.vars` (git-ignored), for signing demo tokens and signing in to the web app.

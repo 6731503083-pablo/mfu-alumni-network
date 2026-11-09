@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>MFU Alumni Network</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2313291f'/%3E%3Cpath d='M8 23V10l8 7 8-7v13' fill='none' stroke='%23c9a227' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --forest: #13291f;
+    --pine: #1b4332;
+    --leaf: #2d6a4f;
+    --mint: #d8f3dc;
+    --mint-soft: #edf7ef;
+    --paper: #f3f6f4;
+    --gold: #c9a227;
+    --gold-soft: #f7f0d8;
+    --ink: #17221d;
+    --muted: #56655d;
+    --line: #d3ddd7;
+    --white: #ffffff;
+    --danger: #a63d32;
+    --danger-soft: #f8e8e5;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Myanmar", "Myanmar Text", "Noto Sans Thai", "Leelawadee UI", sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); }
+  main { flex: 1; width: 100%; max-width: 1120px; margin: 0 auto; padding: 32px 20px 64px; }
+  main:focus { outline: none; }
+  h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; line-height: 1.2; color: var(--pine); }
+  h1 { font-size: 2.125rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.375rem; }
+  p, ul, dl, blockquote { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: var(--leaf); text-underline-offset: 3px; }
+  a:hover { color: var(--pine); }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .skip { position: absolute; left: -9999px; }
+  .skip:focus { left: 16px; top: 12px; z-index: 10; padding: 8px 12px; background: var(--white); }
+  .icon { flex: none; }
+
+  /* Top bar */
+  .bar { background: var(--forest); color: #e3ede6; }
+  .bar-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; }
+  .brand { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: var(--white); text-decoration: none; }
+  .brand:hover { color: var(--white); }
+  .nav { flex: 1; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .nav a { padding: 6px 0; color: #c4d8cb; text-decoration: none; border-bottom: 2px solid transparent; }
+  .nav a:hover { color: var(--white); }
+  .nav a[aria-current="page"] { color: var(--white); border-bottom-color: var(--gold); }
+  .who { display: flex; align-items: center; gap: 12px; font-size: .9375rem; }
+  .who-role { color: #95b5a1; }
+  .bar .btn-quiet { color: #e3ede6; border-color: rgba(255, 255, 255, .3); background: transparent; }
+  .bar .btn-quiet:hover { background: rgba(255, 255, 255, .08); }
+
+  /* Buttons */
+  .btn { font: inherit; font-weight: 600; padding: 9px 16px; border: 1px solid var(--pine); border-radius: 6px; background: var(--pine); color: var(--white); cursor: pointer; }
+  .btn:hover { background: var(--forest); }
+  .btn:disabled { opacity: .55; cursor: progress; }
+  .btn-quiet { background: var(--white); color: var(--pine); border-color: var(--line); }
+  .btn-quiet:hover { background: var(--mint-soft); }
+  .btn-danger { background: var(--white); color: var(--danger); border-color: #e3bdb6; }
+  .btn-danger:hover { background: var(--danger-soft); }
+  .btn-small { padding: 5px 12px; font-size: .875rem; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+  /* Forms */
+  label, legend { display: block; margin-bottom: 6px; padding: 0; font-weight: 600; font-size: .9375rem; }
+  fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .hint { margin-top: 4px; color: var(--muted); font-size: .875rem; }
+  input[type="text"], input[type="number"], input[type="email"], input[type="url"], input[type="password"], select, textarea {
+    width: 100%; padding: 9px 11px; font: inherit; color: var(--ink); background: var(--white); border: 1px solid #b6c5bc; border-radius: 6px;
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  .field { margin-bottom: 16px; }
+  .field-error { margin-top: 4px; color: var(--danger); font-size: .875rem; }
+  [aria-invalid="true"] { border-color: var(--danger) !important; }
+  .check { display: flex; align-items: flex-start; gap: 10px; font-weight: 400; }
+  .check input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--pine); }
+  .counter { color: var(--muted); font-size: .8125rem; text-align: right; margin-top: 4px; }
+  .alert { margin-bottom: 16px; padding: 11px 14px; border-radius: 8px; background: var(--danger-soft); color: #7a2a21; }
+
+  /* Chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { padding: 2px 10px; border-radius: 999px; background: var(--mint); color: var(--pine); font-size: .8125rem; }
+  .pick { position: relative; }
+  .pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .pick span { display: inline-block; padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); font-size: .875rem; font-weight: 400; cursor: pointer; }
+  .pick input:checked + span { background: var(--pine); border-color: var(--pine); color: var(--white); }
+  .pick input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  /* Status */
+  .status { padding: 2px 10px; border-radius: 999px; font-size: .8125rem; font-weight: 600; white-space: nowrap; }
+  .status-waiting { background: var(--gold-soft); color: #6b5410; }
+  .status-connected { background: var(--mint); color: var(--pine); }
+  .status-closed { background: #eaedeb; color: var(--muted); }
+  .taking { color: var(--leaf); font-weight: 600; font-size: .875rem; }
+  .not-taking { color: var(--muted); font-size: .875rem; }
+
+  /* Page head */
+  .page-head { margin-bottom: 24px; }
+  .page-head p { max-width: 62ch; margin-top: 6px; color: var(--muted); }
+  .back { display: inline-block; margin-bottom: 16px; }
+
+  /* Directory */
+  .discover { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 28px; align-items: start; }
+  .filters { position: sticky; top: 16px; padding: 20px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
+  .filters summary { margin-bottom: 14px; font-family: var(--serif); font-size: 1.125rem; font-weight: 700; color: var(--pine); cursor: pointer; }
+  .filters details:not([open]) summary { margin-bottom: 0; }
+  .filters .field:last-of-type { margin-bottom: 20px; }
+  .sheet { background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
+  .sheet[aria-busy="true"] { opacity: .6; }
+  .sheet-head { padding: 13px 22px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
+  .person, .req { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+  .person:last-child, .req:last-child { border-bottom: 0; }
+  .person-name { font-family: var(--serif); font-size: 1.3125rem; font-weight: 700; color: var(--pine); text-decoration: none; }
+  .person-name:hover { text-decoration: underline; }
+  .meta { color: var(--muted); font-size: .9375rem; }
+  .person .chips { margin-top: 10px; }
+  .side-col { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; }
+  .more { padding: 14px 22px; border-top: 1px solid var(--line); }
+  .empty { padding: 28px 22px; color: var(--muted); }
+
+  /* Profile */
+  .profile { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: start; }
+  .card { padding: 26px 28px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
+  .card h2 { margin-bottom: 8px; }
+  .card > p + p, .card > p + .actions, .card > .alert + p { margin-top: 10px; }
+  .lede { margin-top: 4px; font-size: 1.125rem; }
+  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 22px 0; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; }
+  .bio { max-width: 65ch; margin-bottom: 18px; white-space: pre-line; }
+  .side { display: flex; flex-direction: column; gap: 20px; }
+  .quote { margin: 12px 0; padding: 4px 0 4px 14px; border-left: 3px solid var(--mint); white-space: pre-line; }
+
+  /* Consent: the contact details and who may see them */
+  .consent { padding: 24px 26px; background: var(--white); border: 1px solid var(--line); border-left: 5px solid var(--gold); border-radius: 4px 10px 10px 4px; }
+  .consent h2 { margin-bottom: 6px; }
+  .consent-intro { color: var(--muted); font-size: .9375rem; margin-bottom: 12px; }
+  .consent-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 10px; padding: 11px 0; border-top: 1px solid var(--line); }
+  .consent-list .icon { grid-row: span 2; margin-top: 3px; color: var(--muted); }
+  .consent-list .shared .icon { color: var(--gold); }
+  .consent-name { font-weight: 600; }
+  .consent-value { overflow-wrap: anywhere; }
+  .consent-state { color: var(--muted); font-size: .8125rem; }
+  .consent-list .shared .consent-state { color: var(--leaf); font-weight: 600; }
+  .consent-foot { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8125rem; }
+
+  /* Requests */
+  .section-title { margin: 32px 0 12px; font-size: 1.25rem; }
+  .section-title:first-of-type { margin-top: 0; }
+  .req-title { font-family: var(--serif); font-size: 1.1875rem; font-weight: 700; color: var(--pine); }
+  .req .quote { margin: 8px 0; }
+  .capacity { margin-bottom: 20px; padding: 12px 16px; border-radius: 8px; background: var(--mint-soft); color: var(--pine); }
+
+  /* Profile editor */
+  .editor { display: grid; gap: 20px; max-width: 780px; }
+  .editor .card > p.hint { margin: -2px 0 18px; font-size: .9375rem; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .contact-row { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 4px 20px; align-items: start; padding: 14px 0; border-top: 1px solid var(--line); }
+  .contact-row .field { margin-bottom: 0; }
+  .share { padding-top: 30px; }
+  .consent-record { margin-top: 14px; color: var(--muted); font-size: .875rem; }
+  .save-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+
+  /* Sign-in */
+  .signin { display: grid; grid-template-columns: 5fr 6fr; overflow: hidden; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
+  .signin-intro { display: flex; flex-direction: column; gap: 28px; padding: 48px 44px; background: var(--forest); color: #d5e4da; }
+  .signin-intro h1 { color: var(--white); font-size: 2.75rem; }
+  .rule { width: 72px; height: 4px; margin-top: 18px; border-radius: 2px; background: var(--gold); }
+  .promise { font-family: var(--serif); font-size: 1.5rem; line-height: 1.35; color: var(--white); max-width: 18ch; }
+  .signin-team { margin-top: auto; color: #95b5a1; font-size: .9375rem; }
+  .signin-form { padding: 40px 44px; }
+  .signin-form h2 { margin-bottom: 4px; }
+  .signin-form > .hint { margin-bottom: 20px; }
+  .personas { margin-bottom: 18px; }
+  .personas legend { color: var(--muted); font-weight: 600; }
+  .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
+  .persona { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 12px; align-items: center; margin: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; font-weight: 400; cursor: pointer; }
+  .persona input { grid-row: span 2; width: 18px; height: 18px; margin: 0; accent-color: var(--pine); }
+  .persona:has(input:checked) { border-color: var(--pine); background: var(--mint-soft); }
+  .persona-name { font-weight: 600; }
+  .persona-detail { color: var(--muted); font-size: .875rem; }
+  .signin-note { margin-top: 18px; color: var(--muted); font-size: .875rem; }
+
+  /* Toast and footer */
+  .toast { position: fixed; left: 50%; bottom: 24px; z-index: 20; max-width: min(540px, calc(100% - 32px)); padding: 12px 18px; border-radius: 8px; background: var(--forest); color: var(--white); box-shadow: 0 8px 28px rgba(19, 41, 31, .28); transform: translateX(-50%); }
+  .toast.is-error { background: var(--danger); }
+  .foot { padding: 20px 20px 32px; color: var(--muted); font-size: .875rem; text-align: center; }
+
+  @media (max-width: 880px) {
+    .discover, .profile, .signin { grid-template-columns: 1fr; }
+    .filters { position: static; }
+    .signin-intro { padding: 32px 26px; }
+    .signin-intro h1 { font-size: 2.125rem; }
+    .signin-form { padding: 28px 26px; }
+    h1 { font-size: 1.75rem; }
+  }
+  @media (max-width: 560px) {
+    main { padding: 20px 16px 48px; }
+    .bar-inner { padding: 10px 16px 0; justify-content: space-between; }
+    .nav { order: 3; flex-basis: 100%; gap: 4px 18px; }
+    .nav a { white-space: nowrap; }
+    .who-role { display: none; }
+    .person, .req { grid-template-columns: 1fr; padding: 16px; }
+    .side-col { flex-direction: row; flex-wrap: wrap; align-items: center; text-align: left; }
+    .two, .contact-row { grid-template-columns: 1fr; }
+    .share { padding-top: 4px; }
+    .card, .consent { padding: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar" id="bar" hidden></header>
+<main id="main" tabindex="-1"></main>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<footer class="foot">Built by Team 19 (Pod 5), Mae Fah Luang University. Developers can read the <a href="/docs">API reference</a>.</footer>
+
+<script type="application/json" id="reference">{
+  "faculties": [
+    { "id": 1, "name": "School of Science" },
+    { "id": 2, "name": "School of Liberal Arts" },
+    { "id": 3, "name": "School of Management" },
+    { "id": 4, "name": "School of Law" },
+    { "id": 5, "name": "School of Medicine" },
+    { "id": 6, "name": "School of Agro-Industry" },
+    { "id": 7, "name": "School of Information Technology" },
+    { "id": 8, "name": "School of Cosmetic Science" },
+    { "id": 9, "name": "School of Health Science" },
+    { "id": 10, "name": "School of Nursing" },
+    { "id": 11, "name": "School of Anti-Aging and Regenerative Medicine" }
+  ],
+  "interests": [
+    "Software Development", "Data & AI", "Cybersecurity", "UX/UI Design", "Product Management",
+    "Entrepreneurship", "Marketing", "Finance", "Hospitality & Tourism", "Healthcare",
+    "Nursing Practice", "Law & Compliance", "Cosmetic Science", "Food Technology",
+    "Teaching & Academia", "Studying Abroad", "Working Abroad"
+  ]
+}</script>
+<script>
+(() => {
+  'use strict';
+
+  // Every piece of text from the API goes into the page through textContent or a text node,
+  // so stored text like <b> or a script tag shows as text and never runs (PRD test 10).
+
+  const reference = JSON.parse(document.getElementById('reference').textContent);
+  const facultyNames = new Map(reference.faculties.map((faculty) => [faculty.id, faculty.name]));
+  const COUNTRIES = {
+    MM: 'Myanmar', TH: 'Thailand', CN: 'China', LA: 'Laos', VN: 'Vietnam', KH: 'Cambodia',
+    MY: 'Malaysia', SG: 'Singapore', JP: 'Japan', KR: 'South Korea', TW: 'Taiwan', IN: 'India',
+    AU: 'Australia', GB: 'United Kingdom', US: 'United States',
+  };
+  const countryName = (code) => COUNTRIES[code] ?? code;
+  const CURRENT_YEAR = new Date().getFullYear();
+
+  // Demo accounts. Their IDs match scripts/seed.mjs, so the alumni here have seeded profiles.
+  const PERSONAS = [
+    { key: 'su-myat', group: 'Students', role: 'student', id: 'demo-student-su-myat', name: 'Su Myat', detail: 'Student, School of Information Technology' },
+    { key: 'ko-min', group: 'Students', role: 'student', id: 'demo-student-ko-min', name: 'Ko Min', detail: 'Student, School of Management' },
+    { key: 'kyaw-zin-htet', group: 'Alumni', role: 'alumni', id: 'demo-alumni-kyaw-zin-htet', name: 'Kyaw Zin Htet (demo)', detail: 'Software engineer in Yangon' },
+    { key: 'nattaya-srisuk', group: 'Alumni', role: 'alumni', id: 'demo-alumni-nattaya-srisuk', name: 'Nattaya Srisuk (demo)', detail: 'Nurse in Chiang Rai' },
+    { key: 'li-wei', group: 'Alumni', role: 'alumni', id: 'demo-alumni-li-wei', name: 'Li Wei (demo)', detail: 'Marketing manager in Kunming' },
+    { key: 'may-thu-kyaw', group: 'Alumni', role: 'alumni', id: 'demo-alumni-may-thu-kyaw', name: 'May Thu Kyaw (demo)', detail: 'Data analyst in Bangkok' },
+    { key: 'new-alumni', group: 'Alumni', role: 'alumni', id: null, name: 'A new alumni', detail: 'Starts with an empty profile' },
+    { key: 'admin', group: 'Admin', role: 'admin', id: 'demo-admin', name: 'Admin', detail: 'Turns off profiles that break the rules' },
+  ];
+  const studentNames = new Map(PERSONAS.filter((p) => p.role === 'student').map((p) => [p.id, p.name]));
+  const studentName = (id) => studentNames.get(id) ?? 'A student';
+
+  const MESSAGES = {
+    NETWORK: "Can't reach the server. Check the connection and try again.",
+    INVALID_PASSCODE: 'That passcode is wrong. Ask the presenter for the demo passcode.',
+    DEMO_LOGIN_NOT_CONFIGURED: "Demo sign-in isn't set up on this server yet.",
+    DUPLICATE_PENDING: 'You already have a request waiting with this alumni.',
+    PENDING_LIMIT: 'You already have 5 requests waiting. Cancel one, or wait for replies, before sending more.',
+    NOT_OPEN_TO_MENTORING: "This alumni isn't taking mentoring requests right now.",
+    ALREADY_CONNECTED: "You're already connected with this alumni.",
+    CAPACITY_FULL: "You've reached your mentee limit. Raise it in My profile, or end a connection first.",
+    INVALID_STATE: 'This request has already been answered. The list now shows its latest status.',
+    ALUMNI_INACTIVE: 'This profile has been turned off.',
+    FORBIDDEN: "Your account can't do that.",
+    NOT_OWNER: 'Only the person this request belongs to can change it.',
+    NOT_FOUND: "This profile doesn't exist, or it has been turned off.",
+  };
+  const explain = (problem) => MESSAGES[problem.code] ?? problem.message;
+
+  const main = document.getElementById('main');
+  const bar = document.getElementById('bar');
+  const toastBox = document.getElementById('toast');
+  const SESSION_KEY = 'mfu-alumni-network-session';
+  let session = loadSession();
+
+  // ── Building the page ──────────────────────────────────────────────────────────────────────
+  const PROPERTIES = new Set(['value', 'checked', 'disabled', 'hidden', 'required']);
+
+  /** Creates an element. Props become attributes, listeners (onclick) or properties (value). */
+  function h(tag, props, ...children) {
+    const el = document.createElement(tag);
+    const later = [];
+    for (const [key, value] of Object.entries(props ?? {})) {
+      if (value === undefined || value === null || value === false) continue;
+      if (key.startsWith('on') && typeof value === 'function') el.addEventListener(key.slice(2), value);
+      else if (key === 'class') el.className = value;
+      else if (PROPERTIES.has(key)) later.push([key, value]);
+      else el.setAttribute(key, value === true ? '' : String(value));
+    }
+    for (const child of children.flat(Infinity)) {
+      if (child === null || child === undefined || child === false) continue;
+      el.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+    for (const [key, value] of later) el[key] = value;
+    return el;
+  }
+
+  const SVG = 'http://www.w3.org/2000/svg';
+  function icon(kind) {
+    const svg = document.createElementNS(SVG, 'svg');
+    for (const [name, value] of Object.entries({ viewBox: '0 0 20 20', width: 18, height: 18, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7, 'stroke-linecap': 'round', 'aria-hidden': 'true', class: 'icon' })) {
+      svg.setAttribute(name, String(value));
+    }
+    const body = document.createElementNS(SVG, 'rect');
+    for (const [name, value] of Object.entries({ x: 4, y: 9, width: 12, height: 8.5, rx: 1.5 })) body.setAttribute(name, String(value));
+    const shackle = document.createElementNS(SVG, 'path');
+    shackle.setAttribute('d', kind === 'open' ? 'M7 9V6.5a3 3 0 0 1 5.8-1.2' : 'M7 9V6.5a3 3 0 0 1 6 0V9');
+    svg.append(body, shackle);
+    return svg;
+  }
+
+  const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const when = (iso) => (iso ? dateFormat.format(new Date(iso)) : '');
+  const jobLine = (a) => [a.job_title, a.company].filter(Boolean).join(' at ') || 'No job title yet';
+  const placeLine = (a) => [a.city, a.country_code && countryName(a.country_code)].filter(Boolean).join(', ');
+  const schoolLine = (a) => `${facultyNames.get(a.faculty_id) ?? a.faculty}, class of ${a.grad_year}`;
+
+  function pageHead(title, text) {
+    return h('div', { class: 'page-head' }, h('h1', null, title), text ? h('p', null, text) : null);
+  }
+
+  let toastTimer;
+  function toast(message, isError = false) {
+    toastBox.textContent = message;
+    toastBox.classList.toggle('is-error', isError);
+    toastBox.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastBox.hidden = true; }, 5000);
+  }
+
+  /** A labelled control with its hint and an error line, wired up for screen readers. */
+  function field(id, labelText, control, hint) {
+    control.id = id;
+    const described = [hint ? `${id}-hint` : null, `${id}-error`].filter(Boolean).join(' ');
+    control.setAttribute('aria-describedby', described);
+    const error = h('p', { class: 'field-error', id: `${id}-error`, hidden: true });
+    const wrap = h('div', { class: 'field' },
+      h('label', { for: id }, labelText),
+      control,
+      hint ? h('p', { class: 'hint', id: `${id}-hint` }, hint) : null,
+      error);
+    return { wrap, control, error };
+  }
+
+  function select(options, value) {
+    return h('select', { value: value ?? '' }, options.map(([optionValue, label]) => h('option', { value: String(optionValue) }, label)));
+  }
+
+  // ── Session and API ─────────────────────────────────────────────────────────────────────────
+  function loadSession() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) ?? 'null');
+      if (saved && Date.parse(saved.expiresAt) > Date.now() + 60000) return saved;
+    } catch {
+      // Storage can be blocked. The page still works; sign-in just doesn't survive a reload.
+    }
+    return null;
+  }
+
+  function saveSession(value) {
+    session = value;
+    try {
+      if (value) sessionStorage.setItem(SESSION_KEY, JSON.stringify(value));
+      else sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      // See loadSession.
+    }
+  }
+
+  class Problem extends Error {
+    constructor(status, code, message, fields) {
+      super(message);
+      this.status = status;
+      this.code = code;
+      this.fields = fields;
+    }
+  }
+
+  async function api(method, path, body) {
+    const headers = {};
+    if (session) headers.Authorization = `Bearer ${session.token}`;
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    let res;
+    try {
+      res = await fetch(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    } catch {
+      throw new Problem(0, 'NETWORK', MESSAGES.NETWORK);
+    }
+    let json = null;
+    try {
+      json = await res.json();
+    } catch {
+      // Not JSON: the status explains it.
+    }
+    if (res.status === 401 && session) {
+      saveSession(null);
+      toast('Your sign-in has expired. Sign in again.', true);
+      go('#/');
+      throw new Problem(401, 'UNAUTHENTICATED', 'Sign in again.');
+    }
+    if (!res.ok) throw new Problem(res.status, json?.code ?? 'ERROR', json?.error ?? `The server answered ${res.status}.`, json?.fields);
+    return json;
+  }
+
+  function signOut() {
+    saveSession(null);
+    toastBox.hidden = true;
+    go('#/');
+  }
+
+  // ── Routing ────────────────────────────────────────────────────────────────────────────────
+  let renderCount = 0;
+
+  function go(hash) {
+    if (location.hash === hash) render();
+    else location.hash = hash;
+  }
+
+  async function render() {
+    const ticket = ++renderCount;
+    const [, route = '', param = ''] = /^#\/([a-z]*)\/?(.*)$/.exec(location.hash) ?? [];
+    drawBar(route);
+    const show = (view) => {
+      if (ticket !== renderCount || !view) return;
+      main.replaceChildren(view);
+      main.focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+    };
+    if (!session) return show(signInView());
+
+    const role = session.user.role;
+    main.setAttribute('aria-busy', 'true');
+    try {
+      if (route === 'discover') return show(await directoryView());
+      if (route === 'alumni' && param) return show(await profileView(decodeURIComponent(param)));
+      if (route === 'requests' && role !== 'admin') return show(await requestsView());
+      if (route === 'profile' && role === 'alumni') return show(await editorView());
+      go(role === 'alumni' ? '#/requests' : '#/discover');
+    } catch (problem) {
+      if (problem.status !== 401) show(errorView(problem));
+    } finally {
+      main.removeAttribute('aria-busy');
+    }
+  }
+
+  function drawBar(route) {
+    if (!session) {
+      bar.hidden = true;
+      return;
+    }
+    const role = session.user.role;
+    const links = [['discover', role === 'student' ? 'Find a mentor' : 'Alumni directory']];
+    if (role !== 'admin') links.push(['requests', role === 'student' ? 'My requests' : 'Requests to me']);
+    if (role === 'alumni') links.push(['profile', 'My profile']);
+    const current = route === 'alumni' ? 'discover' : route;
+    bar.replaceChildren(h('div', { class: 'bar-inner' },
+      h('a', { class: 'brand', href: '#/' }, 'MFU Alumni Network'),
+      h('nav', { class: 'nav', 'aria-label': 'Main' },
+        links.map(([target, label]) => h('a', { href: `#/${target}`, 'aria-current': target === current ? 'page' : null }, label))),
+      h('div', { class: 'who' },
+        h('span', null, session.name, ' ', h('span', { class: 'who-role' }, `(${role})`)),
+        h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: signOut }, 'Sign out'))));
+    bar.hidden = false;
+  }
+
+  function errorView(problem) {
+    return h('div', { class: 'card' },
+      h('h1', null, problem.status === 404 ? 'Not found' : 'That didn’t work'),
+      h('p', null, explain(problem)),
+      h('p', null, h('a', { href: '#/' }, 'Go back to the start')));
+  }
+
+  // ── Sign-in ────────────────────────────────────────────────────────────────────────────────
+  function signInView() {
+    const passcode = h('input', { type: 'password', autocomplete: 'current-password', required: true });
+    const passcodeField = field('passcode', 'Demo passcode', passcode);
+    const errorBox = h('p', { class: 'alert', role: 'alert', hidden: true });
+    const submit = h('button', { class: 'btn', type: 'submit' }, 'Sign in');
+
+    const groups = ['Students', 'Alumni', 'Admin'].map((group) =>
+      h('fieldset', { class: 'personas' },
+        h('legend', null, group),
+        h('div', { class: 'persona-grid' }, PERSONAS.filter((p) => p.group === group).map((p) =>
+          h('label', { class: 'persona' },
+            h('input', { type: 'radio', name: 'persona', value: p.key, checked: p.key === 'su-myat' }),
+            h('span', { class: 'persona-name' }, p.name),
+            h('span', { class: 'persona-detail' }, p.detail))))));
+
+    const form = h('form', {
+      class: 'signin-form',
+      novalidate: true,
+      onsubmit: async (event) => {
+        event.preventDefault();
+        const persona = PERSONAS.find((p) => p.key === form.elements.persona.value);
+        const random = [...crypto.getRandomValues(new Uint8Array(6))].map((n) => (n % 36).toString(36)).join('');
+        const userId = persona.id ?? `demo-alumni-new-${random}`;
+        submit.disabled = true;
+        errorBox.hidden = true;
+        try {
+          const result = await api('POST', '/auth/demo-login', { passcode: passcode.value, role: persona.role, user_id: userId });
+          saveSession({ token: result.token, expiresAt: result.expires_at, user: result.user, name: persona.id ? persona.name : 'New alumni' });
+          go(persona.role === 'student' || persona.role === 'admin' ? '#/discover' : persona.id ? '#/requests' : '#/profile');
+        } catch (problem) {
+          errorBox.textContent = problem.fields?.passcode ? 'Type the demo passcode.' : explain(problem);
+          errorBox.hidden = false;
+          passcode.focus();
+        } finally {
+          submit.disabled = false;
+        }
+      },
+    },
+    h('h2', null, 'Sign in to the demo'),
+    h('p', { class: 'hint' }, 'Choose who you want to be.'),
+    groups,
+    passcodeField.wrap,
+    errorBox,
+    submit,
+    h('p', { class: 'signin-note' }, 'Demo sign-in stands in for MFU’s Identity service until it publishes its login. It only opens the demo accounts above, and each sign-in lasts two hours.'));
+
+    return h('div', { class: 'signin' },
+      h('div', { class: 'signin-intro' },
+        h('div', null, h('h1', null, 'MFU Alumni Network'), h('div', { class: 'rule' })),
+        h('p', { class: 'promise' }, 'Find alumni. Ask for mentoring. Always with consent.'),
+        h('p', null, 'For Mae Fah Luang University students and graduates, wherever they work now.'),
+        h('p', { class: 'signin-team' }, 'Team 19, Pod 5')),
+      form);
+  }
+
+  // ── Directory (search) ─────────────────────────────────────────────────────────────────────
+  // Kept between visits, so going back from a profile keeps the search.
+  const filters = { role: '', faculty: '', country: '', year: '', interests: [], open: null };
+
+  async function directoryView() {
+    const role = session.user.role;
+    if (filters.open === null) filters.open = role === 'student';
+    const state = { items: [], total: 0 };
+
+    const keyword = field('f-role', 'Job title', h('input', { type: 'text', value: filters.role, maxlength: 100 }), 'Any language, such as Engineer, พยาบาล or အင်ဂျင်နီယာ');
+    const faculty = field('f-faculty', 'School', select([['', 'Any school'], ...reference.faculties.map((f) => [f.id, f.name])], filters.faculty));
+    const country = field('f-country', 'Country they live in', select([['', 'Any country'], ...Object.entries(COUNTRIES).map(([code, name]) => [code, name])], filters.country));
+    const year = field('f-year', 'Graduation year', h('input', { type: 'number', min: 1998, max: CURRENT_YEAR + 1, inputmode: 'numeric', value: filters.year, placeholder: 'Any year' }));
+    const interestBoxes = reference.interests.map((name) => h('input', { type: 'checkbox', value: name, checked: filters.interests.includes(name) }));
+    const open = h('input', { type: 'checkbox', checked: filters.open });
+    const results = h('section', { class: 'sheet', 'aria-live': 'polite', 'aria-label': 'Results' });
+
+    function readFilters() {
+      filters.role = keyword.control.value.trim();
+      filters.faculty = faculty.control.value;
+      filters.country = country.control.value;
+      filters.year = year.control.value.trim();
+      filters.interests = interestBoxes.filter((box) => box.checked).map((box) => box.value);
+      filters.open = open.checked;
+    }
+
+    async function search(fresh) {
+      if (fresh) state.items = [];
+      const params = new URLSearchParams({ limit: '20', offset: String(state.items.length) });
+      if (filters.role) params.set('role', filters.role);
+      if (filters.faculty) params.set('faculty_id', filters.faculty);
+      if (filters.country) params.set('country', filters.country);
+      if (filters.year) params.set('grad_year', filters.year);
+      if (filters.interests.length) params.set('interests', filters.interests.join(','));
+      if (filters.open) params.set('open_to_mentoring', 'true');
+      results.setAttribute('aria-busy', 'true');
+      try {
+        const page = await api('GET', `/alumni?${params}`);
+        state.items.push(...page.data);
+        state.total = page.pagination.total;
+        drawResults();
+      } catch (problem) {
+        const detail = problem.fields ? Object.values(problem.fields).join(' ') : explain(problem);
+        results.replaceChildren(h('p', { class: 'empty' }, detail));
+      } finally {
+        results.setAttribute('aria-busy', 'false');
+      }
+    }
+
+    function drawResults() {
+      const head = h('p', { class: 'sheet-head' }, state.total === 1 ? '1 alumni found' : `${state.total} alumni found`);
+      if (!state.items.length) {
+        results.replaceChildren(head, h('p', { class: 'empty' }, 'No alumni match these filters. Try fewer filters, or a shorter job title.'));
+        return;
+      }
+      const more = state.items.length < state.total
+        ? h('div', { class: 'more' }, h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => search(false) }, 'Show more'))
+        : null;
+      results.replaceChildren(...[head, h('ul', null, state.items.map(personRow)), more].filter(Boolean));
+    }
+
+    function personRow(a) {
+      return h('li', { class: 'person' },
+        h('div', null,
+          h('a', { class: 'person-name', href: `#/alumni/${encodeURIComponent(a.id)}` }, a.display_name),
+          h('p', null, jobLine(a)),
+          h('p', { class: 'meta' }, placeLine(a)),
+          h('p', { class: 'meta' }, schoolLine(a)),
+          a.interests.length ? h('ul', { class: 'chips', 'aria-label': 'Interests' }, a.interests.map((name) => h('li', { class: 'chip' }, name))) : null),
+        h('div', { class: 'side-col' },
+          h('span', { class: a.is_open_to_mentoring ? 'taking' : 'not-taking' }, a.is_open_to_mentoring ? 'Taking mentees' : 'Not taking mentees'),
+          role === 'admin'
+            ? h('button', {
+              class: 'btn btn-danger btn-small',
+              type: 'button',
+              onclick: () => deactivate(a, () => {
+                state.items = state.items.filter((item) => item.id !== a.id);
+                state.total -= 1;
+                drawResults();
+              }),
+            }, 'Turn off profile')
+            : null));
+    }
+
+    const form = h('form', {
+      class: 'filters',
+      'aria-label': 'Search filters',
+      onsubmit: (event) => {
+        event.preventDefault();
+        readFilters();
+        search(true);
+      },
+    },
+    // Open on wide screens. On a phone it starts folded, so the results aren't pushed off screen.
+    h('details', { open: !window.matchMedia('(max-width: 880px)').matches },
+      h('summary', null, 'Filters'),
+      keyword.wrap, faculty.wrap, country.wrap, year.wrap,
+      h('fieldset', { class: 'field' },
+        h('legend', null, 'Interests'),
+        h('div', { class: 'chips' }, interestBoxes.map((box) => h('label', { class: 'pick' }, box, h('span', null, box.value)))),
+        h('p', { class: 'hint' }, 'Shows alumni with any of the ones you pick.')),
+      h('div', { class: 'field' }, h('label', { class: 'check' }, open, 'Only alumni taking mentees')),
+      h('div', { class: 'actions' },
+        h('button', { class: 'btn', type: 'submit' }, 'Search'),
+        h('button', {
+          class: 'btn btn-quiet',
+          type: 'button',
+          onclick: () => {
+            Object.assign(filters, { role: '', faculty: '', country: '', year: '', interests: [], open: role === 'student' });
+            render();
+          },
+        }, 'Clear filters'))));
+
+    search(true);
+    const heads = {
+      student: ['Find a mentor', 'Search MFU alumni by what they do, where they live and what they can help with. Contact details stay hidden until an alumni accepts your request.'],
+      alumni: ['Alumni directory', 'See who else from MFU is mentoring. You see the same public details students do.'],
+      admin: ['Alumni directory', 'Find a profile that breaks the rules and turn it off. A turned-off profile leaves search and stops taking requests. Nothing is deleted.'],
+    };
+    return h('div', null, pageHead(...heads[role]), h('div', { class: 'discover' }, form, results));
+  }
+
+  async function deactivate(a, done) {
+    if (!confirm(`Turn off ${a.display_name}’s profile? It leaves search and stops taking requests. Nothing is deleted.`)) return;
+    try {
+      await api('PATCH', `/admin/alumni/${encodeURIComponent(a.id)}/deactivate`);
+      toast(`Turned off ${a.display_name}’s profile.`);
+      done();
+    } catch (problem) {
+      if (problem.status !== 401) toast(explain(problem), true);
+    }
+  }
+
+  // ── One alumni's profile ───────────────────────────────────────────────────────────────────
+  const CONTACT = [
+    ['email', 'Email'],
+    ['line', 'LINE'],
+    ['linkedin', 'LinkedIn'],
+  ];
+
+  function contactValue(kind, value) {
+    if (kind === 'email') return h('a', { href: `mailto:${value}` }, value);
+    if (kind === 'linkedin' && /^https:\/\/([a-z]{2,3}\.)?linkedin\.com\//i.test(value)) {
+      return h('a', { href: value, target: '_blank', rel: 'noopener noreferrer' }, value);
+    }
+    return value;
+  }
+
+  function consentPanel(profile, role) {
+    const name = profile.display_name;
+    const contact = profile.contact;
+    if (role !== 'student') {
+      return h('section', { class: 'consent', 'aria-labelledby': 'contact-title' },
+        h('h2', { id: 'contact-title' }, 'Contact details'),
+        h('p', { class: 'consent-intro' }, `Only students ${name} has accepted can see contact details, and only the ones ${name} chooses to share.`));
+    }
+    const intro = contact
+      ? `${name} accepted your request. These are the details ${name} has agreed to share with you.`
+      : `Hidden until ${name} accepts your request. Even then, you only see the details ${name} chooses to share.`;
+    return h('section', { class: 'consent', 'aria-labelledby': 'contact-title' },
+      h('h2', { id: 'contact-title' }, 'Contact details'),
+      h('p', { class: 'consent-intro' }, intro),
+      h('ul', { class: 'consent-list' }, CONTACT.map(([kind, label]) => {
+        const value = contact?.[kind];
+        return h('li', { class: value ? 'shared' : 'private' },
+          icon(value ? 'open' : 'closed'),
+          h('span', null, h('span', { class: 'consent-name' }, label), value ? ': ' : null, value ? h('span', { class: 'consent-value' }, contactValue(kind, value)) : null),
+          h('span', { class: 'consent-state' }, value ? 'Shared with you' : contact ? 'Kept private' : 'Not shared yet'));
+      })),
+      contact ? h('p', { class: 'consent-foot' }, `${name} can stop sharing any of these at any time. A record is kept of what was shared with you and when.`) : null);
+  }
+
+  async function profileView(id) {
+    const role = session.user.role;
+    const profile = await api('GET', `/alumni/${encodeURIComponent(id)}`);
+    if ('consent_contact_email' in profile) {
+      go('#/profile');
+      return null;
+    }
+
+    const name = profile.display_name;
+    const side = [consentPanel(profile, role)];
+    if (role === 'student') side.push(await requestPanel(profile));
+    if (role === 'admin') {
+      side.push(h('section', { class: 'card' },
+        h('h2', null, 'Admin'),
+        h('p', null, 'Turning off a profile removes it from search and stops new requests. Nothing is deleted.'),
+        h('div', { class: 'actions' }, h('button', {
+          class: 'btn btn-danger',
+          type: 'button',
+          onclick: () => deactivate(profile, () => go('#/discover')),
+        }, 'Turn off profile'))));
+    }
+
+    const facts = [
+      ['School', facultyNames.get(profile.faculty_id) ?? profile.faculty],
+      ['Graduated', profile.grad_year],
+      ['Lives in', placeLine(profile) || 'Not given'],
+      ['Mentoring', profile.is_open_to_mentoring ? 'Taking mentees' : 'Not taking mentees right now'],
+    ];
+    return h('div', null,
+      h('a', { class: 'back', href: '#/discover' }, 'Back to the directory'),
+      h('div', { class: 'profile' },
+        h('article', { class: 'card' },
+          h('h1', null, name),
+          h('p', { class: 'lede' }, jobLine(profile)),
+          h('dl', { class: 'facts' }, facts.map(([term, value]) => [h('dt', null, term), h('dd', null, value)])),
+          profile.bio ? h('p', { class: 'bio' }, profile.bio) : null,
+          profile.interests.length ? h('ul', { class: 'chips', 'aria-label': 'Interests' }, profile.interests.map((interest) => h('li', { class: 'chip' }, interest))) : null),
+        h('div', { class: 'side' }, side)));
+  }
+
+  async function requestPanel(profile) {
+    const name = profile.display_name;
+    const mine = (await api('GET', '/mentoring-requests/me?limit=50')).data.filter((r) => r.alumni_id === profile.id);
+    const connected = mine.find((r) => r.connection?.status === 'active');
+    const pending = mine.find((r) => r.status === 'pending');
+
+    if (connected) {
+      return h('section', { class: 'card' },
+        h('h2', null, 'You’re connected'),
+        h('p', null, `Since ${when(connected.connection.created_at)}.`),
+        h('div', { class: 'actions' }, h('button', {
+          class: 'btn btn-danger',
+          type: 'button',
+          onclick: () => endConnection(connected, name),
+        }, 'End connection')));
+    }
+    if (pending) {
+      return h('section', { class: 'card' },
+        h('h2', null, 'Request sent'),
+        h('p', null, `Sent ${when(pending.created_at)}. ${name} hasn’t answered yet.`),
+        h('blockquote', { class: 'quote' }, pending.message),
+        h('div', { class: 'actions' }, h('button', {
+          class: 'btn btn-quiet',
+          type: 'button',
+          onclick: () => answer(pending, 'cancelled', 'Request cancelled.'),
+        }, 'Cancel request')));
+    }
+    if (!profile.is_open_to_mentoring) {
+      return h('section', { class: 'card' },
+        h('h2', null, 'Not taking mentees'),
+        h('p', null, `${name} has paused mentoring. Try another alumni from the directory.`));
+    }
+
+    const message = h('textarea', { maxlength: 2000, required: true, rows: 6 });
+    const messageField = field('message', 'What do you want help with?', message, `Say what year you’re in, what you’re aiming for, and what you’d like to ask. ${name} reads this before deciding.`);
+    const counter = h('p', { class: 'counter', 'aria-hidden': 'true' }, '0 / 2000');
+    message.addEventListener('input', () => { counter.textContent = `${message.value.length} / 2000`; });
+    const errorBox = h('p', { class: 'alert', role: 'alert', hidden: true });
+    const submit = h('button', { class: 'btn', type: 'submit' }, 'Send request');
+    return h('form', {
+      class: 'card',
+      novalidate: true,
+      onsubmit: async (event) => {
+        event.preventDefault();
+        errorBox.hidden = true;
+        if (message.value.trim().length < 10) {
+          errorBox.textContent = 'Write at least 10 characters, so the alumni knows what you need.';
+          errorBox.hidden = false;
+          message.focus();
+          return;
+        }
+        submit.disabled = true;
+        try {
+          await api('POST', '/mentoring-requests', { alumni_id: profile.id, message: message.value });
+          toast(`Request sent to ${name}.`);
+          render();
+        } catch (problem) {
+          if (problem.status === 401) return;
+          errorBox.textContent = problem.fields?.message ? 'Write between 10 and 2,000 characters.' : explain(problem);
+          errorBox.hidden = false;
+          submit.disabled = false;
+        }
+      },
+    },
+    h('h2', null, `Ask ${name} for mentoring`),
+    messageField.wrap,
+    counter,
+    errorBox,
+    h('div', { class: 'actions' }, submit));
+  }
+
+  async function answer(request, status, done) {
+    try {
+      const result = await api('PATCH', `/mentoring-requests/${encodeURIComponent(request.id)}`, { status });
+      if (status === 'accepted') {
+        const labels = { contact_email: 'email', contact_line: 'LINE', contact_linkedin: 'LinkedIn' };
+        const shared = (result.revealed_fields ?? []).map((f) => labels[f]);
+        toast(shared.length
+          ? `Connected with ${studentName(request.student_id)}. You shared your ${shared.join(' and ')}.`
+          : `Connected with ${studentName(request.student_id)}. You aren’t sharing any contact details yet, so add some in My profile.`);
+      } else {
+        toast(done);
+      }
+    } catch (problem) {
+      if (problem.status !== 401) toast(explain(problem), true);
+    }
+    render();
+  }
+
+  async function endConnection(request, otherName) {
+    if (!confirm(`End your connection with ${otherName}? Contact details stop showing. The request history stays.`)) return;
+    try {
+      await api('DELETE', `/connections/${encodeURIComponent(request.connection.id)}`);
+      toast('Connection ended.');
+    } catch (problem) {
+      if (problem.status !== 401) toast(explain(problem), true);
+    }
+    render();
+  }
+
+  // ── Requests ───────────────────────────────────────────────────────────────────────────────
+  async function requestsView() {
+    const role = session.user.role;
+    let own = null;
+    if (role === 'alumni') {
+      try {
+        own = await api('GET', '/alumni/me');
+      } catch (problem) {
+        if (problem.status !== 404) throw problem;
+        return h('div', null,
+          pageHead('Requests to me', 'Students can’t find you until you have a profile.'),
+          h('p', null, h('a', { class: 'btn', href: '#/profile' }, 'Create your profile')));
+      }
+    }
+
+    const { data } = await api('GET', '/mentoring-requests/me?limit=50');
+    const isActive = (r) => r.connection?.status === 'active';
+    const waiting = data.filter((r) => r.status === 'pending');
+    const connected = data.filter(isActive);
+    const closed = data.filter((r) => r.status !== 'pending' && !isActive(r));
+
+    function statusChip(r) {
+      if (r.status === 'pending') return h('span', { class: 'status status-waiting' }, role === 'student' ? 'Waiting for reply' : 'Needs your answer');
+      if (isActive(r)) return h('span', { class: 'status status-connected' }, 'Connected');
+      const label = { accepted: 'Connection ended', rejected: 'Declined', cancelled: 'Cancelled' }[r.status] ?? r.status;
+      return h('span', { class: 'status status-closed' }, label);
+    }
+
+    function row(r) {
+      const other = role === 'student' ? r.alumni_name : studentName(r.student_id);
+      const title = role === 'student'
+        ? h('a', { class: 'req-title', href: `#/alumni/${encodeURIComponent(r.alumni_id)}` }, other)
+        : h('p', { class: 'req-title' }, other);
+      const timeline = [`Sent ${when(r.created_at)}`];
+      if (r.responded_at) timeline.push(`answered ${when(r.responded_at)}`);
+      if (r.connection?.ended_at) timeline.push(`ended ${when(r.connection.ended_at)}`);
+
+      const actions = [];
+      if (r.status === 'pending' && role === 'alumni') {
+        actions.push(
+          h('button', { class: 'btn btn-small', type: 'button', onclick: () => answer(r, 'accepted') }, 'Accept'),
+          h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => answer(r, 'rejected', 'Declined.') }, 'Decline'));
+      }
+      if (r.status === 'pending' && role === 'student') {
+        actions.push(h('button', { class: 'btn btn-quiet btn-small', type: 'button', onclick: () => answer(r, 'cancelled', 'Request cancelled.') }, 'Cancel request'));
+      }
+      if (isActive(r)) {
+        if (role === 'student') actions.push(h('a', { class: 'btn btn-quiet btn-small', href: `#/alumni/${encodeURIComponent(r.alumni_id)}` }, 'See contact details'));
+        actions.push(h('button', { class: 'btn btn-danger btn-small', type: 'button', onclick: () => endConnection(r, other) }, 'End connection'));
+      }
+
+      return h('li', { class: 'req' },
+        h('div', null,
+          title,
+          h('blockquote', { class: 'quote' }, r.message),
+          h('p', { class: 'meta' }, `${timeline.join(', ')}.`)),
+        h('div', { class: 'side-col' }, statusChip(r), actions.length ? h('div', { class: 'actions' }, actions) : null));
+    }
+
+    function section(title, list, emptyText) {
+      return [
+        h('h2', { class: 'section-title' }, title),
+        h('div', { class: 'sheet' }, list.length ? h('ul', null, list.map(row)) : h('p', { class: 'empty' }, emptyText)),
+      ];
+    }
+
+    const head = role === 'student'
+      ? pageHead('My requests', 'Everything you’ve asked for, and who has answered.')
+      : pageHead('Requests to me', 'Accept with one tap. Students only see the contact details you’ve switched on in My profile.');
+    const capacity = own
+      ? h('p', { class: 'capacity' }, own.is_open_to_mentoring
+        ? `You’re mentoring ${connected.length} of up to ${own.mentee_capacity} students.`
+        : 'You aren’t taking new requests. Switch mentoring on in My profile to appear as taking mentees.')
+      : null;
+
+    return h('div', null,
+      head,
+      capacity,
+      section(role === 'student' ? 'Waiting for a reply' : 'Waiting for your answer', waiting,
+        role === 'student' ? 'Nothing waiting. Find a mentor in the directory and send a request.' : 'No new requests right now.'),
+      section('Connected', connected, 'No connections yet.'),
+      section('Earlier', closed, 'Nothing here yet.'));
+  }
+
+  // ── My profile (alumni) ────────────────────────────────────────────────────────────────────
+  async function editorView() {
+    let profile = null;
+    try {
+      profile = await api('GET', '/alumni/me');
+    } catch (problem) {
+      if (problem.status !== 404) throw problem;
+    }
+    const creating = !profile;
+    const p = profile ?? { is_open_to_mentoring: true, mentee_capacity: 3, interests: [] };
+    const controls = new Map();
+    const add = (name, built) => {
+      controls.set(name, built);
+      return built.wrap;
+    };
+    const text = (value, max, type = 'text') => h('input', { type, value: value ?? '', maxlength: max });
+
+    const about = h('section', { class: 'card' },
+      h('h2', null, 'About you'),
+      h('p', { class: 'hint' }, 'Students search on these. Everything here is public to signed-in students and alumni.'),
+      add('display_name', field('display_name', 'Name', text(p.display_name, 100))),
+      h('div', { class: 'two' },
+        add('grad_year', field('grad_year', 'Graduation year', h('input', { type: 'number', min: 1998, max: CURRENT_YEAR + 1, inputmode: 'numeric', value: p.grad_year ?? '' }))),
+        add('faculty_id', field('faculty_id', 'School', select([['', 'Choose your school'], ...reference.faculties.map((f) => [f.id, f.name])], p.faculty_id ?? '')))),
+      h('div', { class: 'two' },
+        add('job_title', field('job_title', 'Job title', text(p.job_title, 100), 'In any language.')),
+        add('company', field('company', 'Company', text(p.company, 100)))),
+      h('div', { class: 'two' },
+        add('country_code', field('country_code', 'Country', select([['', 'Not given'], ...Object.entries(COUNTRIES)], p.country_code ?? ''))),
+        add('city', field('city', 'City', text(p.city, 100)))),
+      add('bio', field('bio', 'About your work', h('textarea', { maxlength: 1000, rows: 4, value: p.bio ?? '' }), 'Up to 1,000 characters.')));
+
+    const interestBoxes = reference.interests.map((name) => h('input', { type: 'checkbox', value: name, checked: p.interests.includes(name) }));
+    const interestError = h('p', { class: 'field-error', hidden: true });
+    controls.set('interests', { control: interestBoxes[0], error: interestError });
+
+    const openBox = h('input', { type: 'checkbox', checked: p.is_open_to_mentoring });
+    controls.set('is_open_to_mentoring', { control: openBox, error: h('p', { class: 'field-error', hidden: true }) });
+    const mentoring = h('section', { class: 'card' },
+      h('h2', null, 'Interests and mentoring'),
+      h('p', { class: 'hint' }, 'Students filter by interests. Turn mentoring off any time you’re busy.'),
+      h('fieldset', { class: 'field' },
+        h('legend', null, 'Interests'),
+        h('div', { class: 'chips' }, interestBoxes.map((box) => h('label', { class: 'pick' }, box, h('span', null, box.value)))),
+        interestError),
+      h('div', { class: 'field' }, h('label', { class: 'check' }, openBox, 'Take mentoring requests')),
+      add('mentee_capacity', field('mentee_capacity', 'Most mentees at once', h('input', { type: 'number', min: 0, max: 10, inputmode: 'numeric', value: p.mentee_capacity ?? 3 }), 'From 0 to 10. When you reach it, you can’t accept more until a connection ends.')));
+
+    const CONTACT_FIELDS = [
+      ['contact_email', 'consent_contact_email', 'Email', 'email', 254],
+      ['contact_line', 'consent_contact_line', 'LINE ID', 'text', 100],
+      ['contact_linkedin', 'consent_contact_linkedin', 'LinkedIn link', 'url', 200],
+    ];
+    const contactRows = CONTACT_FIELDS.map(([valueName, consentName, label, type, max]) => {
+      const consentBox = h('input', { type: 'checkbox', checked: Boolean(p[consentName]) });
+      const consentError = h('p', { class: 'field-error', hidden: true });
+      controls.set(consentName, { control: consentBox, error: consentError });
+      return h('div', { class: 'contact-row' },
+        add(valueName, field(valueName, label, text(p[valueName], max, type), valueName === 'contact_linkedin' ? 'A https://linkedin.com link.' : null)),
+        h('div', { class: 'share' }, h('label', { class: 'check' }, consentBox, 'Share with students I accept'), consentError));
+    });
+    const consent = h('section', { class: 'consent' },
+      h('h2', null, 'Contact details and consent'),
+      h('p', { class: 'consent-intro' }, 'Students never see these in search. When you accept a request, that student sees only the ones you switch on here. Switch one off and it disappears from their view straight away.'),
+      contactRows,
+      h('p', { class: 'consent-record' }, p.consent_timestamp
+        ? `Your consent was last recorded on ${when(p.consent_timestamp)}, for purpose version ${p.consent_purpose_version}.`
+        : 'You haven’t agreed to share anything yet.'));
+
+    const errorBox = h('p', { class: 'alert', role: 'alert', hidden: true });
+    const submit = h('button', { class: 'btn', type: 'submit' }, creating ? 'Create profile' : 'Save changes');
+
+    function values() {
+      const textValue = (name) => controls.get(name).control.value.trim() || null;
+      const numberValue = (name) => {
+        const raw = controls.get(name).control.value.trim();
+        return raw === '' ? null : Number(raw);
+      };
+      const result = {
+        display_name: textValue('display_name'),
+        grad_year: numberValue('grad_year'),
+        faculty_id: numberValue('faculty_id'),
+        job_title: textValue('job_title'),
+        company: textValue('company'),
+        country_code: textValue('country_code'),
+        city: textValue('city'),
+        bio: textValue('bio'),
+        is_open_to_mentoring: openBox.checked,
+        mentee_capacity: numberValue('mentee_capacity'),
+        interests: interestBoxes.filter((box) => box.checked).map((box) => box.value),
+      };
+      for (const [valueName, consentName] of CONTACT_FIELDS) {
+        result[valueName] = textValue(valueName);
+        result[consentName] = controls.get(consentName).control.checked;
+      }
+      return result;
+    }
+
+    // Sends only what changed, because the API rejects an update that names no field.
+    function changes(next) {
+      if (creating) {
+        return Object.fromEntries(Object.entries(next).filter(([, value]) => value !== null && !(Array.isArray(value) && !value.length)));
+      }
+      const same = (a, b) => (Array.isArray(a) ? JSON.stringify([...a].sort()) === JSON.stringify([...b].sort()) : (a ?? null) === (b ?? null));
+      return Object.fromEntries(Object.entries(next).filter(([key, value]) => !same(value, profile[key])));
+    }
+
+    function showErrors(fields) {
+      for (const { control, error } of controls.values()) {
+        control.removeAttribute('aria-invalid');
+        error.hidden = true;
+      }
+      errorBox.hidden = true;
+      let first = null;
+      for (const [name, message] of Object.entries(fields ?? {})) {
+        const target = controls.get(name.split('.')[0]);
+        if (!target) {
+          errorBox.textContent = message;
+          errorBox.hidden = false;
+          continue;
+        }
+        target.error.textContent = message;
+        target.error.hidden = false;
+        target.control.setAttribute('aria-invalid', 'true');
+        first ??= target.control;
+      }
+      (first ?? (errorBox.hidden ? null : errorBox))?.focus?.();
+    }
+
+    const form = h('form', {
+      class: 'editor',
+      novalidate: true,
+      onsubmit: async (event) => {
+        event.preventDefault();
+        showErrors(null);
+        const body = changes(values());
+        if (!Object.keys(body).length) {
+          toast('Nothing has changed.');
+          return;
+        }
+        submit.disabled = true;
+        try {
+          const saved = await api('PATCH', '/alumni/me', body);
+          saveSession({ ...session, name: saved.display_name });
+          toast(creating ? 'Profile created. Students can find you now.' : 'Changes saved.');
+          render();
+        } catch (problem) {
+          if (problem.status === 401) return;
+          if (problem.fields) showErrors(problem.fields);
+          else {
+            errorBox.textContent = explain(problem);
+            errorBox.hidden = false;
+          }
+          toast('Some details need fixing before they can be saved.', true);
+          submit.disabled = false;
+        }
+      },
+    },
+    about, mentoring, consent, errorBox,
+    h('div', { class: 'save-bar' }, submit));
+
+    return h('div', null,
+      pageHead(creating ? 'Create your profile' : 'My profile',
+        creating
+          ? 'Name, graduation year and school are needed. Everything else is up to you.'
+          : 'Students find you by these details. You decide which contact details they get, and when.'),
+      form);
+  }
+
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>

@@ -8,6 +8,7 @@ import { call, makePerson, nowSeconds, tokenFor } from './helpers';
 const PROTECTED_ROUTES: [string, string][] = [
   ['GET', '/alumni'],
   ['GET', '/alumni/some-id'],
+  ['GET', '/alumni/me'],
   ['PATCH', '/alumni/me'],
   ['POST', '/mentoring-requests'],
   ['GET', '/mentoring-requests/me'],
@@ -102,8 +103,10 @@ describe('token checks', () => {
 // PRD test 7, role half. The ownership half is in requests.test.ts and connections.test.ts.
 describe('role checks', () => {
   const MATRIX: [string, string, string[]][] = [
-    ['GET', '/alumni', ['student', 'alumni']],
-    ['GET', '/alumni/missing-id', ['student', 'alumni']],
+    // Admins browse public fields to find profiles to deactivate (slide 4). They never see contact.
+    ['GET', '/alumni', ['student', 'alumni', 'admin']],
+    ['GET', '/alumni/missing-id', ['student', 'alumni', 'admin']],
+    ['GET', '/alumni/me', ['alumni']],
     ['PATCH', '/alumni/me', ['alumni']],
     ['POST', '/mentoring-requests', ['student']],
     ['GET', '/mentoring-requests/me', ['student', 'alumni']],

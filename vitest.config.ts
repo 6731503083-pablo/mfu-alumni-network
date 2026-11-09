@@ -15,6 +15,7 @@ export default defineConfig(async () => {
             WEBHOOK_SECRET: 'test-team17-webhook-secret',
             PARTNER_WEBHOOK_SECRET: 'test-partner-secret',
             EVENTS_CLUBS_WEBHOOK_SECRET: 'test-events-clubs-secret',
+            DEMO_PASSCODE: 'test-demo-passcode',
           },
         },
       }),

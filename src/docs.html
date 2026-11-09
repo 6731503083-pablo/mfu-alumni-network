@@ -262,8 +262,10 @@
       <p class="index-group">Mentoring API</p>
       <ul>
         <li><a href="#sign-in">Sign in for testing</a></li>
+        <li><a href="#demo-login">Sign in with the demo passcode</a></li>
         <li><a href="#search">Search alumni</a></li>
         <li><a href="#profile">View a profile</a></li>
+        <li><a href="#own-profile">View your own profile</a></li>
         <li><a href="#update-profile">Create or update your profile</a></li>
         <li><a href="#send-request">Send a mentoring request</a></li>
         <li><a href="#list-requests">List your requests</a></li>
@@ -342,11 +344,55 @@
         </div>
       </section>
 
+      <section class="endpoint" id="demo-login">
+        <div class="doc">
+          <h3>Sign in with the demo passcode</h3>
+          <p class="route"><span class="method method-post">POST</span> /auth/demo-login</p>
+          <p>How the web app at <a href="/app">/app</a> signs people in until the Identity service publishes its login. It returns a two-hour token for a demo account, so the browser never needs <code>JWT_SECRET</code>. It only signs in IDs that start with <code>demo-</code>, so it can't be used to act as a real user.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>passcode</code><span class="where">Required</span></td><td>The demo passcode, set as the <code>DEMO_PASSCODE</code> secret.</td></tr>
+              <tr><td><code>role</code><span class="where">Required</span></td><td><code>student</code>, <code>alumni</code> or <code>admin</code>.</td></tr>
+              <tr><td><code>user_id</code><span class="where">Required</span></td><td>An ID that starts with <code>demo-</code>, such as <code>demo-student-su-myat</code>.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Signed in.<code class="shape">{ token, expires_at, user: { id, role } }</code></td></tr>
+              <tr><td class="status s4">400</td><td>A field is invalid, or the ID doesn't start with <code>demo-</code>.<code class="shape">{ error, code, fields }</code></td></tr>
+              <tr><td class="status s4">401</td><td><code>INVALID_PASSCODE</code>: the passcode is wrong.</td></tr>
+              <tr><td class="status s5">503</td><td><code>DEMO_LOGIN_NOT_CONFIGURED</code>: the server has no <code>DEMO_PASSCODE</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/auth/demo-login" aria-label="Try POST /auth/demo-login" autocomplete="off">
+          <div class="field"><label for="as-demo-login">Send as</label><select id="as-demo-login" data-as data-default="none"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field">
+            <label for="demo-login-body">Body</label>
+            <textarea id="demo-login-body" data-body rows="6" spellcheck="false">{
+  "passcode": "",
+  "role": "student",
+  "user_id": "demo-student-su-myat"
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Sign in</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
       <section class="endpoint" id="search">
         <div class="doc">
           <h3>Search alumni</h3>
           <p class="route"><span class="method method-get">GET</span> /alumni <span class="api-id">API-01</span></p>
-          <p>For students and alumni. Returns active alumni, most recent graduates first. Contact details are never included, even when an alumni has agreed to share them.</p>
+          <p>For students, alumni and admins. Returns active alumni, most recent graduates first. Contact details are never included, even when an alumni has agreed to share them.</p>
           <h4>Filters</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Filter</th><th scope="col">What to send</th></tr></thead>
@@ -413,7 +459,7 @@
         <div class="doc">
           <h3>View a profile</h3>
           <p class="route"><span class="method method-get">GET</span> /alumni/{id} <span class="api-id">API-02</span></p>
-          <p>For students and alumni. What comes back depends on who's asking.</p>
+          <p>For students, alumni and admins. What comes back depends on who's asking. Admins see public fields only.</p>
           <h4>What each person sees</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Who's asking</th><th scope="col">What they see</th></tr></thead>
@@ -436,6 +482,31 @@
         <form class="console" data-method="GET" data-path="/alumni/{id}" aria-label="Try GET /alumni/{id}" autocomplete="off">
           <div class="field"><label for="as-profile">Send as</label><select id="as-profile" data-as data-default="student-1"></select><p class="hint" data-as-hint hidden></p></div>
           <div class="field"><label for="profile-id">Alumni ID</label><input id="profile-id" type="text" data-param="id" data-fill="alumniId" spellcheck="false"></div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send request</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="own-profile">
+        <div class="doc">
+          <h3>View your own profile</h3>
+          <p class="route"><span class="method method-get">GET</span> /alumni/me</p>
+          <p>For alumni. Returns your whole profile, including every contact detail and consent setting, so the web app's profile editor can load it. Added for the web app; it isn't one of the PRD's nine endpoints.</p>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Your profile, the same as the owner's view of <code>GET /alumni/{id}</code>.</td></tr>
+              <tr><td class="status s4">404</td><td><code>NOT_FOUND</code>: you haven't created a profile yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/alumni/me" aria-label="Try GET /alumni/me" autocomplete="off">
+          <div class="field"><label for="as-own-profile">Send as</label><select id="as-own-profile" data-as data-default="alumni-1"></select><p class="hint" data-as-hint hidden></p></div>
           <pre class="curl"><code></code></pre>
           <div class="actions">
             <button class="btn btn-send" type="submit">Send request</button>

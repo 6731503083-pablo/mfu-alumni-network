@@ -1,11 +1,13 @@
 import { Hono } from 'hono';
 
+import appHtml from './app.html';
 import docsHtml from './docs.html';
 import { handleError } from './lib/errors';
 import { hmacHex, timingSafeEqual } from './lib/hmac';
 import { admin } from './routes/admin';
 import { alumni } from './routes/alumni';
 import { connections } from './routes/connections';
+import { demoAuth } from './routes/demo-auth';
 import { eventsClubs } from './routes/events-clubs';
 import { requests } from './routes/requests';
 import type { AppEnv } from './types';
@@ -32,9 +34,12 @@ app.use('*', async (c, next) => {
 app.get('/', (c) =>
   c.json({
     message: 'MFU Alumni Network API',
+    app: '/app',
     docs: '/docs',
     endpoints: [
+      'POST /auth/demo-login',
       'GET /alumni',
+      'GET /alumni/me',
       'GET /alumni/{id}',
       'PATCH /alumni/me',
       'POST /mentoring-requests',
@@ -55,6 +60,28 @@ app.get('/', (c) =>
 // API reference with a request console. It holds no secrets: test webhooks are signed in the
 // visitor's browser with a secret they type in.
 app.get('/docs', (c) => c.html(docsHtml));
+
+// The web app. A new nonce on every response lets the page's own <script> and <style> tags run and
+// nothing else, so injected markup can't execute even if it got into the page.
+app.get('/app', (c) => {
+  const nonce = crypto.randomUUID().replace(/-/g, '');
+  c.header(
+    'Content-Security-Policy',
+    [
+      "default-src 'none'",
+      `script-src 'nonce-${nonce}'`,
+      `style-src 'nonce-${nonce}'`,
+      "connect-src 'self'",
+      "img-src 'self' data:",
+      "base-uri 'none'",
+      "form-action 'none'",
+      "frame-ancestors 'none'",
+    ].join('; '),
+  );
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('Referrer-Policy', 'no-referrer');
+  return c.html(appHtml.replace(/<(script|style)\b/g, `<$1 nonce="${nonce}"`));
+});
 
 // 1. Public endpoint the partner team calls.
 app.get('/api/integration/status', (c) =>
@@ -149,6 +176,7 @@ app.post('/api/connections', async (c) => {
 });
 
 // The Mentoring API from the PRD (API-01 to API-09).
+app.route('/auth', demoAuth);
 app.route('/alumni', alumni);
 app.route('/mentoring-requests', requests);
 app.route('/connections', connections);

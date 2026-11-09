@@ -18,10 +18,10 @@ describe('GET /docs', () => {
     // Routes with middleware appear more than once in app.routes.
     const routes = new Set(
       app.routes
-        .filter((route) => route.method !== 'ALL' && route.path !== '/' && route.path !== '/docs')
+        .filter((route) => route.method !== 'ALL' && !['/', '/docs', '/app'].includes(route.path))
         .map((route) => `${route.method} ${route.path.replace(/:(\w+)/g, '{$1}')}`),
     );
-    expect(routes.size).toBe(14);
+    expect(routes.size).toBe(16);
     for (const route of routes) {
       const [method, path] = route.split(' ');
       expect(text, route).toContain(`data-method="${method}" data-path="${path}"`);
@@ -41,6 +41,7 @@ describe('GET /docs', () => {
     expect(text).not.toContain(env.WEBHOOK_SECRET);
     expect(text).not.toContain(env.EVENTS_CLUBS_WEBHOOK_SECRET);
     expect(text).not.toContain(env.PARTNER_WEBHOOK_SECRET);
+    expect(text).not.toContain(env.DEMO_PASSCODE);
   });
 });
 
@@ -50,6 +51,7 @@ describe('test setup', () => {
     expect(env.WEBHOOK_SECRET).toBe('test-team17-webhook-secret');
     expect(env.PARTNER_WEBHOOK_SECRET).toBe('test-partner-secret');
     expect(env.EVENTS_CLUBS_WEBHOOK_SECRET).toBe('test-events-clubs-secret');
+    expect(env.DEMO_PASSCODE).toBe('test-demo-passcode');
   });
 });
 
