@@ -117,6 +117,7 @@
   .sheet { background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
   .sheet[aria-busy="true"] { opacity: .6; }
   .sheet-head { padding: 13px 22px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
+  .loading { padding: 28px 22px; color: var(--muted); }
   .person, .req { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
   .person:last-child, .req:last-child { border-bottom: 0; }
   .person-name { font-family: var(--serif); font-size: 1.3125rem; font-weight: 700; color: var(--pine); text-decoration: none; }
@@ -126,6 +127,7 @@
   .side-col { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; }
   .more { padding: 14px 22px; border-top: 1px solid var(--line); }
   .empty { padding: 28px 22px; color: var(--muted); }
+  .retry { margin-top: 12px; }
 
   /* Internships */
   .toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 16px; margin-bottom: 20px; padding: 18px 20px 2px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
@@ -233,6 +235,8 @@
     .two, .contact-row { grid-template-columns: 1fr; }
     .share { padding-top: 4px; }
     .card, .consent { padding: 20px; }
+    .sheet-head, .loading, .empty { padding-left: 16px; padding-right: 16px; }
+    .actions .btn { flex: 1 1 auto; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { scroll-behavior: auto !important; transition: none !important; }
@@ -267,6 +271,7 @@
     "Teaching & Academia", "Studying Abroad", "Working Abroad"
   ]
 }</script>
+<!-- APP_UI_HELPERS -->
 <script>
 (() => {
   'use strict';
@@ -332,51 +337,13 @@
   const SESSION_KEY = 'mfu-alumni-network-session';
   let session = loadSession();
 
-  // ── Building the page ──────────────────────────────────────────────────────────────────────
-  const PROPERTIES = new Set(['value', 'checked', 'disabled', 'hidden', 'required']);
-
-  /** Creates an element. Props become attributes, listeners (onclick) or properties (value). */
-  function h(tag, props, ...children) {
-    const el = document.createElement(tag);
-    const later = [];
-    for (const [key, value] of Object.entries(props ?? {})) {
-      if (value === undefined || value === null || value === false) continue;
-      if (key.startsWith('on') && typeof value === 'function') el.addEventListener(key.slice(2), value);
-      else if (key === 'class') el.className = value;
-      else if (PROPERTIES.has(key)) later.push([key, value]);
-      else el.setAttribute(key, value === true ? '' : String(value));
-    }
-    for (const child of children.flat(Infinity)) {
-      if (child === null || child === undefined || child === false) continue;
-      el.append(child instanceof Node ? child : document.createTextNode(String(child)));
-    }
-    for (const [key, value] of later) el[key] = value;
-    return el;
-  }
-
-  const SVG = 'http://www.w3.org/2000/svg';
-  function icon(kind) {
-    const svg = document.createElementNS(SVG, 'svg');
-    for (const [name, value] of Object.entries({ viewBox: '0 0 20 20', width: 18, height: 18, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7, 'stroke-linecap': 'round', 'aria-hidden': 'true', class: 'icon' })) {
-      svg.setAttribute(name, String(value));
-    }
-    const body = document.createElementNS(SVG, 'rect');
-    for (const [name, value] of Object.entries({ x: 4, y: 9, width: 12, height: 8.5, rx: 1.5 })) body.setAttribute(name, String(value));
-    const shackle = document.createElementNS(SVG, 'path');
-    shackle.setAttribute('d', kind === 'open' ? 'M7 9V6.5a3 3 0 0 1 5.8-1.2' : 'M7 9V6.5a3 3 0 0 1 6 0V9');
-    svg.append(body, shackle);
-    return svg;
-  }
+  const { h, icon, pageHead, field, select } = window.MFUAppUI;
 
   const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   const when = (iso) => (iso ? dateFormat.format(new Date(iso)) : '');
   const jobLine = (a) => [a.job_title, a.company].filter(Boolean).join(' at ') || 'No job title yet';
   const placeLine = (a) => [a.city, a.country_code && countryName(a.country_code)].filter(Boolean).join(', ');
   const schoolLine = (a) => `${facultyNames.get(a.faculty_id) ?? a.faculty}, class of ${a.grad_year}`;
-
-  function pageHead(title, text) {
-    return h('div', { class: 'page-head' }, h('h1', null, title), text ? h('p', null, text) : null);
-  }
 
   let toastTimer;
   function toast(message, isError = false) {
@@ -385,24 +352,6 @@
     toastBox.hidden = false;
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { toastBox.hidden = true; }, 5000);
-  }
-
-  /** A labelled control with its hint and an error line, wired up for screen readers. */
-  function field(id, labelText, control, hint) {
-    control.id = id;
-    const described = [hint ? `${id}-hint` : null, `${id}-error`].filter(Boolean).join(' ');
-    control.setAttribute('aria-describedby', described);
-    const error = h('p', { class: 'field-error', id: `${id}-error`, hidden: true });
-    const wrap = h('div', { class: 'field' },
-      h('label', { for: id }, labelText),
-      control,
-      hint ? h('p', { class: 'hint', id: `${id}-hint` }, hint) : null,
-      error);
-    return { wrap, control, error };
-  }
-
-  function select(options, value) {
-    return h('select', { value: value ?? '' }, options.map(([optionValue, label]) => h('option', { value: String(optionValue) }, label)));
   }
 
   // ── Session and API ─────────────────────────────────────────────────────────────────────────
@@ -508,6 +457,7 @@
 
     const role = session.user.role;
     main.setAttribute('aria-busy', 'true');
+    main.replaceChildren(h('p', { class: 'loading', role: 'status' }, 'Loading…'));
     try {
       if (route === 'discover') return show(await directoryView());
       if (route === 'alumni' && param) return show(await profileView(decodeURIComponent(param)));
@@ -548,7 +498,9 @@
     return h('div', { class: 'card' },
       h('h1', null, problem.status === 404 ? 'Not found' : 'That didn’t work'),
       h('p', null, explain(problem)),
-      h('p', null, h('a', { href: '#/' }, 'Go back to the start')));
+      h('div', { class: 'actions' },
+        h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => render() }, 'Try again'),
+        h('a', { class: 'btn btn-quiet', href: '#/' }, 'Go back to the start')));
   }
 
   // ── Sign-in ────────────────────────────────────────────────────────────────────────────────
@@ -682,6 +634,7 @@
       if (filters.year) params.set('grad_year', filters.year);
       if (filters.interests.length) params.set('interests', filters.interests.join(','));
       if (filters.open) params.set('open_to_mentoring', 'true');
+      if (fresh) results.replaceChildren(h('p', { class: 'loading', role: 'status' }, 'Searching alumni…'));
       results.setAttribute('aria-busy', 'true');
       try {
         const page = await api('GET', `/alumni?${params}`);
@@ -690,7 +643,11 @@
         drawResults();
       } catch (problem) {
         const detail = problem.fields ? Object.values(problem.fields).join(' ') : explain(problem);
-        results.replaceChildren(h('p', { class: 'empty' }, detail));
+        results.replaceChildren(
+          h('div', { class: 'empty' },
+            h('p', null, detail),
+            h('p', { class: 'retry' },
+              h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => search(true) }, 'Try again'))));
       } finally {
         results.setAttribute('aria-busy', 'false');
       }

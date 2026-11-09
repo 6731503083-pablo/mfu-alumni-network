@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 
 import appHtml from './app.html';
+import { appUiHelpers } from './app-ui-helpers';
 import docsHtml from './docs.html';
 import { handleError } from './lib/errors';
 import { hmacHex, timingSafeEqual } from './lib/hmac';
@@ -99,7 +100,8 @@ app.get('/app', (c) => {
       "frame-ancestors 'none'",
     ].join('; '),
   );
-  return c.html(appHtml.replace(/<(script|style)\b/g, `<$1 nonce="${nonce}"`));
+  const html = appHtml.replace('<!-- APP_UI_HELPERS -->', appUiHelpers);
+  return c.html(html.replace(/<(script|style)\b/g, `<$1 nonce="${nonce}"`));
 });
 
 // 1. Public endpoint the partner team calls.
