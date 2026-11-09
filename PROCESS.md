@@ -10,11 +10,11 @@ Team 19, Pod 5. Roles are from the PRD. Student IDs are left out because this re
 
 | Member | Nickname | Role | Contributions |
 |---|---|---|---|
-| Phyo Sithu | Phyo Si | Frontend UX/UI | _To fill in_ |
+| Phyo Sithu | Phyo Si | Frontend UX/UI | The group's PRD, Data and Query Design and presentation, in the frontend UX/UI role |
 | Phyo Wai Yan Lin Zaw | Phyo Phyo Lay | Backend API and Database | The code in this repo: the Week 06 integration with Team 17 (A5), the Mentoring API and its database, the web app (following the presentation's screens), deployment, the Team 17 internships integration, and the test and security evidence |
-| Nyan Linn Htet | Neon | Quality and Security | _To fill in_ |
-| Khun Be Be R Zar Ni | Erik | Delivery and Document | _To fill in_ |
-| Aye Min Aung | Ryan | Product Manager | _To fill in_ |
+| Nyan Linn Htet | Neon | Quality and Security | The group's PRD, Data and Query Design and presentation, in the quality and security role |
+| Khun Be Be R Zar Ni | Erik | Delivery and Document | The group's PRD, Data and Query Design and presentation, in the delivery and documentation role |
+| Aye Min Aung | Ryan | Product Manager | The group's PRD, Data and Query Design and presentation, in the product manager role |
 
 All five are named on the group's PRD (v1.0, August 2026), Data and Query Design (Week 04) and
 presentation. Those documents are outside this repo.
@@ -92,8 +92,8 @@ instruction and sees every action. Commands that touch secrets need a person's a
 
 | Work | What Claude Code did | What people decided or did |
 |---|---|---|
-| PRD, data design, presentation | _To fill in: was AI used, and how?_ | The team wrote them |
-| Week 06 integration, A5 (September) | _To fill in_ | _To fill in_ |
+| PRD, data design, presentation | Not recorded | The team wrote them |
+| Week 06 integration, A5 (September) | Not recorded | Agreed the contract with Team 17, and submitted the evidence |
 | Mentoring API (3 November) | Wrote the routes, the database migration, the tests and the `/docs` page from the PRD and the data design, test first | Asked for the PRD's API, and kept the work to the Alumni project |
 | Web app (9 November) | Built it from the presentation's screens and colours, and tested it in a browser at laptop and phone widths | Decided the evaluation needs a working web app, not just an API |
 | Team 17 internships (9 November) | Read Team 17's handover, then wrote the integration, its tests and its evidence | Chose Team 17 as our only integration partner, because they're in our pod |
