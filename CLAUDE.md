@@ -10,6 +10,9 @@ The group's **MFU Alumni Network** project (Team 19, Pod 5). This Worker holds t
   [`../06_integration_v2.md`](../06_integration_v2.md). They were submitted as evidence, so keep
   their behaviour unchanged.
 
+`ARCHITECTURE.md`, `PROCESS.md`, `TESTING.md` and `SECURITY.md` are the final evaluation's evidence
+(10 Nov 2026). Keep their counts, commit hashes and line links in step with the code.
+
 `GET /docs` serves a hand-written API reference and request console from `src/docs.html`. Update it
 whenever a route changes (a test fails if a route has no console), and never put a secret in it.
 

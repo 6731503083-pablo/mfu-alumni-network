@@ -17,9 +17,12 @@ A Cloudflare Worker with three parts:
 API docs, with a request console, are at
 [`/docs`](https://alumni-network-integration.phyo2lay.workers.dev/docs).
 
-See [TESTING.md](TESTING.md) for how the system is tested and where the results are, and
-[SECURITY.md](SECURITY.md) for its security and PDPA controls, each with the test or live check that
-proves it.
+| Page | What it covers |
+|---|---|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | The parts and how they connect, where to start reading the code, the data model, design decisions, and what's built against the PRD |
+| [PROCESS.md](PROCESS.md) | The team, how the work went, the git history, and how we used AI |
+| [TESTING.md](TESTING.md) | How the system is tested and where the results are |
+| [SECURITY.md](SECURITY.md) | Security and PDPA controls, each with the test or live check that proves it |
 
 ## Web app
 
