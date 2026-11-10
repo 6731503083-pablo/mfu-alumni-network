@@ -111,7 +111,7 @@ instruction and sees every action. Commands that touch secrets need a person's a
 We don't take the AI's word that something works. Every claim in this repo points to a test, a live
 run or a screenshot:
 
-- **297 automated tests**, run inside the real Workers runtime against a real D1 database.
+- **315 automated tests**, run inside the real Workers runtime against a real D1 database.
 - **Failed, then fixed:** each security fix's test was run against the code before the fix, to prove
   the test catches the bug ([three runs](TESTING.md#failed-tests-that-led-to-fixes)).
 - **Live checks:** the 35-check demo, 40 security and PDPA checks, and a Team 17 call with their
