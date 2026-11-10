@@ -69,7 +69,7 @@ never talks to Team 17 directly: our Worker calls them and checks their answer f
 | [`src/docs.html`](src/docs.html) | API reference, with a console for trying every route | Section 11 |
 | [`migrations/0002_alumni_network.sql`](migrations/0002_alumni_network.sql) | The database: tables, rules, triggers and the faculty and interest lists | Section 8 |
 | [`migrations/0003_current_mfu_schools.sql`](migrations/0003_current_mfu_schools.sql) | Brings the schools up to MFU's current 15: the PRD's 11 had an old name and four missing | Section 8 |
-| [`test/`](test/) | 297 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
+| [`test/`](test/) | 315 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
 | [`scripts/`](scripts/) | The live demo, seed data, and the Team 17 and security evidence runs | |
 
 ## The data
@@ -224,7 +224,7 @@ Against the PRD's "MVP is complete when" list (section 17):
 | AI suggestions within 5 seconds, with a rule-based fallback | ❌ Not built (FR-09) |
 | `alumni.connection_created` reaches the Notification Hub through the outbox | ⚠️ Queued, not sent (FR-10). Forged inbound webhooks are refused ✅ |
 | Alumni events from Events and Clubs appear for matching students | ⚠️ Received, checked and stored. Not shown to students yet (FR-11) |
-| All 11 planned tests pass | ⚠️ 10 fully and test 6 half (sending isn't built), out of 297 tests. Run before each deploy, not in CI |
+| All 11 planned tests pass | ⚠️ 10 fully and test 6 half (sending isn't built), out of 315 tests. Run before each deploy, not in CI |
 | Deployed at 0 THB, with runbooks | ✅ Deployed on Cloudflare's free plan. ❌ No runbooks |
 
 Also not built: the OpenAPI document (the `/docs` page covers every route instead), and real Identity
