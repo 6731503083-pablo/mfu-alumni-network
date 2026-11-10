@@ -21,7 +21,7 @@ describe('GET /docs', () => {
         .filter((route) => route.method !== 'ALL' && !['/', '/docs', '/app'].includes(route.path))
         .map((route) => `${route.method} ${route.path.replace(/:(\w+)/g, '{$1}')}`),
     );
-    expect(routes.size).toBe(18);
+    expect(routes.size).toBe(23);
     for (const route of routes) {
       const [method, path] = route.split(' ');
       expect(text, route).toContain(`data-method="${method}" data-path="${path}"`);

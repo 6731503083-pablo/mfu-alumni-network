@@ -118,7 +118,7 @@ reloads, so the next sign-in is one click on a name.
 
 ## Closing (10 seconds)
 
-> "The suite has 315 automated tests, and 40 security checks run against the live site. The tests,
+> "The suite has 341 automated tests, and 40 security checks run against the live site. The tests,
 > the security write-up and the integration evidence are all in the repo."
 
 ## If they ask for a live change
@@ -129,7 +129,7 @@ reloads, so the next sign-in is one click on a name.
 2. In the terminal:
 
    ```bash
-   npm test           # 315 pass, about 2 seconds
+   npm test           # 341 pass, about 2 seconds
    npm run typecheck  # no errors
    npm run deploy     # about 9 seconds
    ```

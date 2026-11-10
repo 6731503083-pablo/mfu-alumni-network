@@ -95,6 +95,11 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
 - Erasure by anonymisation (BR-04).
 - Real Identity service tokens: `src/lib/auth.ts` verifies HS256 with `JWT_SECRET` until the contract
   arrives (PRD Assumption 1). When it does, change that file and delete `src/routes/demo-auth.ts`.
+- Screens for the Assumption 1 fallback, and sending its sign-in codes by email.
+  `src/routes/alumni-verification.ts` lets alumni whose student email has closed register with a
+  personal email, an admin approve them, and a single-use code sign them in. Approved IDs start
+  `personal-`. With no email provider, `POST /auth/alumni/sign-in-link` only returns the code
+  (`demo_code`) to a caller who sends the demo passcode.
 - The OpenAPI document (PRD section 11). The web app is served from the same Worker, so there's no
   CORS.
 
