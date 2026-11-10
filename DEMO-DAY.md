@@ -2,7 +2,8 @@
 
 What the team does on the day: the checks before we start, the demo click by click, the live change,
 the questions we expect, and what to do if something breaks. Everything here was rehearsed on
-9 November.
+9 November. The presenter's script, with what to say at each step, is in
+[DEMO-SCRIPT.md](DEMO-SCRIPT.md).
 
 **One laptop has the keys.** Deploying needs the Cloudflare login, and the live demo scripts need
 `.demo.vars`. Both are on Phyo Phyo Lay's laptop, so run the commands there. Any of us can drive it.
