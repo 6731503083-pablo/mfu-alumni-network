@@ -52,6 +52,8 @@ describe('DELETE /connections/:id (API-07)', () => {
   it('returns 404 for an unknown connection', async () => {
     const res = await call('DELETE', '/connections/no-such-id', { as: await makePerson('student') });
     expect(res.status).toBe(404);
+    expect(res.json).toEqual({ error: 'Connection not found', code: 'NOT_FOUND' });
+    expect(res.text).not.toMatch(/stack|at \S+\(/i);
   });
 });
 
