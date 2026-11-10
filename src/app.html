@@ -67,7 +67,12 @@
   .btn-danger { background: var(--white); color: var(--danger); border-color: #e3bdb6; }
   .btn-danger:hover { background: var(--danger-soft); }
   .btn-small { padding: 5px 12px; font-size: .875rem; }
+  /* A link styled as a button keeps the button's colours on hover, not the link's. */
+  a.btn { display: inline-block; text-decoration: none; }
+  a.btn:hover { color: var(--white); }
+  a.btn-quiet, a.btn-quiet:hover { color: var(--pine); }
   .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   /* Forms */
   label, legend { display: block; margin-bottom: 6px; padding: 0; font-weight: 600; font-size: .9375rem; }
@@ -108,15 +113,40 @@
   .page-head p { max-width: 62ch; margin-top: 6px; color: var(--muted); }
   .back { display: inline-block; margin-bottom: 16px; }
 
-  /* Directory */
-  .discover { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 28px; align-items: start; }
-  .filters { position: sticky; top: 16px; padding: 20px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
-  .filters summary { margin-bottom: 14px; font-family: var(--serif); font-size: 1.125rem; font-weight: 700; color: var(--pine); cursor: pointer; }
-  .filters details:not([open]) summary { margin-bottom: 0; }
-  .filters .field:last-of-type { margin-bottom: 20px; }
+  /* Directory: start from what the student needs, then narrow it down */
+  /* One filter panel: topics on top, the narrower filters in a row under them */
+  .finder { margin-bottom: 20px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
+  .finder-topics { padding: 20px 22px 18px; }
+  .topics legend { margin-bottom: 4px; font-family: var(--serif); font-size: 1.375rem; font-weight: 700; color: var(--pine); }
+  .topics .hint { margin: 0 0 12px; font-size: .9375rem; }
+  .topics .chips { gap: 8px; }
+  .topics .pick span { padding: 7px 15px; font-size: .9375rem; }
+  .topics .pick span:hover { border-color: var(--leaf); }
+  .filter-row { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1.7fr) minmax(0, 1.1fr) minmax(0, .8fr) auto; gap: 12px 16px; align-items: end; padding: 16px 22px 18px; border-top: 1px solid var(--line); }
+  .filter-row .field { margin: 0; }
+  .filter-row .check { min-height: 44px; margin: 0; align-items: center; white-space: nowrap; }
+  .filter-row .check input { margin: 0; }
   .sheet { background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
   .sheet[aria-busy="true"] { opacity: .6; }
-  .sheet-head { padding: 13px 22px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
+  .sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 13px 22px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
+  .count { margin-right: 4px; color: var(--ink); font-weight: 600; }
+  .count:focus { outline: none; }
+  .applied { display: flex; flex-wrap: wrap; gap: 6px; }
+  .remove { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px 2px 11px; font: inherit; font-size: .8125rem; color: var(--pine); background: var(--mint-soft); border: 1px solid #bcd9c4; border-radius: 999px; cursor: pointer; }
+  .remove:hover { background: var(--mint); }
+  .remove-x { display: grid; place-items: center; width: 18px; height: 18px; font-size: 1rem; line-height: 1; }
+  .clear-all { padding: 0; font: inherit; font-size: .875rem; color: var(--leaf); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .clear-all:hover { color: var(--pine); }
+  .mentor { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 4px 18px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+  .mentor:last-child { border-bottom: 0; }
+  .mentor .mono { width: 48px; height: 48px; font-size: 1.0625rem; }
+  .mentor .chips { margin-top: 10px; }
+  .chip-match { background: var(--pine); color: var(--white); }
+  .mentor-act { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right; }
+  .starters { margin-bottom: 16px; }
+  .starters .hint { margin: 0 0 8px; }
+  .starter { padding: 5px 12px; font: inherit; font-size: .875rem; text-align: left; color: var(--pine); background: var(--white); border: 1px dashed #9fbfab; border-radius: 999px; cursor: pointer; }
+  .starter:hover { background: var(--mint-soft); border-style: solid; }
   .loading { padding: 28px 22px; color: var(--muted); }
   .person, .req { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
   .person:last-child, .req:last-child { border-bottom: 0; }
@@ -217,8 +247,8 @@
   .foot { padding: 20px 20px 32px; color: var(--muted); font-size: .875rem; text-align: center; }
 
   @media (max-width: 880px) {
-    .discover, .profile, .signin-row { grid-template-columns: 1fr; }
-    .filters { position: static; }
+    .profile, .signin-row { grid-template-columns: 1fr; }
+    .filter-row { grid-template-columns: 1fr 1fr; }
     h1, .tagline { font-size: 1.75rem; }
   }
   @media (max-width: 560px) {
@@ -231,6 +261,10 @@
     .nav a { white-space: nowrap; }
     .who-role { display: none; }
     .person, .req { grid-template-columns: 1fr; padding: 16px; }
+    .filter-row { grid-template-columns: 1fr; }
+    .mentor { grid-template-columns: 40px minmax(0, 1fr); padding: 16px; }
+    .mentor .mono { width: 40px; height: 40px; }
+    .mentor-act { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: center; text-align: left; }
     .side-col { flex-direction: row; flex-wrap: wrap; align-items: center; text-align: left; }
     .two, .contact-row { grid-template-columns: 1fr; }
     .share { padding-top: 4px; }
@@ -606,19 +640,44 @@
   // ── Directory (search) ─────────────────────────────────────────────────────────────────────
   // Kept between visits, so going back from a profile keeps the search.
   const filters = { role: '', faculty: '', country: '', year: '', interests: [], open: null };
+  // Set by a card's "Ask for mentoring", so the profile opens with the message box ready.
+  let askFor = null;
+
+  const withoutDemo = (text) => text.replace(/\s*\(demo\)/gi, '');
+  function initials(name) {
+    const words = withoutDemo(name).trim().split(/\s+/).filter(Boolean);
+    const first = (word) => Array.from(word)[0] ?? '';
+    if (!words.length) return '?';
+    return (words.length > 1 ? first(words[0]) + first(words[words.length - 1]) : first(words[0])).toUpperCase();
+  }
 
   async function directoryView() {
     const role = session.user.role;
     if (filters.open === null) filters.open = role === 'student';
-    const state = { items: [], total: 0 };
+    // `ticket` drops answers that arrive after a newer search, so fast clicking can't show old results.
+    const state = { items: [], total: 0, ticket: 0, drawn: false, focusCount: false };
 
-    const keyword = field('f-role', 'Job title', h('input', { type: 'text', value: filters.role, maxlength: 100 }), 'Any language, such as Engineer, พยาบาล or အင်ဂျင်နီယာ');
+    // A student's own requests, so a card says "Request sent" or "Connected" instead of offering to
+    // ask again. If they don't load, open cards just offer to ask, and the profile page still checks.
+    const mine = new Map();
+    const loadMine = role !== 'student' ? Promise.resolve() : api('GET', '/mentoring-requests/me?limit=50')
+      .then((page) => {
+        for (const r of page.data) {
+          if (r.connection?.status === 'active') mine.set(r.alumni_id, 'connected');
+          else if (r.status === 'pending' && !mine.has(r.alumni_id)) mine.set(r.alumni_id, 'pending');
+        }
+      })
+      .catch(() => {});
+
+    const keyword = field('f-role', 'Job title', h('input', { type: 'text', value: filters.role, maxlength: 100, placeholder: 'Engineer, พยาบาล, အင်ဂျင်နီယာ' }));
     const faculty = field('f-faculty', 'School', select([['', 'Any school'], ...reference.faculties.map((f) => [f.id, f.name])], filters.faculty));
     const country = field('f-country', 'Country they live in', select([['', 'Any country'], ...Object.entries(COUNTRIES).map(([code, name]) => [code, name])], filters.country));
     const year = field('f-year', 'Graduation year', h('input', { type: 'number', min: 1998, max: CURRENT_YEAR + 1, inputmode: 'numeric', value: filters.year, placeholder: 'Any year' }));
     const interestBoxes = reference.interests.map((name) => h('input', { type: 'checkbox', value: name, checked: filters.interests.includes(name) }));
     const open = h('input', { type: 'checkbox', checked: filters.open });
-    const results = h('section', { class: 'sheet', 'aria-live': 'polite', 'aria-label': 'Results' });
+    const results = h('section', { class: 'sheet', 'aria-label': 'Results' });
+    // Only the count is announced, so a screen reader hears "3 alumni found", not the whole list.
+    const count = h('p', { class: 'count', 'aria-live': 'polite', tabindex: '-1' });
 
     function readFilters() {
       filters.role = keyword.control.value.trim();
@@ -630,22 +689,28 @@
     }
 
     async function search(fresh) {
-      if (fresh) state.items = [];
-      const params = new URLSearchParams({ limit: '20', offset: String(state.items.length) });
+      const ticket = ++state.ticket;
+      const params = new URLSearchParams({ limit: '20', offset: String(fresh ? 0 : state.items.length) });
       if (filters.role) params.set('role', filters.role);
       if (filters.faculty) params.set('faculty_id', filters.faculty);
       if (filters.country) params.set('country', filters.country);
       if (filters.year) params.set('grad_year', filters.year);
       if (filters.interests.length) params.set('interests', filters.interests.join(','));
       if (filters.open) params.set('open_to_mentoring', 'true');
-      if (fresh) results.replaceChildren(h('p', { class: 'loading', role: 'status' }, 'Searching alumni…'));
+      // After the first load, old results stay on screen, dimmed, until the new ones arrive.
+      if (!state.drawn) results.replaceChildren(h('p', { class: 'loading', role: 'status' }, 'Searching alumni…'));
       results.setAttribute('aria-busy', 'true');
       try {
-        const page = await api('GET', `/alumni?${params}`);
+        const [page] = await Promise.all([api('GET', `/alumni?${params}`), loadMine]);
+        if (ticket !== state.ticket) return;
+        if (fresh) state.items = [];
         state.items.push(...page.data);
         state.total = page.pagination.total;
         drawResults();
+        state.drawn = true;
       } catch (problem) {
+        if (ticket !== state.ticket || problem.status === 401) return;
+        state.drawn = false;
         const detail = problem.fields ? Object.values(problem.fields).join(' ') : explain(problem);
         results.replaceChildren(
           h('div', { class: 'empty' },
@@ -653,81 +718,160 @@
             h('p', { class: 'retry' },
               h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => search(true) }, 'Try again'))));
       } finally {
-        results.setAttribute('aria-busy', 'false');
+        if (ticket === state.ticket) results.setAttribute('aria-busy', 'false');
       }
+    }
+
+    // Filters apply as soon as they change. Typing waits for a pause, so each key isn't a search.
+    let typing;
+    function apply() {
+      clearTimeout(typing);
+      readFilters();
+      search(true);
+    }
+    function applySoon(event) {
+      if (event?.isComposing) return;
+      clearTimeout(typing);
+      typing = setTimeout(apply, 350);
+    }
+    keyword.control.addEventListener('input', applySoon);
+    keyword.control.addEventListener('compositionend', applySoon);
+    // A year is only searched once it's empty or a whole year in range, so "20" isn't sent as one.
+    year.control.addEventListener('input', () => {
+      const value = year.control.value.trim();
+      if (!value || (/^\d{4}$/.test(value) && year.control.checkValidity())) applySoon();
+    });
+    for (const control of [faculty.control, country.control, open, ...interestBoxes]) control.addEventListener('change', apply);
+
+    const isDefault = () => !filters.role && !filters.faculty && !filters.country && !filters.year
+      && !filters.interests.length && filters.open === (role === 'student');
+
+    function clearAll() {
+      for (const control of [keyword.control, faculty.control, country.control, year.control]) control.value = '';
+      for (const box of interestBoxes) box.checked = false;
+      open.checked = role === 'student';
+      state.focusCount = true;
+      apply();
+    }
+
+    // Every filter in use, each with a way to remove just that one.
+    function inUse() {
+      const list = filters.interests.map((name) => [name, () => {
+        const box = interestBoxes.find((b) => b.value === name);
+        if (box) box.checked = false;
+      }]);
+      if (filters.role) list.push([`Job title: ${filters.role}`, () => { keyword.control.value = ''; }]);
+      if (filters.faculty) list.push([facultyNames.get(Number(filters.faculty)) ?? filters.faculty, () => { faculty.control.value = ''; }]);
+      if (filters.country) list.push([`Lives in ${countryName(filters.country)}`, () => { country.control.value = ''; }]);
+      if (filters.year) list.push([`Class of ${filters.year}`, () => { year.control.value = ''; }]);
+      if (filters.open) list.push(['Taking mentees', () => { open.checked = false; }]);
+      return list;
     }
 
     function drawResults() {
-      const head = h('p', { class: 'sheet-head' }, state.total === 1 ? '1 alumni found' : `${state.total} alumni found`);
+      const used = inUse();
+      count.textContent = state.total === 1 ? '1 alumni found' : `${state.total} alumni found`;
+      const head = h('div', { class: 'sheet-head' },
+        count,
+        used.length ? h('ul', { class: 'applied', 'aria-label': 'Filters in use' }, used.map(([label, reset]) => h('li', null,
+          h('button', {
+            class: 'remove',
+            type: 'button',
+            'aria-label': `Remove filter: ${label}`,
+            onclick: () => { reset(); state.focusCount = true; apply(); },
+          }, label, h('span', { class: 'remove-x', 'aria-hidden': 'true' }, '×'))))) : null,
+        isDefault() ? null : h('button', { class: 'clear-all', type: 'button', onclick: clearAll }, 'Clear filters'));
+
       if (!state.items.length) {
-        results.replaceChildren(head, h('p', { class: 'empty' }, 'No alumni match these filters. Try fewer filters, or a shorter job title.'));
-        return;
+        results.replaceChildren(head, h('p', { class: 'empty' }, used.length
+          ? 'No alumni match all of these. Remove a filter above to see more.'
+          : 'No alumni have a profile yet.'));
+      } else {
+        const more = state.items.length < state.total
+          ? h('div', { class: 'more' }, h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => search(false) }, 'Show more'))
+          : null;
+        results.replaceChildren(...[head, h('ul', null, state.items.map(mentorRow)), more].filter(Boolean));
       }
-      const more = state.items.length < state.total
-        ? h('div', { class: 'more' }, h('button', { class: 'btn btn-quiet', type: 'button', onclick: () => search(false) }, 'Show more'))
-        : null;
-      results.replaceChildren(...[head, h('ul', null, state.items.map(personRow)), more].filter(Boolean));
+      // The button that was clicked is gone, so keyboard focus moves to the new count. Not if the
+      // person has already moved on, say into the job title box.
+      if (state.focusCount) {
+        state.focusCount = false;
+        const lost = !document.activeElement || document.activeElement === document.body;
+        if (lost) count.focus({ preventScroll: true });
+      }
     }
 
-    function personRow(a) {
-      return h('li', { class: 'person' },
+    function mentorRow(a) {
+      // Topics the student picked come first and stand out, so the reason this person showed up is visible.
+      const picked = new Set(filters.interests);
+      const interests = [...a.interests].sort((x, y) => picked.has(y) - picked.has(x));
+      return h('li', { class: 'mentor' },
+        h('span', { class: 'mono mono-alumni', 'aria-hidden': 'true' }, initials(a.display_name)),
         h('div', null,
           h('a', { class: 'person-name', href: `#/alumni/${encodeURIComponent(a.id)}` }, a.display_name),
           h('p', null, jobLine(a)),
-          h('p', { class: 'meta' }, placeLine(a)),
+          placeLine(a) ? h('p', { class: 'meta' }, placeLine(a)) : null,
           h('p', { class: 'meta' }, schoolLine(a)),
-          a.interests.length ? h('ul', { class: 'chips', 'aria-label': 'Interests' }, a.interests.map((name) => h('li', { class: 'chip' }, name))) : null),
-        h('div', { class: 'side-col' },
-          h('span', { class: a.is_open_to_mentoring ? 'taking' : 'not-taking' }, a.is_open_to_mentoring ? 'Taking mentees' : 'Not taking mentees'),
-          role === 'admin'
-            ? h('button', {
-              class: 'btn btn-danger btn-small',
-              type: 'button',
-              onclick: () => deactivate(a, () => {
-                state.items = state.items.filter((item) => item.id !== a.id);
-                state.total -= 1;
-                drawResults();
-              }),
-            }, 'Turn off profile')
-            : null));
+          interests.length ? h('ul', { class: 'chips', 'aria-label': 'Can help with' }, interests.map((name) => picked.has(name)
+            ? h('li', { class: 'chip chip-match' }, name, h('span', { class: 'sr-only' }, ', one of your picks'))
+            : h('li', { class: 'chip' }, name))) : null),
+        h('div', { class: 'mentor-act' }, actionsFor(a)));
     }
 
+    function actionsFor(a) {
+      const profile = `#/alumni/${encodeURIComponent(a.id)}`;
+      const status = h('span', { class: a.is_open_to_mentoring ? 'taking' : 'not-taking' }, a.is_open_to_mentoring ? 'Taking mentees' : 'Not taking mentees');
+      if (role === 'alumni') return status;
+      if (role === 'admin') {
+        return [status, h('button', {
+          class: 'btn btn-danger btn-small',
+          type: 'button',
+          onclick: () => deactivate(a, () => {
+            state.items = state.items.filter((item) => item.id !== a.id);
+            state.total -= 1;
+            drawResults();
+          }),
+        }, 'Turn off profile')];
+      }
+      const asked = mine.get(a.id);
+      if (asked === 'connected') {
+        return [h('span', { class: 'status status-connected' }, 'Connected'), h('a', { class: 'btn btn-quiet btn-small', href: profile }, 'See contact details')];
+      }
+      if (asked === 'pending') {
+        return [h('span', { class: 'status status-waiting' }, 'Request sent'), h('a', { class: 'btn btn-quiet btn-small', href: profile }, 'View request')];
+      }
+      if (!a.is_open_to_mentoring) return status;
+      return h('a', { class: 'btn btn-small', href: profile, onclick: () => { askFor = a.id; } }, 'Ask for mentoring');
+    }
+
+    const topics = h('fieldset', { class: 'topics', 'aria-describedby': 'topics-hint' },
+      h('legend', null, role === 'student' ? 'What do you want help with?' : 'Interests'),
+      h('p', { class: 'hint', id: 'topics-hint' }, role === 'student'
+        ? 'Pick one or more. You’ll see alumni who can help with any of them.'
+        : 'Shows alumni with any of the ones you pick.'),
+      h('div', { class: 'chips' }, interestBoxes.map((box) => h('label', { class: 'pick' }, box, h('span', null, box.value)))));
+
+    // Every filter lives in this one panel, above full-width results.
     const form = h('form', {
-      class: 'filters',
+      class: 'finder',
       'aria-label': 'Search filters',
       onsubmit: (event) => {
         event.preventDefault();
-        readFilters();
-        search(true);
+        apply();
       },
     },
-    // Open on wide screens. On a phone it starts folded, so the results aren't pushed off screen.
-    h('details', { open: !window.matchMedia('(max-width: 880px)').matches },
-      h('summary', null, 'Filters'),
+    h('div', { class: 'finder-topics' }, topics),
+    h('div', { class: 'filter-row' },
       keyword.wrap, faculty.wrap, country.wrap, year.wrap,
-      h('fieldset', { class: 'field' },
-        h('legend', null, 'Interests'),
-        h('div', { class: 'chips' }, interestBoxes.map((box) => h('label', { class: 'pick' }, box, h('span', null, box.value)))),
-        h('p', { class: 'hint' }, 'Shows alumni with any of the ones you pick.')),
-      h('div', { class: 'field' }, h('label', { class: 'check' }, open, 'Only alumni taking mentees')),
-      h('div', { class: 'actions' },
-        h('button', { class: 'btn', type: 'submit' }, 'Search'),
-        h('button', {
-          class: 'btn btn-quiet',
-          type: 'button',
-          onclick: () => {
-            Object.assign(filters, { role: '', faculty: '', country: '', year: '', interests: [], open: role === 'student' });
-            render();
-          },
-        }, 'Clear filters'))));
+      h('div', { class: 'field' }, h('label', { class: 'check' }, open, 'Only taking mentees'))));
 
     search(true);
     const heads = {
-      student: ['Find a mentor', 'Search MFU alumni by what they do, where they live and what they can help with. Contact details stay hidden until an alumni accepts your request.'],
+      student: ['Find a mentor', 'Pick what you want help with, then ask an MFU alumni who has done it. Their contact details stay hidden until they accept your request.'],
       alumni: ['Alumni directory', 'See who else from MFU is mentoring. You see the same public details students do.'],
       admin: ['Alumni directory', 'Find a profile that breaks the rules and turn it off. A turned-off profile leaves search and stops taking requests. Nothing is deleted.'],
     };
-    return h('div', null, pageHead(...heads[role]), h('div', { class: 'discover' }, form, results));
+    return h('div', null, pageHead(...heads[role]), form, results);
   }
 
   async function deactivate(a, done) {
@@ -822,6 +966,8 @@
 
   async function requestPanel(profile) {
     const name = profile.display_name;
+    const cameToAsk = askFor === profile.id;
+    askFor = null;
     const mine = (await api('GET', '/mentoring-requests/me?limit=50')).data.filter((r) => r.alumni_id === profile.id);
     const connected = mine.find((r) => r.connection?.status === 'active');
     const pending = mine.find((r) => r.status === 'pending');
@@ -857,6 +1003,40 @@
     const messageField = field('message', 'What do you want help with?', message, `Say what year you’re in, what you’re aiming for, and what you’d like to ask. ${name} reads this before deciding.`);
     const counter = h('p', { class: 'counter', 'aria-hidden': 'true' }, '0 / 2000');
     message.addEventListener('input', () => { counter.textContent = `${message.value.length} / 2000`; });
+
+    // Not knowing what to ask is the most common reason students never write to a mentor, so offer a
+    // first sentence built from this person's own profile. It only fills the box; the student edits it.
+    const plainName = withoutDemo(name);
+    const job = profile.job_title && withoutDemo([profile.job_title, profile.company].filter(Boolean).join(' at '));
+    const place = placeLine(profile);
+    const starters = [
+      job && ['Ask about their career', `Hi ${plainName}, I’m a student at MFU. I’d like to hear how you got to your role as ${job}, and what you’d focus on if you were a student again.`],
+      profile.interests[0] && [`Ask about ${profile.interests[0]}`, `Hi ${plainName}, I’m a student at MFU and I’m interested in ${profile.interests[0]}. Could we have a short chat about how to get started and what to learn first?`],
+      place && [`Ask about life in ${profile.city || place}`, `Hi ${plainName}, I’m a student at MFU. I’d like to ask what it’s like to live and work in ${place}, and how you found your first job there.`],
+    ].filter(Boolean);
+    let lastStarter = '';
+    function useStarter(text) {
+      // Replace an untouched starter; add to anything the student wrote themselves.
+      const own = message.value.trim() && message.value !== lastStarter;
+      message.value = own ? `${message.value.trimEnd()}\n\n${text}` : text;
+      lastStarter = message.value;
+      message.dispatchEvent(new Event('input'));
+      message.focus();
+      message.setSelectionRange(message.value.length, message.value.length);
+    }
+    const starterBox = starters.length
+      ? h('div', { class: 'starters' },
+        h('p', { class: 'hint' }, 'Not sure what to write? Start with one of these, then add your year and what you’re aiming for.'),
+        h('div', { class: 'actions' }, starters.map(([label, text]) => h('button', { class: 'starter', type: 'button', onclick: () => useStarter(text) }, label))))
+      : null;
+    // Arrived from a card's "Ask for mentoring": put the cursor in the message box.
+    if (cameToAsk) {
+      requestAnimationFrame(() => {
+        if (!message.isConnected) return;
+        message.focus({ preventScroll: true });
+        message.scrollIntoView({ block: 'nearest' });
+      });
+    }
     const errorBox = h('p', { class: 'alert', role: 'alert', hidden: true });
     const submit = h('button', { class: 'btn', type: 'submit' }, 'Send request');
     return h('form', {
@@ -885,6 +1065,7 @@
       },
     },
     h('h2', null, `Ask ${name} for mentoring`),
+    starterBox,
     messageField.wrap,
     counter,
     errorBox,
