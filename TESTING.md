@@ -5,7 +5,7 @@ are from 9 November 2026.
 
 | Kind | What it covers | Run it | Result | Evidence |
 |---|---|---|---|---|
-| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **315 of 315 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-10.txt) |
+| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **341 of 341 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-10.txt) |
 | Type check | `src` and `test` | `npm run typecheck` | No errors | |
 | End to end, live | The presentation's five steps to a mentor, plus consent withdrawal, security and admin, against the deployed API | `npm run demo` | **35 of 35 checks pass** | [live run](evidence/demo-run-live-2026-11-09.txt) |
 | Security, live | 40 attacks and privacy checks against the deployed site. It writes nothing to the live database | `npm run evidence:security` | **40 of 40 pass** | [live run](evidence/security/live-security-checks-2026-11-09.txt), [SECURITY.md](SECURITY.md) |
@@ -26,6 +26,7 @@ are from 9 November 2026.
 | [`test/docs-and-lab.test.ts`](test/docs-and-lab.test.ts) | 21 | The docs page has a console for every route and no secrets, the seed lists, error shapes, security headers on every answer, the HTTPS redirect, and the A5 lab routes |
 | [`test/connections-admin.test.ts`](test/connections-admin.test.ts) | 10 | Ending a connection (either party only) and admin deactivation |
 | [`test/quality-security.test.ts`](test/quality-security.test.ts) | 12 | A second, focused pass by Quality and Security: protected routes, admin-only routes, contact details only after a connection and only while consented, duplicate and closed requests, and webhook signatures and retries. See [QUALITY_ASSURANCE_REPORT.md](QUALITY_ASSURANCE_REPORT.md) |
+| [`test/alumni-verification.test.ts`](test/alumni-verification.test.ts) | 26 | The PRD Assumption 1 fallback: personal-email claims (student addresses refused), the admin review queue, single-use sign-in codes (expired, reused, raced), and sign-up through to a profile students can find |
 | [`test/phase2-validation.test.ts`](test/phase2-validation.test.ts) | 5 | Input validation: missing request fields, a blank display name, a wrong JSON type, an over-long webhook title and an unsupported URL scheme |
 
 ### The PRD's 11 planned tests

@@ -7,6 +7,7 @@ import { handleError } from './lib/errors';
 import { hmacHex, timingSafeEqual } from './lib/hmac';
 import { admin } from './routes/admin';
 import { alumni } from './routes/alumni';
+import { alumniSignup, verificationAdmin } from './routes/alumni-verification';
 import { connections } from './routes/connections';
 import { demoAuth } from './routes/demo-auth';
 import { partnerInternships } from './routes/partner-internships';
@@ -58,6 +59,11 @@ app.get('/', (c) =>
     docs: '/docs',
     endpoints: [
       'POST /auth/demo-login',
+      'POST /auth/alumni/register',
+      'POST /auth/alumni/sign-in-link',
+      'POST /auth/alumni/sign-in',
+      'GET /admin/alumni-verifications',
+      'PATCH /admin/alumni-verifications/{id}',
       'GET /alumni',
       'GET /alumni/me',
       'GET /alumni/{id}',
@@ -203,6 +209,11 @@ app.route('/mentoring-requests', requests);
 app.route('/connections', connections);
 app.route('/admin', admin);
 app.route('/webhooks/events-clubs', eventsClubs);
+
+// PRD Assumption 1 fallback: alumni whose student email has closed sign up with a personal email, and
+// the Alumni Association approves them before they can sign in.
+app.route('/auth/alumni', alumniSignup);
+app.route('/admin/alumni-verifications', verificationAdmin);
 
 // Team 17's internship listings, for students looking for a mentor in that field.
 app.route('/partners/team17', partnerInternships);

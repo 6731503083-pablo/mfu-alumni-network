@@ -272,6 +272,11 @@
         <li><a href="#answer-request">Accept, reject or cancel</a></li>
         <li><a href="#end-connection">End a connection</a></li>
         <li><a href="#deactivate">Deactivate a profile</a></li>
+        <li><a href="#alumni-register">Graduated? Sign up with a personal email</a></li>
+        <li><a href="#verification-queue">List alumni claims to check</a></li>
+        <li><a href="#verification-review">Approve or reject a claim</a></li>
+        <li><a href="#alumni-sign-in-link">Ask for a sign-in code</a></li>
+        <li><a href="#alumni-sign-in">Sign in with the code</a></li>
         <li><a href="#events-clubs">Receive an alumni event</a></li>
         <li><a href="#team17-internships">Browse Team 17’s internships</a></li>
         <li><a href="#mentors">Count mentors by field, for other teams</a></li>
@@ -753,6 +758,210 @@
           <pre class="curl"><code></code></pre>
           <div class="actions">
             <button class="btn btn-send" type="submit">Deactivate profile</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="alumni-register">
+        <div class="doc">
+          <h3>Graduated? Sign up with a personal email</h3>
+          <p class="route"><span class="method method-post">POST</span> /auth/alumni/register <span class="api-id">Assumption 1</span></p>
+          <p>The fallback for PRD Assumption 1. Alumni lose their <code>@lamduan.mfu.ac.th</code> address after graduation, so if the Identity service only signs in current students, an alumni sends a claim with a personal email. No token is needed and none is returned: the claim waits until the Alumni Association checks it against graduation records.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>email</code><span class="where">Required</span></td><td>A personal email. Stored lowercased. A <code>@lamduan.mfu.ac.th</code> address is refused.</td></tr>
+              <tr><td><code>display_name</code><span class="where">Required</span></td><td>1 to 100 characters.</td></tr>
+              <tr><td><code>student_id</code><span class="where">Required</span></td><td>The 10-digit MFU student ID the Association checks.</td></tr>
+              <tr><td><code>faculty_id</code><span class="where">Required</span></td><td>A school ID from the reference list.</td></tr>
+              <tr><td><code>grad_year</code><span class="where">Required</span></td><td>1998 to this year.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">201</td><td>The claim is waiting for the Association.<code class="shape">{ id, status: "pending", message }</code></td></tr>
+              <tr><td class="status s4">400</td><td>A field is invalid, or the email is a student address.<code class="shape">{ error, code, fields }</code></td></tr>
+              <tr><td class="status s4">409</td><td><code>ALREADY_REGISTERED</code>: this email or student ID already has an open or approved claim.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/auth/alumni/register" aria-label="Try POST /auth/alumni/register" autocomplete="off">
+          <div class="field"><label for="as-alumni-register">Send as</label><select id="as-alumni-register" data-as data-default="none"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field">
+            <label for="alumni-register-body">Body</label>
+            <textarea id="alumni-register-body" data-body rows="8" spellcheck="false">{
+  "email": "thiri.aung.demo@example.com",
+  "display_name": "Thiri Aung (demo)",
+  "student_id": "6231501234",
+  "faculty_id": 7,
+  "grad_year": 2022
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Send claim</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="verification-queue">
+        <div class="doc">
+          <h3>List alumni claims to check</h3>
+          <p class="route"><span class="method method-get">GET</span> /admin/alumni-verifications <span class="api-id">Assumption 1</span></p>
+          <p>For admins, standing in for the Alumni Association. Shows what's needed to check a claim against graduation records, oldest first, up to 100.</p>
+          <h4>Filters</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Filter</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>status</code><span class="where">Optional</span></td><td><code>pending</code> (the default), <code>approved</code> or <code>rejected</code>.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>The claims.<code class="shape">{ data: [{ id, email, display_name, student_id, faculty_id, faculty, grad_year, status, review_note, reviewed_at, created_at }] }</code></td></tr>
+              <tr><td class="status s4">401</td><td>No valid token.</td></tr>
+              <tr><td class="status s4">403</td><td>The caller isn't an admin.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="GET" data-path="/admin/alumni-verifications" aria-label="Try GET /admin/alumni-verifications" autocomplete="off">
+          <div class="field"><label for="as-verification-queue">Send as</label><select id="as-verification-queue" data-as data-default="admin-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field"><label for="verification-queue-status">status</label><input id="verification-queue-status" type="text" data-query="status" placeholder="pending" spellcheck="false"></div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">List claims</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="verification-review">
+        <div class="doc">
+          <h3>Approve or reject a claim</h3>
+          <p class="route"><span class="method method-patch">PATCH</span> /admin/alumni-verifications/{id} <span class="api-id">Assumption 1</span></p>
+          <p>For admins. Only a pending claim can be reviewed. Approval gives the person an ID starting <code>personal-</code>, which can't collide with an Identity service user ID. A rejected person can send a new claim.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>status</code><span class="where">Required</span></td><td><code>approved</code> or <code>rejected</code>.</td></tr>
+              <tr><td><code>note</code><span class="where">Optional</span></td><td>Up to 500 characters, such as why it was rejected.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Reviewed.<code class="shape">{ id, status, identity_user_id }</code></td></tr>
+              <tr><td class="status s4">403</td><td>The caller isn't an admin.</td></tr>
+              <tr><td class="status s4">404</td><td>There's no claim with this ID.</td></tr>
+              <tr><td class="status s4">409</td><td><code>ALREADY_REVIEWED</code>: the claim isn't pending any more.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="PATCH" data-path="/admin/alumni-verifications/{id}" aria-label="Try PATCH /admin/alumni-verifications/{id}" autocomplete="off">
+          <div class="field"><label for="as-verification-review">Send as</label><select id="as-verification-review" data-as data-default="admin-1"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field"><label for="verification-review-id">Claim ID</label><input id="verification-review-id" type="text" data-param="id" spellcheck="false"></div>
+          <div class="field">
+            <label for="verification-review-body">Body</label>
+            <textarea id="verification-review-body" data-body rows="4" spellcheck="false">{
+  "status": "approved",
+  "note": "Matches the 2022 graduation list"
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Review claim</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="alumni-sign-in-link">
+        <div class="doc">
+          <h3>Ask for a sign-in code</h3>
+          <p class="route"><span class="method method-post">POST</span> /auth/alumni/sign-in-link <span class="api-id">Assumption 1</span></p>
+          <p>Sends a single-use code, valid for 15 minutes, to an approved personal email. Receiving it proves the person owns the inbox. The answer is the same whether or not the email has an account.</p>
+          <p class="note"><strong>No email provider is connected yet.</strong> Until one is, the code comes back as <code>demo_code</code>, and only to a caller who also sends the demo passcode. Without the passcode nothing is sent.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>email</code><span class="where">Required</span></td><td>The personal email from the claim.</td></tr>
+              <tr><td><code>passcode</code><span class="where">Optional</span></td><td>The demo passcode, to get the code back in the answer.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">202</td><td>Done, whether or not the email has an account. With the passcode and an approved email it adds the code.<code class="shape">{ message, demo_code?, expires_at? }</code></td></tr>
+              <tr><td class="status s4">401</td><td><code>INVALID_PASSCODE</code>: the passcode is wrong.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/auth/alumni/sign-in-link" aria-label="Try POST /auth/alumni/sign-in-link" autocomplete="off">
+          <div class="field"><label for="as-alumni-sign-in-link">Send as</label><select id="as-alumni-sign-in-link" data-as data-default="none"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field">
+            <label for="alumni-sign-in-link-body">Body</label>
+            <textarea id="alumni-sign-in-link-body" data-body rows="4" spellcheck="false">{
+  "email": "thiri.aung.demo@example.com",
+  "passcode": ""
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Ask for a code</button>
+            <button class="btn" type="button" data-copy>Copy curl</button>
+          </div>
+          <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>
+        </form>
+      </section>
+
+      <section class="endpoint" id="alumni-sign-in">
+        <div class="doc">
+          <h3>Sign in with the code</h3>
+          <p class="route"><span class="method method-post">POST</span> /auth/alumni/sign-in <span class="api-id">Assumption 1</span></p>
+          <p>Swaps the code for a two-hour alumni token. A code works once, and only while the claim is still approved. The alumni then creates a profile with <code>PATCH /alumni/me</code>, as any alumni does.</p>
+          <h4>Body</h4>
+          <table class="spec fields">
+            <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
+            <tbody>
+              <tr><td><code>code</code><span class="where">Required</span></td><td>The 64-character code.</td></tr>
+            </tbody>
+          </table>
+          <h4>Responses</h4>
+          <table class="spec">
+            <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td class="status s2">200</td><td>Signed in.<code class="shape">{ token, expires_at, user: { id, role: "alumni" } }</code></td></tr>
+              <tr><td class="status s4">400</td><td>The code isn't 64 hex characters.</td></tr>
+              <tr><td class="status s4">401</td><td><code>INVALID_CODE</code>: the code is wrong, used or expired.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="console" data-method="POST" data-path="/auth/alumni/sign-in" aria-label="Try POST /auth/alumni/sign-in" autocomplete="off">
+          <div class="field"><label for="as-alumni-sign-in">Send as</label><select id="as-alumni-sign-in" data-as data-default="none"></select><p class="hint" data-as-hint hidden></p></div>
+          <div class="field">
+            <label for="alumni-sign-in-body">Body</label>
+            <textarea id="alumni-sign-in-body" data-body rows="3" spellcheck="false">{
+  "code": ""
+}</textarea>
+          </div>
+          <pre class="curl"><code></code></pre>
+          <div class="actions">
+            <button class="btn btn-send" type="submit">Sign in</button>
             <button class="btn" type="button" data-copy>Copy curl</button>
           </div>
           <div class="result" aria-live="polite"><p class="empty">The response appears here.</p></div>

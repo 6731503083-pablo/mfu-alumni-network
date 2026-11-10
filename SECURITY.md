@@ -43,16 +43,16 @@ No real person's details are stored.
 
 | Control | What it does | Code | Proven by |
 |---|---|---|---|
-| Content-Security-Policy | The web app gets a new nonce on every response. Only our own `<script>` and `<style>` tags carry it, so injected code can't run. No inline handlers, no framing, and the page can only call our own site | [index.ts:87-102](src/index.ts#L87-L102) | [app.test.ts:157](test/app.test.ts#L157), [app.test.ts:171](test/app.test.ts#L171), live H1 |
+| Content-Security-Policy | The web app gets a new nonce on every response. Only our own `<script>` and `<style>` tags carry it, so injected code can't run. No inline handlers, no framing, and the page can only call our own site | [index.ts:92-111](src/index.ts#L92-L111) | [app.test.ts:157](test/app.test.ts#L157), [app.test.ts:171](test/app.test.ts#L171), live H1 |
 | No HTML from data | The page builds everything with `createElement` and text nodes, so a name or bio is always shown as text | [app-ui-helpers.ts:5-21](src/app-ui-helpers.ts#L5-L21) | [app.test.ts:178](test/app.test.ts#L178), [alumni.test.ts:466](test/alumni.test.ts#L466) |
-| Security headers | Every answer, errors included, carries HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer` and `Cache-Control: no-store`. The last keeps profiles and contact details out of caches | [index.ts:28-45](src/index.ts#L28-L45) | [docs-and-lab.test.ts:105](test/docs-and-lab.test.ts#L105), [red-green](evidence/tests/red-green-security-headers.txt), live H2 to H5 |
-| HTTPS only | Browsers always use HTTPS here, because `.dev` is on their HSTS preload list. Other clients asking for `http://` get a 308 redirect to `https://` | [index.ts:29-35](src/index.ts#L29-L35) | [docs-and-lab.test.ts:123](test/docs-and-lab.test.ts#L123), live H6 |
+| Security headers | Every answer, errors included, carries HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer` and `Cache-Control: no-store`. The last keeps profiles and contact details out of caches | [index.ts:30-53](src/index.ts#L30-L53) | [docs-and-lab.test.ts:105](test/docs-and-lab.test.ts#L105), [red-green](evidence/tests/red-green-security-headers.txt), live H2 to H5 |
+| HTTPS only | Browsers always use HTTPS here, because `.dev` is on their HSTS preload list. Other clients asking for `http://` get a 308 redirect to `https://` | [index.ts:30-36](src/index.ts#L30-L36) | [docs-and-lab.test.ts:123](test/docs-and-lab.test.ts#L123), live H6 |
 
 ### Integrations, secrets and errors
 
 | Control | What it does | Code | Proven by |
 |---|---|---|---|
-| Signed webhooks | Events & Clubs and Team 17 webhooks must carry an HMAC-SHA256 of the raw body, compared in constant time. A body changed after signing fails | [hmac.ts](src/lib/hmac.ts), [events-clubs.ts:34-39](src/routes/events-clubs.ts#L34-L39), [index.ts:127](src/index.ts#L127) | [events-clubs.test.ts:79-104](test/events-clubs.test.ts#L79-L104), live W1 to W3 |
+| Signed webhooks | Events & Clubs and Team 17 webhooks must carry an HMAC-SHA256 of the raw body, compared in constant time. A body changed after signing fails | [hmac.ts](src/lib/hmac.ts), [events-clubs.ts:34-39](src/routes/events-clubs.ts#L34-L39), [index.ts:139](src/index.ts#L139) | [events-clubs.test.ts:79-104](test/events-clubs.test.ts#L79-L104), live W1 to W3 |
 | Replays stored once | A retried webhook with the same event ID isn't stored twice | [events-clubs.ts:57-65](src/routes/events-clubs.ts#L57-L65), [0001_init.sql:10](migrations/0001_init.sql#L10) | [events-clubs.test.ts:56](test/events-clubs.test.ts#L56), [events-clubs.test.ts:66](test/events-clubs.test.ts#L66) |
 | Partner data checked | Each Team 17 listing is checked against their contract, and broken ones are skipped. Their call has a 10-second limit. Our query is checked before we call them, and we send them no personal data, only the search filters | [partner-internships.ts:78-90](src/routes/partner-internships.ts#L78-L90), [partner-internships.ts:116-142](src/routes/partner-internships.ts#L116-L142) | [partner-internships.test.ts:118-185](test/partner-internships.test.ts#L118-L185) |
 | Public counts, no profiles | `GET /api/mentors` is open to other teams' websites with no sign-in, so it returns counts and links only: no names, IDs or contact details | [partner-mentors.ts](src/routes/partner-mentors.ts) | [partner-mentors.test.ts](test/partner-mentors.test.ts) |
@@ -126,6 +126,7 @@ Mapped to the [OWASP Top 10 (2021)](https://owasp.org/Top10/).
 | 7 | **The web app keeps its token in `sessionStorage`.** A script running in the page could read it. The CSP is what stops such scripts, and the token is gone when the tab closes | Low | Revisit when Identity arrives |
 | 8 | **Live secrets were shared in an AI assistant's chat** while deploying on 9 November (`JWT_SECRET`, `EVENTS_CLUBS_WEBHOOK_SECRET`, `DEMO_PASSCODE`) | Medium | Replace all three with `wrangler secret put` after the evaluation. From now on, type secrets straight into wrangler |
 | 9 | **Data location not checked** (PDPA section 28) | Low today: fictional data only | Check before real data goes in |
+| 10 | **Personal-email sign-up has no email provider or rate limit.** `POST /auth/alumni/register` is public, so claims could be flooded. Sign-in codes are only returned to demo-passcode holders, and a demo admin can approve claims | Low today: claims hold no access until approved, and codes are single-use, 15-minute and stored as hashes | Connect an email provider, drop `demo_code`, rate-limit registration, and limit approval to Association accounts |
 
 ## 5. Check it yourself
 
