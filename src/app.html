@@ -82,6 +82,26 @@
     width: 100%; padding: 9px 11px; font: inherit; color: var(--ink); background: var(--white); border: 1px solid #b6c5bc; border-radius: 6px;
   }
   input[type="text"], input[type="number"], input[type="email"], input[type="url"], input[type="password"], select { min-height: 44px; }
+  input[type="text"]:hover, input[type="number"]:hover, input[type="email"]:hover, input[type="url"]:hover, input[type="password"]:hover, select:hover, textarea:hover { border-color: #8fa99a; }
+  /* Safari draws its own select, half height and ignoring padding. Drawing our own keeps every
+     field the same height and look in every browser. */
+  select {
+    -webkit-appearance: none; appearance: none; padding-right: 36px; cursor: pointer;
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231b4332' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 13px center / 12px 8px;
+  }
+  input.search-input {
+    padding-left: 38px;
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Ccircle cx='7' cy='7' r='5' fill='none' stroke='%2356655d' stroke-width='1.7'/%3E%3Cpath d='M11 11l3.5 3.5' stroke='%2356655d' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 13px center / 16px 16px;
+  }
+  /* An on/off switch: the real checkbox stays for keyboard and screen readers, the track is drawn. */
+  .toggle { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin: 0; font-weight: 400; cursor: pointer; white-space: nowrap; }
+  .toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .track { position: relative; flex: none; width: 40px; height: 24px; border-radius: 999px; background: #c3d1c8; transition: background-color .15s; }
+  .track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--white); box-shadow: 0 1px 2px rgba(19, 41, 31, .3); transition: transform .15s; }
+  .toggle:hover .track { background: #aebfb4; }
+  .toggle input:checked + .track { background: var(--pine); }
+  .toggle input:checked + .track::after { transform: translateX(16px); }
+  .toggle input:focus-visible + .track { outline: 3px solid var(--gold); outline-offset: 2px; }
   textarea { min-height: 120px; resize: vertical; }
   .field { margin-bottom: 16px; }
   .field-error { margin-top: 4px; color: var(--danger); font-size: .875rem; }
@@ -122,10 +142,8 @@
   .topics .chips { gap: 8px; }
   .topics .pick span { padding: 7px 15px; font-size: .9375rem; }
   .topics .pick span:hover { border-color: var(--leaf); }
-  .filter-row { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1.7fr) minmax(0, 1.1fr) minmax(0, .8fr) auto; gap: 12px 16px; align-items: end; padding: 16px 22px 18px; border-top: 1px solid var(--line); }
+  .filter-row { display: grid; grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.7fr) minmax(0, 1.1fr) minmax(124px, .75fr) auto; gap: 12px 16px; align-items: end; padding: 16px 22px 18px; border-top: 1px solid var(--line); }
   .filter-row .field { margin: 0; }
-  .filter-row .check { min-height: 44px; margin: 0; align-items: center; white-space: nowrap; }
-  .filter-row .check input { margin: 0; }
   .sheet { background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
   .sheet[aria-busy="true"] { opacity: .6; }
   .sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 13px 22px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .9375rem; }
@@ -143,10 +161,6 @@
   .mentor .chips { margin-top: 10px; }
   .chip-match { background: var(--pine); color: var(--white); }
   .mentor-act { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right; }
-  .starters { margin-bottom: 16px; }
-  .starters .hint { margin: 0 0 8px; }
-  .starter { padding: 5px 12px; font: inherit; font-size: .875rem; text-align: left; color: var(--pine); background: var(--white); border: 1px dashed #9fbfab; border-radius: 999px; cursor: pointer; }
-  .starter:hover { background: var(--mint-soft); border-style: solid; }
   .loading { padding: 28px 22px; color: var(--muted); }
   .person, .req { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; padding: 18px 22px; border-bottom: 1px solid var(--line); }
   .person:last-child, .req:last-child { border-bottom: 0; }
@@ -169,31 +183,84 @@
   .source code { font-size: .8125rem; overflow-wrap: anywhere; }
   .retry { margin-top: 12px; }
 
-  /* Profile */
-  .profile { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: start; }
   .card { padding: 26px 28px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
   .card h2 { margin-bottom: 8px; }
   .card > p + p, .card > p + .actions, .card > .alert + p { margin-top: 10px; }
-  .lede { margin-top: 4px; font-size: 1.125rem; }
-  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin: 22px 0; }
-  .facts dt { color: var(--muted); }
-  .facts dd { margin: 0; }
-  .bio { max-width: 65ch; margin-bottom: 18px; white-space: pre-line; }
-  .side { display: flex; flex-direction: column; gap: 20px; }
   .quote { margin: 12px 0; padding: 4px 0 4px 14px; border-left: 3px solid var(--mint); white-space: pre-line; }
 
-  /* Consent: the contact details and who may see them */
+  /* Profile: the person sits on the page itself; the one raised panel beside them is the path from
+     asking, through their answer, to the contact details they choose to share. */
+  .profile { display: grid; grid-template-columns: minmax(0, 1fr) 410px; gap: 48px; align-items: start; }
+  .intro { display: grid; grid-template-columns: 96px minmax(0, 1fr); grid-template-areas: "mono head" ". body"; gap: 0 26px; }
+  .intro > .mono { grid-area: mono; width: 96px; height: 96px; font-size: 2.125rem; box-shadow: inset 0 0 0 1px #eadfb8; }
+  .intro-head { grid-area: head; padding-top: 6px; }
+  .intro-body { grid-area: body; }
+  .intro h1 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 2.625rem; line-height: 1.08; letter-spacing: -0.015em; }
+  .demo-tag { padding: 2px 8px; border: 1px solid #c9d5ce; border-radius: 4px; font-family: var(--sans); font-size: .75rem; font-weight: 600; line-height: 1.4; letter-spacing: 0; color: var(--muted); }
+  .job { margin-top: 8px; font-size: 1.1875rem; }
+  .availability { display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; color: var(--leaf); font-size: .9375rem; font-weight: 600; }
+  .availability::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px var(--mint); }
+  .availability.paused { color: var(--muted); }
+  .availability.paused::before { box-shadow: 0 0 0 4px #e3e9e5; }
+  .jump { display: none; }
+  .words { max-width: 34em; margin-top: 34px; padding: 2px 0 2px 22px; border-left: 3px solid var(--gold); font-family: var(--serif); font-size: 1.375rem; line-height: 1.5; color: var(--pine); white-space: pre-line; overflow-wrap: anywhere; }
+  .helps { margin-top: 34px; }
+  .helps h2 { margin-bottom: 12px; font-size: 1.1875rem; }
+  .helps .chips { gap: 8px; }
+  .helps .chip { padding: 6px 14px; font-size: .9375rem; }
+  .background { max-width: 34em; margin-top: 34px; }
+  .background div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 0 16px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .background dt { color: var(--muted); }
+  .background dd { margin: 0; }
+
+  .ask { padding: 26px 28px 28px; background: var(--white); border: 1px solid var(--line); border-top: 4px solid var(--pine); border-radius: 12px; box-shadow: 0 18px 40px -26px rgba(19, 41, 31, .45); }
+  .ask h2 { font-size: 1.375rem; text-wrap: balance; }
+  .ask-intro { margin-top: 8px; color: var(--muted); }
+  .ask > .btn, .ask > .actions { margin-top: 18px; }
+  .ask-foot { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
+  /* The path: a numbered rail, because asking, answering and sharing really do happen in order. */
+  .path { margin: 22px 0 0; padding: 0; list-style: none; }
+  .step { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 0 14px; padding-bottom: 24px; }
+  .step:last-child { padding-bottom: 0; }
+  .step::before { content: ''; position: absolute; left: 14px; top: 34px; bottom: 4px; width: 2px; border-radius: 1px; background: var(--line); }
+  .step:last-child::before { display: none; }
+  .step-done::before { background: var(--leaf); }
+  .node { display: grid; place-items: center; width: 30px; height: 30px; border: 2px solid #b6c5bc; border-radius: 50%; background: var(--white); color: var(--muted); font-size: .875rem; font-weight: 700; }
+  .step-now .node { border-color: var(--pine); background: var(--pine); color: var(--white); box-shadow: 0 0 0 4px var(--mint); }
+  .step-done .node { border-color: var(--leaf); background: var(--leaf); color: var(--white); }
+  .step-title { align-self: center; font-weight: 700; line-height: 1.35; text-wrap: balance; }
+  .step-later .step-title { color: var(--muted); font-weight: 600; }
+  .step-body { grid-column: 2; margin-top: 6px; }
+  .step-note { color: var(--muted); font-size: .9375rem; }
+  .step-body > * + * { margin-top: 10px; }
+  .step-body .quote { margin: 10px 0 12px; font-size: .9375rem; }
+  .step-body textarea { min-height: 136px; }
+  .step-body .field { margin-bottom: 0; }
+  .step-body .counter { margin-top: 2px; }
+  .step-body .actions .btn { flex: 1 1 auto; }
+  .step-body form .actions, .step-body form .alert { margin-top: 10px; margin-bottom: 0; }
+  .starters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .starters-label { flex-basis: 100%; color: var(--muted); font-size: .875rem; }
+  .starter { padding: 5px 12px; font: inherit; font-size: .875rem; text-align: left; color: var(--pine); background: var(--white); border: 1px dashed #9fbfab; border-radius: 999px; cursor: pointer; }
+  .starter:hover { background: var(--mint-soft); border-style: solid; }
+  /* Contact details: before acceptance only their names show, locked; after, the shared values. */
+  .locks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .locks li { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--muted); font-size: .875rem; }
+  .locks .icon { width: 15px; height: 15px; }
+  .vault { border: 1px solid var(--line); border-radius: 8px; }
+  .vault li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 0 10px; padding: 10px 12px; border-top: 1px solid var(--line); }
+  .vault li:first-child { border-top: 0; }
+  .vault .icon { grid-row: span 2; margin-top: 3px; color: var(--muted); }
+  .vault .shared { background: #fdfbf3; }
+  .vault .shared .icon { color: #9a7a12; }
+  .vault-name { font-size: .875rem; color: var(--muted); }
+  .vault-value { font-size: .9375rem; font-weight: 500; overflow-wrap: anywhere; }
+  .vault-state { color: var(--muted); font-size: .9375rem; }
+
+  /* Consent, in the profile editor: the contact details and who may see them */
   .consent { padding: 24px 26px; background: var(--white); border: 1px solid var(--line); border-left: 5px solid var(--gold); border-radius: 4px 10px 10px 4px; }
   .consent h2 { margin-bottom: 6px; }
   .consent-intro { color: var(--muted); font-size: .9375rem; margin-bottom: 12px; }
-  .consent-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 2px 10px; padding: 11px 0; border-top: 1px solid var(--line); }
-  .consent-list .icon { grid-row: span 2; margin-top: 3px; color: var(--muted); }
-  .consent-list .shared .icon { color: var(--gold); }
-  .consent-name { font-weight: 600; }
-  .consent-value { overflow-wrap: anywhere; }
-  .consent-state { color: var(--muted); font-size: .8125rem; }
-  .consent-list .shared .consent-state { color: var(--leaf); font-weight: 600; }
-  .consent-foot { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8125rem; }
 
   /* Requests */
   .section-title { margin: 32px 0 12px; font-size: 1.25rem; }
@@ -250,6 +317,10 @@
     .profile, .signin-row { grid-template-columns: 1fr; }
     .filter-row { grid-template-columns: 1fr 1fr; }
     h1, .tagline { font-size: 1.75rem; }
+    /* One column: the request panel moves under the profile, so a button at the top leads to it. */
+    .profile { gap: 32px; }
+    .intro h1 { font-size: 2.125rem; }
+    .jump { display: inline-block; margin-top: 16px; }
   }
   @media (max-width: 560px) {
     main { padding: 20px 16px 48px; }
@@ -268,12 +339,20 @@
     .side-col { flex-direction: row; flex-wrap: wrap; align-items: center; text-align: left; }
     .two, .contact-row { grid-template-columns: 1fr; }
     .share { padding-top: 4px; }
-    .card, .consent { padding: 20px; }
+    .card, .consent, .ask { padding: 20px; }
+    .intro { grid-template-columns: 60px minmax(0, 1fr); grid-template-areas: "mono head" "body body"; gap: 0 16px; }
+    .intro > .mono { width: 60px; height: 60px; font-size: 1.375rem; }
+    .intro-head { padding-top: 0; }
+    .intro h1 { font-size: 1.75rem; }
+    .job { font-size: 1.0625rem; }
+    .words { margin-top: 24px; padding-left: 16px; font-size: 1.1875rem; }
+    .helps, .background { margin-top: 26px; }
+    .background div { grid-template-columns: 84px minmax(0, 1fr); }
     .sheet-head, .loading, .empty { padding-left: 16px; padding-right: 16px; }
     .actions .btn { flex: 1 1 auto; }
   }
   @media (prefers-reduced-motion: reduce) {
-    * { scroll-behavior: auto !important; transition: none !important; }
+    *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
   }
 </style>
 </head>
@@ -669,12 +748,14 @@
       })
       .catch(() => {});
 
-    const keyword = field('f-role', 'Job title', h('input', { type: 'text', value: filters.role, maxlength: 100, placeholder: 'Engineer, พยาบาล, အင်ဂျင်နီယာ' }));
+    const keyword = field('f-role', 'Job title', h('input', { type: 'text', class: 'search-input', value: filters.role, maxlength: 100, placeholder: 'Engineer, พยาบาล, အင်ဂျင်နီယာ' }));
     const faculty = field('f-faculty', 'School', select([['', 'Any school'], ...reference.faculties.map((f) => [f.id, f.name])], filters.faculty));
     const country = field('f-country', 'Country they live in', select([['', 'Any country'], ...Object.entries(COUNTRIES).map(([code, name]) => [code, name])], filters.country));
-    const year = field('f-year', 'Graduation year', h('input', { type: 'number', min: 1998, max: CURRENT_YEAR + 1, inputmode: 'numeric', value: filters.year, placeholder: 'Any year' }));
+    // A list, not a number box: no half-typed years, and it matches the other filters.
+    const years = Array.from({ length: CURRENT_YEAR - 1998 + 1 }, (_, i) => String(CURRENT_YEAR - i));
+    const year = field('f-year', 'Class of', select([['', 'Any year'], ...years.map((y) => [y, y])], filters.year));
     const interestBoxes = reference.interests.map((name) => h('input', { type: 'checkbox', value: name, checked: filters.interests.includes(name) }));
-    const open = h('input', { type: 'checkbox', checked: filters.open });
+    const open = h('input', { type: 'checkbox', role: 'switch', checked: filters.open });
     const results = h('section', { class: 'sheet', 'aria-label': 'Results' });
     // Only the count is announced, so a screen reader hears "3 alumni found", not the whole list.
     const count = h('p', { class: 'count', 'aria-live': 'polite', tabindex: '-1' });
@@ -736,12 +817,7 @@
     }
     keyword.control.addEventListener('input', applySoon);
     keyword.control.addEventListener('compositionend', applySoon);
-    // A year is only searched once it's empty or a whole year in range, so "20" isn't sent as one.
-    year.control.addEventListener('input', () => {
-      const value = year.control.value.trim();
-      if (!value || (/^\d{4}$/.test(value) && year.control.checkValidity())) applySoon();
-    });
-    for (const control of [faculty.control, country.control, open, ...interestBoxes]) control.addEventListener('change', apply);
+    for (const control of [faculty.control, country.control, year.control, open, ...interestBoxes]) control.addEventListener('change', apply);
 
     const isDefault = () => !filters.role && !filters.faculty && !filters.country && !filters.year
       && !filters.interests.length && filters.open === (role === 'student');
@@ -863,7 +939,7 @@
     h('div', { class: 'finder-topics' }, topics),
     h('div', { class: 'filter-row' },
       keyword.wrap, faculty.wrap, country.wrap, year.wrap,
-      h('div', { class: 'field' }, h('label', { class: 'check' }, open, 'Only taking mentees'))));
+      h('div', { class: 'field' }, h('label', { class: 'toggle' }, open, h('span', { class: 'track', 'aria-hidden': 'true' }), 'Only taking mentees'))));
 
     search(true);
     const heads = {
@@ -886,6 +962,8 @@
   }
 
   // ── One alumni's profile ───────────────────────────────────────────────────────────────────
+  // On the left, who this alumni is. On the right, one panel that follows a student from writing
+  // a request, through the alumni's answer, to the contact details the alumni chose to share.
   const CONTACT = [
     ['email', 'Email'],
     ['line', 'LINE'],
@@ -895,33 +973,50 @@
   function contactValue(kind, value) {
     if (kind === 'email') return h('a', { href: `mailto:${value}` }, value);
     if (kind === 'linkedin' && /^https:\/\/([a-z]{2,3}\.)?linkedin\.com\//i.test(value)) {
-      return h('a', { href: value, target: '_blank', rel: 'noopener noreferrer' }, value);
+      return h('a', { href: value, target: '_blank', rel: 'noopener noreferrer' }, value.replace(/^https:\/\/(www\.)?/i, ''));
     }
     return value;
   }
 
-  function consentPanel(profile, role) {
-    const name = profile.display_name;
-    const contact = profile.contact;
-    if (role !== 'student') {
-      return h('section', { class: 'consent', 'aria-labelledby': 'contact-title' },
-        h('h2', { id: 'contact-title' }, 'Contact details'),
-        h('p', { class: 'consent-intro' }, `Only students ${name} has accepted can see contact details, and only the ones ${name} chooses to share.`));
+  function tick() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for (const [name, value] of Object.entries({ viewBox: '0 0 16 16', width: 14, height: 14, fill: 'none', stroke: 'currentColor', 'stroke-width': 2.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })) {
+      svg.setAttribute(name, String(value));
     }
-    const intro = contact
-      ? `${name} accepted your request. These are the details ${name} has agreed to share with you.`
-      : `Hidden until ${name} accepts your request. Even then, you only see the details ${name} chooses to share.`;
-    return h('section', { class: 'consent', 'aria-labelledby': 'contact-title' },
-      h('h2', { id: 'contact-title' }, 'Contact details'),
-      h('p', { class: 'consent-intro' }, intro),
-      h('ul', { class: 'consent-list' }, CONTACT.map(([kind, label]) => {
-        const value = contact?.[kind];
-        return h('li', { class: value ? 'shared' : 'private' },
-          icon(value ? 'open' : 'closed'),
-          h('span', null, h('span', { class: 'consent-name' }, label), value ? ': ' : null, value ? h('span', { class: 'consent-value' }, contactValue(kind, value)) : null),
-          h('span', { class: 'consent-state' }, value ? 'Shared with you' : contact ? 'Kept private' : 'Not shared yet'));
-      })),
-      contact ? h('p', { class: 'consent-foot' }, `${name} can stop sharing any of these at any time. A record is kept of what was shared with you and when.`) : null);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M3.5 8.5l3 3 6-7');
+    svg.append(path);
+    return svg;
+  }
+
+  // One step on the path: done, now or later. Screen readers hear which steps are done and which
+  // one is current, not just the numbers.
+  function step(state, number, title, ...body) {
+    return h('li', { class: `step step-${state}`, 'aria-current': state === 'now' ? 'step' : null },
+      h('span', { class: 'node', 'aria-hidden': 'true' }, state === 'done' ? tick() : String(number)),
+      h('p', { class: 'step-title' }, state === 'done' ? h('span', { class: 'sr-only' }, 'Done: ') : null, title),
+      body.length ? h('div', { class: 'step-body' }, body) : null);
+  }
+
+  // Before a student is accepted, they see which kinds of contact detail exist, never the values.
+  function lockedContacts() {
+    return h('ul', { class: 'locks', 'aria-label': 'Hidden for now' }, CONTACT.map(([, label]) => h('li', null, icon('closed'), label)));
+  }
+
+  function sharedContacts(contact) {
+    return h('ul', { class: 'vault' }, CONTACT.map(([kind, label]) => {
+      const value = contact?.[kind];
+      return h('li', { class: value ? 'shared' : null },
+        icon(value ? 'open' : 'closed'),
+        h('span', { class: 'vault-name' }, label),
+        value
+          ? h('span', { class: 'vault-value' }, contactValue(kind, value))
+          : h('span', { class: 'vault-state' }, 'Kept private'));
+    }));
+  }
+
+  function panel(title, ...content) {
+    return h('section', { class: 'ask', 'aria-labelledby': 'ask-title' }, h('h2', { id: 'ask-title' }, title), content);
   }
 
   async function profileView(id) {
@@ -932,87 +1027,128 @@
       return null;
     }
 
-    const name = profile.display_name;
-    const side = [consentPanel(profile, role)];
-    if (role === 'student') side.push(await requestPanel(profile));
-    if (role === 'admin') {
-      side.push(h('section', { class: 'card' },
-        h('h2', null, 'Admin'),
-        h('p', null, 'Turning off a profile removes it from search and stops new requests. Nothing is deleted.'),
+    // Seeded alumni end in "(demo)". The name shows once with a tag, and sentences use it without.
+    const name = withoutDemo(profile.display_name);
+    const isDemo = name !== profile.display_name;
+    let side;
+    if (role === 'student') side = await askPanel(profile, name);
+    else if (role === 'admin') {
+      side = panel('Turn off this profile',
+        h('p', { class: 'ask-intro' }, 'It leaves search and stops taking new requests. Nothing is deleted.'),
         h('div', { class: 'actions' }, h('button', {
           class: 'btn btn-danger',
           type: 'button',
           onclick: () => deactivate(profile, () => go('#/discover')),
-        }, 'Turn off profile'))));
+        }, 'Turn off profile')),
+        h('p', { class: 'ask-foot' }, 'Admins never see contact details.'));
+    } else {
+      side = panel('Contact details',
+        h('p', { class: 'ask-intro' }, `Only students ${name} has accepted see these, and only the ones ${name} chooses to share.`),
+        h('div', { class: 'ask-foot' }, lockedContacts()));
     }
 
-    const facts = [
+    // On one column the panel sits under the profile, so a student gets a way straight to it.
+    const composer = side.querySelector('textarea');
+    const jump = composer ? h('button', {
+      class: 'btn jump',
+      type: 'button',
+      onclick: () => {
+        composer.scrollIntoView({ block: 'center' });
+        composer.focus({ preventScroll: true });
+      },
+    }, 'Ask for mentoring') : null;
+
+    // Topics the student picked in Find a mentor come first and stand out, as they do in the list.
+    const picked = new Set(filters.interests);
+    const interests = [...profile.interests].sort((x, y) => picked.has(y) - picked.has(x));
+    const open = profile.is_open_to_mentoring;
+    const background = [
       ['School', facultyNames.get(profile.faculty_id) ?? profile.faculty],
-      ['Graduated', profile.grad_year],
+      ['Class of', profile.grad_year],
       ['Lives in', placeLine(profile) || 'Not given'],
-      ['Mentoring', profile.is_open_to_mentoring ? 'Taking mentees' : 'Not taking mentees right now'],
     ];
     return h('div', null,
-      h('a', { class: 'back', href: '#/discover' }, 'Back to the directory'),
+      h('a', { class: 'back', href: '#/discover' }, role === 'student' ? 'Back to Find a mentor' : 'Back to the alumni directory'),
       h('div', { class: 'profile' },
-        h('article', { class: 'card' },
-          h('h1', null, name),
-          h('p', { class: 'lede' }, jobLine(profile)),
-          h('dl', { class: 'facts' }, facts.map(([term, value]) => [h('dt', null, term), h('dd', null, value)])),
-          profile.bio ? h('p', { class: 'bio' }, profile.bio) : null,
-          profile.interests.length ? h('ul', { class: 'chips', 'aria-label': 'Interests' }, profile.interests.map((interest) => h('li', { class: 'chip' }, interest))) : null),
-        h('div', { class: 'side' }, side)));
+        h('article', { class: 'intro', 'aria-labelledby': 'profile-name' },
+          h('span', { class: 'mono mono-alumni', 'aria-hidden': 'true' }, initials(name)),
+          h('div', { class: 'intro-head' },
+            h('h1', { id: 'profile-name' }, name, isDemo ? h('span', { class: 'demo-tag' }, 'Demo profile') : null),
+            h('p', { class: 'job' }, withoutDemo(jobLine(profile))),
+            h('p', { class: open ? 'availability' : 'availability paused' }, open ? 'Taking mentees' : 'Not taking mentees right now'),
+            jump),
+          h('div', { class: 'intro-body' },
+            profile.bio ? h('blockquote', { class: 'words' }, profile.bio) : null,
+            interests.length ? h('section', { class: 'helps', 'aria-labelledby': 'helps-title' },
+              h('h2', { id: 'helps-title' }, 'Can help with'),
+              h('ul', { class: 'chips' }, interests.map((interest) => picked.has(interest)
+                ? h('li', { class: 'chip chip-match' }, interest, h('span', { class: 'sr-only' }, ', one of your picks'))
+                : h('li', { class: 'chip' }, interest)))) : null,
+            h('dl', { class: 'background' }, background.map(([term, value]) => h('div', null, h('dt', null, term), h('dd', null, value)))))),
+        side));
   }
 
-  async function requestPanel(profile) {
-    const name = profile.display_name;
+  async function askPanel(profile, name) {
     const cameToAsk = askFor === profile.id;
     askFor = null;
     const mine = (await api('GET', '/mentoring-requests/me?limit=50')).data.filter((r) => r.alumni_id === profile.id);
     const connected = mine.find((r) => r.connection?.status === 'active');
     const pending = mine.find((r) => r.status === 'pending');
+    const myRequests = () => h('a', { href: '#/requests' }, 'My requests');
 
     if (connected) {
-      return h('section', { class: 'card' },
-        h('h2', null, 'You’re connected'),
-        h('p', null, `Since ${when(connected.connection.created_at)}.`),
-        h('div', { class: 'actions' }, h('button', {
-          class: 'btn btn-danger',
+      return panel(`You’re connected with ${name}`,
+        h('ol', { class: 'path' },
+          step('done', 1, 'Request sent', h('p', { class: 'step-note' }, when(connected.created_at))),
+          step('done', 2, `${name} accepted`, h('p', { class: 'step-note' }, `Connected since ${when(connected.connection.created_at)}`)),
+          step('now', 3, 'Contact details',
+            sharedContacts(profile.contact),
+            h('p', { class: 'step-note' }, `${name} can stop sharing any of these at any time. A record is kept of what was shared with you and when.`))),
+        h('div', { class: 'ask-foot' }, h('button', {
+          class: 'btn btn-danger btn-small',
           type: 'button',
           onclick: () => endConnection(connected, name),
         }, 'End connection')));
     }
     if (pending) {
-      return h('section', { class: 'card' },
-        h('h2', null, 'Request sent'),
-        h('p', null, `Sent ${when(pending.created_at)}. ${name} hasn’t answered yet.`),
-        h('blockquote', { class: 'quote' }, pending.message),
-        h('div', { class: 'actions' }, h('button', {
-          class: 'btn btn-quiet',
-          type: 'button',
-          onclick: () => answer(pending, 'cancelled', 'Request cancelled.'),
-        }, 'Cancel request')));
+      return panel(`Your request to ${name}`,
+        h('ol', { class: 'path' },
+          step('done', 1, 'Request sent',
+            h('p', { class: 'step-note' }, when(pending.created_at)),
+            h('blockquote', { class: 'quote' }, pending.message),
+            h('button', {
+              class: 'btn btn-quiet btn-small',
+              type: 'button',
+              onclick: () => answer(pending, 'cancelled', 'Request cancelled.'),
+            }, 'Cancel request')),
+          step('now', 2, `Waiting for ${name} to answer`, h('p', { class: 'step-note' }, 'The answer shows here and in ', myRequests(), '.')),
+          step('later', 3, 'Contact details unlock', lockedContacts())));
     }
     if (!profile.is_open_to_mentoring) {
-      return h('section', { class: 'card' },
-        h('h2', null, 'Not taking mentees'),
-        h('p', null, `${name} has paused mentoring. Try another alumni from the directory.`));
+      return panel('Requests are closed for now',
+        h('p', { class: 'ask-intro' }, `${name} has paused mentoring. Other alumni can help with the same topics.`),
+        h('a', { class: 'btn btn-quiet', href: '#/discover' }, 'Find another mentor'));
     }
 
     const message = h('textarea', { maxlength: 2000, required: true, rows: 6 });
-    const messageField = field('message', 'What do you want help with?', message, `Say what year you’re in, what you’re aiming for, and what you’d like to ask. ${name} reads this before deciding.`);
+    // Alumni-mentoring guides agree on a short message that says who you are, why this person, and
+    // asks something only they can answer. Mentors get many requests, so a personal one stands out.
+    const messageField = field('message', `Your message to ${name}`, message, `Keep it short: who you are, why you picked ${name}, and one question only they can answer.`);
+    // The step title above already says "Write to …", so the label is there for screen readers only.
+    messageField.wrap.querySelector('label').className = 'sr-only';
     const counter = h('p', { class: 'counter', 'aria-hidden': 'true' }, '0 / 2000');
     message.addEventListener('input', () => { counter.textContent = `${message.value.length} / 2000`; });
 
     // Not knowing what to ask is the most common reason students never write to a mentor, so offer a
     // first sentence built from this person's own profile. It only fills the box; the student edits it.
-    const plainName = withoutDemo(name);
+    // A topic the student picked in Find a mentor is the one offered.
     const job = profile.job_title && withoutDemo([profile.job_title, profile.company].filter(Boolean).join(' at '));
     const place = placeLine(profile);
+    const topic = profile.interests.find((interest) => filters.interests.includes(interest)) ?? profile.interests[0];
     const starters = [
-      job && ['Ask about their career', `Hi ${plainName}, I’m a student at MFU. I’d like to hear how you got to your role as ${job}, and what you’d focus on if you were a student again.`],
-      profile.interests[0] && [`Ask about ${profile.interests[0]}`, `Hi ${plainName}, I’m a student at MFU and I’m interested in ${profile.interests[0]}. Could we have a short chat about how to get started and what to learn first?`],
-      place && [`Ask about life in ${profile.city || place}`, `Hi ${plainName}, I’m a student at MFU. I’d like to ask what it’s like to live and work in ${place}, and how you found your first job there.`],
+      job && ['Their career', `Hi ${name}, I’m a student at MFU. I’d like to hear how you got to your role as ${job}, and what you’d focus on if you were a student again.`],
+      topic && [topic, `Hi ${name}, I’m a student at MFU and I’m interested in ${topic}. Could we have a short chat about how to get started and what to learn first?`],
+      place && [`Life in ${profile.city || place}`, `Hi ${name}, I’m a student at MFU. I’d like to ask what it’s like to live and work in ${place}, and how you found your first job there.`],
     ].filter(Boolean);
     let lastStarter = '';
     function useStarter(text) {
@@ -1025,9 +1161,9 @@
       message.setSelectionRange(message.value.length, message.value.length);
     }
     const starterBox = starters.length
-      ? h('div', { class: 'starters' },
-        h('p', { class: 'hint' }, 'Not sure what to write? Start with one of these, then add your year and what you’re aiming for.'),
-        h('div', { class: 'actions' }, starters.map(([label, text]) => h('button', { class: 'starter', type: 'button', onclick: () => useStarter(text) }, label))))
+      ? h('div', { class: 'starters', role: 'group', 'aria-labelledby': 'starters-label' },
+        h('span', { class: 'starters-label', id: 'starters-label' }, 'Not sure how to begin? Pick a draft, then make it yours:'),
+        starters.map(([label, text]) => h('button', { class: 'starter', type: 'button', onclick: () => useStarter(text) }, label)))
       : null;
     // Arrived from a card's "Ask for mentoring": put the cursor in the message box.
     if (cameToAsk) {
@@ -1039,14 +1175,14 @@
     }
     const errorBox = h('p', { class: 'alert', role: 'alert', hidden: true });
     const submit = h('button', { class: 'btn', type: 'submit' }, 'Send request');
-    return h('form', {
-      class: 'card',
+    const form = h('form', {
       novalidate: true,
+      'aria-labelledby': 'ask-title',
       onsubmit: async (event) => {
         event.preventDefault();
         errorBox.hidden = true;
         if (message.value.trim().length < 10) {
-          errorBox.textContent = 'Write at least 10 characters, so the alumni knows what you need.';
+          errorBox.textContent = `Write at least 10 characters, so ${name} knows what you need.`;
           errorBox.hidden = false;
           message.focus();
           return;
@@ -1064,12 +1200,19 @@
         }
       },
     },
-    h('h2', null, `Ask ${name} for mentoring`),
     starterBox,
     messageField.wrap,
     counter,
     errorBox,
     h('div', { class: 'actions' }, submit));
+
+    return panel(`Ask ${name} for mentoring`,
+      h('ol', { class: 'path' },
+        step('now', 1, `Write to ${name}`, form),
+        step('later', 2, `${name} answers`, h('p', { class: 'step-note' }, 'The answer shows here and in ', myRequests(), '.')),
+        step('later', 3, 'Contact details unlock',
+          lockedContacts(),
+          h('p', { class: 'step-note' }, `You see only the ones ${name} chooses to share.`))));
   }
 
   async function answer(request, status, done) {

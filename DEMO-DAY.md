@@ -35,10 +35,10 @@ the next person is one click on their name.
 |---|---|---|---|
 | 1 | **Ko Min** (student) | Type the passcode, then click **Ko Min** | "Until MFU's Identity service publishes its login, a demo sign-in stands in for it." |
 | 2 | Ko Min | Type `พยาบาล` in Job title. The list updates as you type, no button needed | "Search works in Thai and Burmese." One result: Nattaya Srisuk (FR-01) |
-| 3 | Ko Min | Open **Nattaya Srisuk** | "Her contact details say *Not shared yet*. They're hidden until she accepts." (BR-01) |
-| 4 | Ko Min | Write what you want help with, then **Send request** | "One pending request per alumni and five in total, checked by the database." (BR-05, BR-08) |
+| 3 | Ko Min | Open **Nattaya Srisuk** | The panel on the right shows three steps. Step 3, *Contact details unlock*, shows Email, LINE and LinkedIn locked: "They're hidden until she accepts, and then he sees only the ones she shares." (BR-01) |
+| 4 | Ko Min | Click the **Healthcare** draft, add a line of your own, then **Send request**. The panel moves to step 2, *Waiting for Nattaya Srisuk to answer* | "One pending request per alumni and five in total, checked by the database." (BR-05, BR-08) |
 | 5 | **Nattaya Srisuk** (alumni) | **Requests to me**, then **Accept** | The message says "Connected with Ko Min. You shared your email and LINE." "Capacity, the connection, the reveal log and the event happen in one transaction." (FR-06) |
-| 6 | Ko Min | **My requests**, then **See contact details** | Email and LINE are *Shared with you*. LinkedIn is *Kept private*. "What he saw, and when, is now logged." (BR-10) |
+| 6 | Ko Min | **My requests**, then **See contact details** | Steps 1 and 2 are ticked. Email and LINE show their values, and LinkedIn says *Kept private*. "What he saw, and when, is now logged." (BR-10) |
 | 7 | Nattaya | **My profile**, untick the email's **Share with students I accept**, then **Save changes** | "She can stop sharing at any time." (BR-03) |
 | 8 | Ko Min | Open Nattaya again | Email is now *Kept private* |
 | 9 | Ko Min | **Internships** | Team 17's live listings, with their request ID at the bottom. The first load takes about 3 seconds, so start talking: "This comes from Team 17's API, through our server." (Requirement 3) |
@@ -59,7 +59,7 @@ through **Internships**, then **Find a mentor for this**.
 
 ### A visible change, deployed (rehearsed: about 20 seconds)
 
-1. Open [`src/app.html`](src/app.html#L634), line 634, the sign-in page's tagline. Change the text.
+1. Open [`src/app.html`](src/app.html#L713), line 713, the sign-in page's tagline. Change the text.
 2. Run it:
 
    ```bash

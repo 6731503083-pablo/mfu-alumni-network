@@ -49,7 +49,7 @@ two columns.
 | H2 | Search the job title "พยาบาล" | Nattaya Srisuk only | | |
 | H3 | Send Kyaw Zin Htet a request | "Request sent" | | |
 | H4 | Sign in as Kyaw Zin Htet and accept | "Connected with Su Myat…" | | |
-| H5 | Sign in as Su Myat and open Kyaw Zin Htet | Contact details "Shared with you" | | |
+| H5 | Sign in as Su Myat and open Kyaw Zin Htet | "You’re connected with Kyaw Zin Htet", with the shared contact details showing | | |
 | H6 | As Kyaw Zin Htet, switch email sharing off. As Su Myat, reload the profile | Email now "Kept private" | | |
 | H7 | Open Internships | Team 17's listings and a request ID | | |
 | H8 | Find a mentor for this on any listing | Directory filtered to that field | | |
