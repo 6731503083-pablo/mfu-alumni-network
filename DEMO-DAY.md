@@ -34,7 +34,7 @@ the next person is one click on their name.
 | # | Signed in as | Do | Say |
 |---|---|---|---|
 | 1 | **Ko Min** (student) | Type the passcode, then click **Ko Min** | "Until MFU's Identity service publishes its login, a demo sign-in stands in for it." |
-| 2 | Ko Min | Job title: `พยาบาล`, then **Search** | "Search works in Thai and Burmese." One result: Nattaya Srisuk (FR-01) |
+| 2 | Ko Min | Type `พยาบาล` in Job title. The list updates as you type, no button needed | "Search works in Thai and Burmese." One result: Nattaya Srisuk (FR-01) |
 | 3 | Ko Min | Open **Nattaya Srisuk** | "Her contact details say *Not shared yet*. They're hidden until she accepts." (BR-01) |
 | 4 | Ko Min | Write what you want help with, then **Send request** | "One pending request per alumni and five in total, checked by the database." (BR-05, BR-08) |
 | 5 | **Nattaya Srisuk** (alumni) | **Requests to me**, then **Accept** | The message says "Connected with Ko Min. You shared your email and LINE." "Capacity, the connection, the reveal log and the event happen in one transaction." (FR-06) |
@@ -59,7 +59,7 @@ through **Internships**, then **Find a mentor for this**.
 
 ### A visible change, deployed (rehearsed: about 20 seconds)
 
-1. Open [`src/app.html`](src/app.html#L600), line 600, the sign-in page's tagline. Change the text.
+1. Open [`src/app.html`](src/app.html#L634), line 634, the sign-in page's tagline. Change the text.
 2. Run it:
 
    ```bash
