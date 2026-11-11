@@ -1,0 +1,174 @@
+# BEFORE the fix: code at d7d7363, with the tests from fix commit d8c182d (test/alumni-verification.test.ts)
+# command: npx vitest run test/alumni-verification.test.ts --reporter=verbose -t "Demo powers"
+# run at 2026-11-11T15:21:14Z
+
+ RUN  v4.1.12 /private/tmp/claude-501/-Users-phyophyolay-Documents-MFU-Projects-platform/1dcb2de5-873a-40c7-ad03-c7aa35704c34/scratchpad/wt-demo-claims
+
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > stores a pending claim without signing anyone in
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student address, which closes after graduation
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses the student domain in capitals too
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student ID that is not 10 digits
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year in the future
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year before MFU
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an empty name
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an unknown faculty
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a field the API does not take
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a second open claim for the same email or student ID
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > accepts a new claim after the last one was rejected
+ ↓ test/alumni-verification.test.ts > Alumni Association review > only lets admins see the queue
+ ↓ test/alumni-verification.test.ts > Alumni Association review > lists pending claims with what the Association needs to check them
+ ↓ test/alumni-verification.test.ts > Alumni Association review > approves a claim and gives it an ID that cannot collide with Identity
+ ↓ test/alumni-verification.test.ts > Alumni Association review > refuses to review a claim twice
+ ↓ test/alumni-verification.test.ts > Alumni Association review > answers 404 for an unknown claim
+ ↓ test/alumni-verification.test.ts > Alumni Association review > does not let an alumni approve their own claim
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > says the same for a real email with an account as for one without
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > refuses an email that is not valid
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > gives no code to a claim that is still pending
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > stores only a hash of the code
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > signs in once with the code, then refuses it
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > lets only one of two requests with the same code through
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > refuses an expired code
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > refuses a made-up code
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > takes an approved alumni from sign-up to a profile students can find
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > never returns a code for a real email 6ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > shows a demo admin demo claims only 3ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > lets a demo admin review demo claims, and answers 404 for a real one 4ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > marks a demo claim's token as demo, and a real one's not 11ms
+ × test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > gives an approved demo claim a demo ID, so a demo admin can turn its profile off 4ms
+   → expected 'personal-1fdb7c25-1503-4fd9-86f8-caf5…' to match /^demo-alumni-[0-9a-f-]{36}$/
+ × test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > doesn't let a demo claim hold a real alumni's student ID 3ms
+   → expected 409 to be 201 // Object.is equality
+ × test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > keeps each ID in its namespace in the database too 3ms
+   → promise resolved "{ success: true, meta: { …(11) }, …(1) }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > gives an approved demo claim a demo ID, so a demo admin can turn its profile off
+AssertionError: expected 'personal-1fdb7c25-1503-4fd9-86f8-caf5…' to match /^demo-alumni-[0-9a-f-]{36}$/
+
+- Expected:
+/^demo-alumni-[0-9a-f-]{36}$/
+
++ Received:
+"personal-1fdb7c25-1503-4fd9-86f8-caf581a465f6"
+
+ ❯ test/alumni-verification.test.ts:293:44
+    291|     const demo = await register(body);
+    292|     const approved = await review(admin, demo.json.id, { status: 'appr…
+    293|     expect(approved.json.identity_user_id).toMatch(/^demo-alumni-[0-9a…
+       |                                            ^
+    294|
+    295|     const { json } = await askForCode(body.email);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > doesn't let a demo claim hold a real alumni's student ID
+AssertionError: expected 409 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 409
+
+ ❯ test/alumni-verification.test.ts:312:25
+    310|
+    311|     const real = await register(claim({ student_id: studentId }));
+    312|     expect(real.status).toBe(201);
+       |                         ^
+    313|     expect((await register(claim({ student_id: studentId }))).json.cod…
+    314|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > keeps each ID in its namespace in the database too
+AssertionError: promise resolved "{ success: true, meta: { …(11) }, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "meta": {
++     "changed_db": true,
++     "changes": 1,
++     "duration": 0,
++     "last_row_id": 11,
++     "rows_read": 2,
++     "rows_written": 5,
++     "served_by": "miniflare.db",
++     "served_by_primary": true,
++     "size_after": 208896,
++     "timings": {
++       "sql_duration_ms": 0,
++     },
++     "total_attempts": 1,
++   },
++   "results": [],
++   "success": true,
+  }
+
+ ❯ test/alumni-verification.test.ts:323:75
+    321|         .bind(identity, id)
+    322|         .run();
+    323|     await expect(approve(demo.json.id, `personal-${crypto.randomUUID()…
+       |                                                                           ^
+    324|     await expect(approve(real.json.id, `demo-alumni-${crypto.randomUUI…
+    325|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 4 passed | 26 skipped (33)
+   Start at  22:21:15
+   Duration  879ms (transform 182ms, setup 412ms, import 10ms, tests 34ms, environment 0ms)
+
+
+
+# AFTER the fix: fix commit d8c182d
+# command: npx vitest run test/alumni-verification.test.ts --reporter=verbose -t "Demo powers"
+# run at 2026-11-11T15:21:16Z
+
+ RUN  v4.1.12 /Users/phyophyolay/Documents/MFU_Projects/platform/alumni-network
+
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > stores a pending claim without signing anyone in
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student address, which closes after graduation
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses the student domain in capitals too
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student ID that is not 10 digits
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year in the future
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year before MFU
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an empty name
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an unknown faculty
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a field the API does not take
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a second open claim for the same email or student ID
+ ↓ test/alumni-verification.test.ts > POST /auth/alumni/register > accepts a new claim after the last one was rejected
+ ↓ test/alumni-verification.test.ts > Alumni Association review > only lets admins see the queue
+ ↓ test/alumni-verification.test.ts > Alumni Association review > lists pending claims with what the Association needs to check them
+ ↓ test/alumni-verification.test.ts > Alumni Association review > approves a claim and gives it an ID that cannot collide with Identity
+ ↓ test/alumni-verification.test.ts > Alumni Association review > refuses to review a claim twice
+ ↓ test/alumni-verification.test.ts > Alumni Association review > answers 404 for an unknown claim
+ ↓ test/alumni-verification.test.ts > Alumni Association review > does not let an alumni approve their own claim
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > says the same for a real email with an account as for one without
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > refuses an email that is not valid
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > gives no code to a claim that is still pending
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > stores only a hash of the code
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > signs in once with the code, then refuses it
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > lets only one of two requests with the same code through
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > refuses an expired code
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > refuses a made-up code
+ ↓ test/alumni-verification.test.ts > Signing in with a personal email > takes an approved alumni from sign-up to a profile students can find
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > never returns a code for a real email 11ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > shows a demo admin demo claims only 3ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > lets a demo admin review demo claims, and answers 404 for a real one 4ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > marks a demo claim's token as demo, and a real one's not 6ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > gives an approved demo claim a demo ID, so a demo admin can turn its profile off 6ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > doesn't let a demo claim hold a real alumni's student ID 3ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > keeps each ID in its namespace in the database too 3ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed | 26 skipped (33)
+   Start at  22:21:16
+   Duration  859ms (transform 177ms, setup 391ms, import 10ms, tests 36ms, environment 0ms)
+

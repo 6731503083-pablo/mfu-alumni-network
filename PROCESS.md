@@ -111,9 +111,9 @@ instruction and sees every action. Commands that touch secrets need a person's a
 We don't take the AI's word that something works. Every claim in this repo points to a test, a live
 run or a screenshot:
 
-- **346 automated tests**, run inside the real Workers runtime against a real D1 database.
+- **349 automated tests**, run inside the real Workers runtime against a real D1 database.
 - **Failed, then fixed:** each security fix's test was run against the code before the fix, to prove
-  the test catches the bug ([three runs](TESTING.md#failed-tests-that-led-to-fixes)).
+  the test catches the bug ([four runs](TESTING.md#failed-tests-that-led-to-fixes)).
 - **Live checks:** the 35-check demo, 40 security and PDPA checks, and a Team 17 call with their
   request ID.
 - **Browser checks** with screenshots, labelled as AI-driven, plus a sheet for a person to re-check by
@@ -144,6 +144,7 @@ this group project separate from individual assignments".
 | Seven web app bugs: a message left over from the last person, a stray "null", filters kept after sign-out, a cramped phone layout, "Remote, Remote", no loading message, and PDPA wording that claimed more than we can | Browser testing ([manual log](evidence/tests/manual-test-log.md), M13 to M23) | `7ac1d4d`, `fe38bc8` and `bd8c24b` |
 | No security headers on API answers, and plain HTTP served | Collecting the security evidence | `76a8ec0`, [failed, then fixed](evidence/tests/red-green-security-headers.txt) |
 | TESTING.md said Ko Min had no history, but he was already connected to an alumni | The live security run's output | `c3a0ba0` |
+| Opening demo sign-in let anyone approve a demo claim into a `personal-` ID, or hold a real student's ID with one | An automated security review of the commit | `d8c182d`, [failed, then fixed](evidence/tests/red-green-demo-claims.txt) |
 
 ### What we learned
 

@@ -13,10 +13,10 @@ data, but a demo token can't reach a real account.
 
 | Evidence | What it shows | Result |
 |---|---|---|
-| `npm test` | 346 automated tests. The ones cited below cover security and privacy | **346 of 346 pass** ([report](evidence/tests/automated-test-report-2026-11-11.txt)) |
+| `npm test` | 349 automated tests. The ones cited below cover security and privacy | **349 of 349 pass** ([report](evidence/tests/automated-test-report-2026-11-11.txt)) |
 | `npm run evidence:security` | 40 attacks and privacy checks against the **live** site. The IDs H1 to E1 below refer to it. It writes nothing to the live database | **40 of 40 pass** ([live run](evidence/security/live-security-checks-2026-11-11.txt)) |
 | Live headers | The real response headers from the live site, captured with curl | [live-headers-2026-11-09.txt](evidence/security/live-headers-2026-11-09.txt) |
-| Failed, then fixed | Three security problems we found. Each one's test failed on the old code and passes on the fix | [reveal log](evidence/tests/red-green-reveal-log.txt), [demo admin](evidence/tests/red-green-demo-admin.txt), [headers](evidence/tests/red-green-security-headers.txt) |
+| Failed, then fixed | Four security problems we found. Each one's test failed on the old code and passes on the fix | [reveal log](evidence/tests/red-green-reveal-log.txt), [demo admin](evidence/tests/red-green-demo-admin.txt), [headers](evidence/tests/red-green-security-headers.txt), [demo claims](evidence/tests/red-green-demo-claims.txt) |
 | `npm audit` | Known vulnerabilities in our dependencies | **0** (Hono updated to 4.13.17 on 9 November) |
 
 ## 1. Security controls
@@ -27,7 +27,7 @@ data, but a demo token can't reach a real account.
 |---|---|---|---|
 | Signed tokens | Every Mentoring API route needs a token signed with `JWT_SECRET`. Only HS256 is accepted, so `alg: none` fails. A token must have an expiry, and 30 seconds of clock difference is allowed | [auth.ts:13-47](src/lib/auth.ts#L13-L47) | [auth.test.ts "token checks"](test/auth.test.ts#L29), live A1 to A5 |
 | Empty secrets refuse everything | If `JWT_SECRET` or `EVENTS_CLUBS_WEBHOOK_SECRET` isn't set, the server answers 503. An empty key would let anyone sign | [auth.ts:14-17](src/lib/auth.ts#L14-L17), [demo-auth.ts:37-40](src/routes/demo-auth.ts#L37-L40), [events-clubs.ts:30-32](src/routes/events-clubs.ts#L30-L32) | [auth.test.ts:92](test/auth.test.ts#L92), [app.test.ts:50](test/app.test.ts#L50), [events-clubs.test.ts:147](test/events-clubs.test.ts#L147) |
-| Limited demo sign-in | Stands in for MFU's Identity service. It needs no password, so anyone can try the app. That's why it only signs `demo-` IDs, never a real or `personal-` one, and the ID fixes the role. Tokens last two hours and are marked `demo: true`. A demo admin can only turn off demo profiles, and only sees and reviews `@example.com` claims | [demo-auth.ts:13-50](src/routes/demo-auth.ts#L13-L50), [admin.ts:12-23](src/routes/admin.ts#L12-L23) | [app.test.ts:12-93](test/app.test.ts#L12-L93), [alumni-verification.test.ts:240](test/alumni-verification.test.ts#L240), [red-green](evidence/tests/red-green-demo-admin.txt), live A6 to A9 |
+| Limited demo sign-in | Stands in for MFU's Identity service. It needs no password, so anyone can try the app. That's why it only signs `demo-` IDs, never a real or `personal-` one, and the ID fixes the role. Tokens last two hours and are marked `demo: true`. A demo admin can only turn off demo profiles, and only sees and reviews `@example.com` claims. An approved demo claim gets a `demo-alumni-` ID, never `personal-`, and doesn't hold its student ID, which the database enforces too | [demo-auth.ts:13-50](src/routes/demo-auth.ts#L13-L50), [admin.ts:12-23](src/routes/admin.ts#L12-L23) | [app.test.ts:12-93](test/app.test.ts#L12-L93), [alumni-verification.test.ts:240](test/alumni-verification.test.ts#L240), [red-green](evidence/tests/red-green-demo-admin.txt), live A6 to A9 |
 | Role check on every route | Each route names the roles allowed to call it (student, alumni or admin). Any other role gets 403 | [auth.ts:50-57](src/lib/auth.ts#L50-L57) | [auth.test.ts role matrix](test/auth.test.ts#L105): every role on every route. Live R1 to R4 |
 | Ownership checks | Only the sender can cancel a request. Only the alumni who received it can accept or reject it. Only the two people in a connection can end it. An alumni's profile is found from their token, never from an ID in the request | [requests.ts:238-241](src/routes/requests.ts#L238-L241), [connections.ts:25-27](src/routes/connections.ts#L25-L27), [alumni.ts:177-183](src/routes/alumni.ts#L177-L183) | [requests.test.ts "ownership"](test/requests.test.ts#L541), [requests.test.ts:54](test/requests.test.ts#L54), [connections-admin.test.ts:41](test/connections-admin.test.ts#L41), live R5 and R6 |
 
@@ -128,12 +128,12 @@ Mapped to the [OWASP Top 10 (2021)](https://owasp.org/Top10/).
 | 7 | **The web app keeps its token in `sessionStorage`.** A script running in the page could read it. The CSP is what stops such scripts, and the token is gone when the tab closes | Low | Revisit when Identity arrives |
 | 8 | **Live secrets were shared in an AI assistant's chat** while deploying on 9 November (`JWT_SECRET`, `EVENTS_CLUBS_WEBHOOK_SECRET`, `DEMO_PASSCODE`) | Medium | Replace the two still in use with `wrangler secret put` after the evaluation. `DEMO_PASSCODE` has been unused since 11 November: delete it with `wrangler secret delete`. From now on, type secrets straight into wrangler |
 | 9 | **Data location not checked** (PDPA section 28) | Low today: fictional data only | Check before real data goes in |
-| 10 | **Personal-email sign-up has no email provider or rate limit.** `POST /auth/alumni/register` is public, so claims could be flooded, and a real email can't sign in until codes are emailed. Demo powers reach `@example.com` claims only: a demo admin can't see or review any other, and only they get their code back in the answer ([test](test/alumni-verification.test.ts)) | Low: claims hold no access until approved, and codes are single-use, 15-minute and stored as hashes | Connect an email provider, drop `demo_code`, rate-limit registration, and give the Association real admin accounts |
+| 10 | **Personal-email sign-up has no email provider or rate limit.** `POST /auth/alumni/register` is public, so claims could be flooded, and a real email can't sign in until codes are emailed. Demo powers reach `@example.com` claims only: a demo admin can't see or review any other, and only they get their code back in the answer. An approved demo claim gets a `demo-alumni-` ID and doesn't hold its student ID, so it can't pass as a checked alumni or block a real one ([test](test/alumni-verification.test.ts)) | Low: claims hold no access until approved, and codes are single-use, 15-minute and stored as hashes | Connect an email provider, drop `demo_code`, rate-limit registration, and give the Association real admin accounts |
 
 ## 5. Check it yourself
 
 ```bash
-npm test                      # 346 tests
+npm test                      # 349 tests
 npm run evidence:security     # 40 checks against the live site. Writes nothing there
 npm audit --omit=dev          # known vulnerabilities in runtime libraries
 ```
