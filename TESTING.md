@@ -6,7 +6,7 @@ on 11 November after demo sign-in stopped needing a passcode.
 
 | Kind | What it covers | Run it | Result | Evidence |
 |---|---|---|---|---|
-| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **346 of 346 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-11.txt) |
+| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **349 of 349 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-11.txt) |
 | Type check | `src` and `test` | `npm run typecheck` | No errors | |
 | End to end, live | The presentation's five steps to a mentor, plus consent withdrawal, security and admin, against the deployed API | `npm run demo` | **35 of 35 checks pass** | [live run](evidence/demo-run-live-2026-11-09.txt) |
 | Security, live | 40 attacks and privacy checks against the deployed site. It writes nothing to the live database | `npm run evidence:security` | **40 of 40 pass** | [live run](evidence/security/live-security-checks-2026-11-11.txt), [SECURITY.md](SECURITY.md) |
@@ -27,7 +27,7 @@ on 11 November after demo sign-in stopped needing a passcode.
 | [`test/docs-and-lab.test.ts`](test/docs-and-lab.test.ts) | 21 | The docs page has a console for every route and no secrets, the seed lists, error shapes, security headers on every answer, the HTTPS redirect, and the A5 lab routes |
 | [`test/connections-admin.test.ts`](test/connections-admin.test.ts) | 10 | Ending a connection (either party only) and admin deactivation |
 | [`test/quality-security.test.ts`](test/quality-security.test.ts) | 12 | A second, focused pass by Quality and Security: protected routes, admin-only routes, contact details only after a connection and only while consented, duplicate and closed requests, and webhook signatures and retries. See [QUALITY_ASSURANCE_REPORT.md](QUALITY_ASSURANCE_REPORT.md) |
-| [`test/alumni-verification.test.ts`](test/alumni-verification.test.ts) | 30 | The PRD Assumption 1 fallback: personal-email claims (student addresses refused), the admin review queue, single-use sign-in codes (expired, reused, raced), sign-up through to a profile students can find, and demo powers limited to `@example.com` claims |
+| [`test/alumni-verification.test.ts`](test/alumni-verification.test.ts) | 33 | The PRD Assumption 1 fallback: personal-email claims (student addresses refused), the admin review queue, single-use sign-in codes (expired, reused, raced), sign-up through to a profile students can find, and demo powers limited to `@example.com` claims, which get `demo-alumni-` IDs and don't hold student IDs |
 | [`test/phase2-validation.test.ts`](test/phase2-validation.test.ts) | 5 | Input validation: missing request fields, a blank display name, a wrong JSON type, an over-long webhook title and an unsupported URL scheme |
 
 ### The PRD's 11 planned tests
@@ -49,15 +49,18 @@ on 11 November after demo sign-in stopped needing a passcode.
 ## Failed tests that led to fixes
 
 Three real security problems were found on 9 November: two by an automated security review, and one
-while collecting the [security evidence](SECURITY.md). For each one we wrote a test, ran it against
+while collecting the [security evidence](SECURITY.md). A fourth was found on 11 November by an
+automated security review of the commit that opened demo sign-in. For each one we wrote a test, ran it against
 the code **before** the fix (it failed), and then ran it against the fixed code (it passed). The
-first two before runs used a separate checkout of the old commit, with the fix's test file added.
+first two before runs, and the fourth, used a separate checkout of the old commit, with the fix's test
+file added.
 
 | Bug | Before | After | Evidence |
 |---|---|---|---|
 | A contact detail consented **after** a connection was made was shown to the student without a reveal-log row (BR-10) | 1 test failed | 2 of 2 pass (fix `bd95c01`) | [red-green-reveal-log.txt](evidence/tests/red-green-reveal-log.txt) |
 | Anyone with the demo passcode could get an admin token able to turn off **any** profile | 4 tests failed | 6 of 6 pass (fix `67079bf`) | [red-green-demo-admin.txt](evidence/tests/red-green-demo-admin.txt) |
 | The live API's answers and `/docs` had no security headers, and plain `http://` was served | 7 tests failed | 8 of 8 pass (fix `76a8ec0`) | [red-green-security-headers.txt](evidence/tests/red-green-security-headers.txt) |
+| With demo sign-in open, anyone could approve a demo claim into a `personal-` ID, the namespace for checked alumni, or use one to hold a real alumni's student ID for good | 3 tests failed | 7 of 7 pass (fix `d8c182d`) | [red-green-demo-claims.txt](evidence/tests/red-green-demo-claims.txt) |
 
 Manual testing found 7 more failures in the web app (M13 to M15, M18, M20, M21 and M23 in the
 [manual log](evidence/tests/manual-test-log.md)). All were fixed and checked again.

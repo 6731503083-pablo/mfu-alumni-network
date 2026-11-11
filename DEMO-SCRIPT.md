@@ -116,7 +116,7 @@ password.
 
 ## Closing (10 seconds)
 
-> "The suite has 346 automated tests, and 40 security checks run against the live site. The tests,
+> "The suite has 349 automated tests, and 40 security checks run against the live site. The tests,
 > the security write-up and the integration evidence are all in the repo."
 
 ## If they ask for a live change
@@ -127,7 +127,7 @@ password.
 2. In the terminal:
 
    ```bash
-   npm test           # 346 pass, about 2 seconds
+   npm test           # 349 pass, about 2 seconds
    npm run typecheck  # no errors
    npm run deploy     # about 9 seconds
    ```

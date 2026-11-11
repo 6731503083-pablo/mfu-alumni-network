@@ -783,7 +783,7 @@
             <tbody>
               <tr><td class="status s2">201</td><td>The claim is waiting for the Association.<code class="shape">{ id, status: "pending", message }</code></td></tr>
               <tr><td class="status s4">400</td><td>A field is invalid, or the email is a student address.<code class="shape">{ error, code, fields }</code></td></tr>
-              <tr><td class="status s4">409</td><td><code>ALREADY_REGISTERED</code>: this email or student ID already has an open or approved claim.</td></tr>
+              <tr><td class="status s4">409</td><td><code>ALREADY_REGISTERED</code>: this email or student ID already has an open or approved claim. Demo claims (<code>@example.com</code>) don't hold their student ID.</td></tr>
             </tbody>
           </table>
         </div>
@@ -846,7 +846,7 @@
         <div class="doc">
           <h3>Approve or reject a claim</h3>
           <p class="route"><span class="method method-patch">PATCH</span> /admin/alumni-verifications/{id} <span class="api-id">Assumption 1</span></p>
-          <p>For admins. Only a pending claim can be reviewed. A demo admin can only review demo claims (<code>@example.com</code>), and gets 404 for any other. Approval gives the person an ID starting <code>personal-</code>, which can't collide with an Identity service user ID. A rejected person can send a new claim.</p>
+          <p>For admins. Only a pending claim can be reviewed. A demo admin can only review demo claims (<code>@example.com</code>), and gets 404 for any other. Approval gives the person an ID starting <code>personal-</code>, which can't collide with an Identity service user ID. A demo claim's ID starts <code>demo-alumni-</code> instead, so it stays a demo account. A rejected person can send a new claim.</p>
           <h4>Body</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>

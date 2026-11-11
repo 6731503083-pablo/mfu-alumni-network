@@ -17,7 +17,7 @@ Run these in `alumni-network/`, in this order:
 | # | Do | Expect |
 |---|---|---|
 | 1 | `git pull` and `npm install` | Up to date |
-| 2 | `npm test` | 346 pass, in about 2 seconds |
+| 2 | `npm test` | 349 pass, in about 2 seconds |
 | 3 | `npm run typecheck` | No TypeScript errors |
 | 4 | `npm run evidence:team17` | `200`. This also confirms Team 17 is online. If it isn't, message Team 17 |
 | 5 | `npm run evidence:security` | 40 of 40 pass |
@@ -64,7 +64,7 @@ through **Internships**, then **Find a mentor for this**.
 2. Run it:
 
    ```bash
-   npm test          # 346 pass, about 2 seconds
+   npm test          # 349 pass, about 2 seconds
    npm run typecheck # no TypeScript errors
    npm run deploy    # about 9 seconds
    ```

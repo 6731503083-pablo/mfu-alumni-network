@@ -100,10 +100,11 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
 - Screens for the Assumption 1 fallback, and sending its sign-in codes by email.
   `src/routes/alumni-verification.ts` lets alumni whose student email has closed register with a
   personal email, an admin approve them, and a single-use code sign them in. Approved IDs start
-  `personal-`. Demo powers reach `@example.com` claims only (invariant 9): a demo admin sees and
-  reviews only those, `POST /auth/alumni/sign-in-link` returns their code (`demo_code`) in the
-  answer, and their tokens carry `demo: true`. A real email gets no code
-  until an email provider is connected.
+  `personal-`, but a demo claim's start `demo-alumni-`, and demo claims don't hold their student ID
+  (migration 0005 enforces both). Demo powers reach `@example.com` claims only (invariant 9): a demo
+  admin sees and reviews only those, `POST /auth/alumni/sign-in-link` returns their code
+  (`demo_code`) in the answer, and their tokens carry `demo: true`. A real email gets no code until
+  an email provider is connected.
 - The OpenAPI document (PRD section 11). The web app is served from the same Worker, so there's no
   CORS.
 

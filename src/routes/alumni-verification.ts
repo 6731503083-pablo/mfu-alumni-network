@@ -22,8 +22,10 @@ import type { AppEnv } from '../types';
  *
  * Demo powers reach demo claims only, as with demo sign-in (CLAUDE.md invariant 9). A demo claim uses
  * an @example.com address, which is reserved and can never be a real inbox. For those, and only
- * those, step 4 returns the code in the answer, a demo admin can see and review the claim, and the
- * token carries `demo: true`. A claim with a real email needs a real admin and a real email.
+ * those, step 4 returns the code in the answer, a demo admin can see and review the claim, approval
+ * gives a demo-alumni- ID rather than personal-, and the token carries `demo: true`. A demo claim
+ * doesn't hold its student ID either (migration 0005), so it can't block the real alumni. A claim
+ * with a real email needs a real admin and a real email.
  */
 
 const STUDENT_DOMAIN = /@lamduan\.mfu\.ac\.th$/i;
@@ -185,16 +187,21 @@ verificationAdmin.patch('/:id', requireRole('admin'), async (c) => {
   const { status, note } = await parseJsonBody(c, reviewBody);
   const user = c.get('user');
   const demo = user.demo ? 1 : 0;
-  const identityUserId = status === 'approved' ? `personal-${crypto.randomUUID()}` : null;
 
+  // Approval gives an ID in the claim's own namespace: demo-alumni- for a demo claim, personal- for a
+  // real one. The database refuses any other pairing.
   const updated = await c.env.DB.prepare(
     `UPDATE alumni_verifications
-     SET status = ?1, identity_user_id = ?2, review_note = ?3, reviewed_by = ?4, reviewed_at = ?5
-     WHERE id = ?6 AND status = 'pending' AND (?7 = 0 OR ${IS_DEMO_CLAIM})`,
+     SET status = ?1,
+         identity_user_id = CASE WHEN ?1 = 'approved'
+           THEN (CASE WHEN ${IS_DEMO_CLAIM} THEN 'demo-alumni-' ELSE 'personal-' END) || ?2 END,
+         review_note = ?3, reviewed_by = ?4, reviewed_at = ?5
+     WHERE id = ?6 AND status = 'pending' AND (?7 = 0 OR ${IS_DEMO_CLAIM})
+     RETURNING identity_user_id`,
   )
-    .bind(status, identityUserId, note ?? null, user.id, new Date().toISOString(), id, demo)
-    .run();
-  if (!updated.meta.changes) {
+    .bind(status, crypto.randomUUID(), note ?? null, user.id, new Date().toISOString(), id, demo)
+    .first<{ identity_user_id: string | null }>();
+  if (!updated) {
     const exists = await c.env.DB.prepare(
       `SELECT 1 FROM alumni_verifications WHERE id = ?1 AND (?2 = 0 OR ${IS_DEMO_CLAIM})`,
     )
@@ -203,5 +210,5 @@ verificationAdmin.patch('/:id', requireRole('admin'), async (c) => {
     if (exists) throw conflict('ALREADY_REVIEWED', 'This claim has already been reviewed');
     throw notFound('Claim');
   }
-  return c.json({ id, status, identity_user_id: identityUserId });
+  return c.json({ id, status, identity_user_id: updated.identity_user_id });
 });
