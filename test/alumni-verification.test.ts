@@ -284,4 +284,43 @@ describe('Demo powers reach demo claims only (invariant 9)', () => {
     expect(realSession.status).toBe(200);
     expect(tokenClaims(realSession.json.token).demo).toBeUndefined();
   });
+
+  it('gives an approved demo claim a demo ID, so a demo admin can turn its profile off', async () => {
+    const admin = await demoAdmin();
+    const body = claim({ email: demoEmail() });
+    const demo = await register(body);
+    const approved = await review(admin, demo.json.id, { status: 'approved' });
+    expect(approved.json.identity_user_id).toMatch(/^demo-alumni-[0-9a-f-]{36}$/);
+
+    const { json } = await askForCode(body.email);
+    const session = await signIn(json.demo_code);
+    expect(session.json.user.id).toBe(approved.json.identity_user_id);
+    const profile = await call('PATCH', '/alumni/me', {
+      as: session.json.token,
+      body: { display_name: 'Thiri Aung', grad_year: 2022, faculty_id: 7 },
+    });
+    const off = await call('PATCH', `/admin/alumni/${profile.json.id}/deactivate`, { as: admin });
+    expect(off.status).toBe(200);
+  });
+
+  it("doesn't let a demo claim hold a real alumni's student ID", async () => {
+    const studentId = claim().student_id;
+    const demo = await register(claim({ email: demoEmail(), student_id: studentId }));
+    expect((await review(await demoAdmin(), demo.json.id, { status: 'approved' })).status).toBe(200);
+
+    const real = await register(claim({ student_id: studentId }));
+    expect(real.status).toBe(201);
+    expect((await register(claim({ student_id: studentId }))).json.code).toBe('ALREADY_REGISTERED');
+  });
+
+  it('keeps each ID in its namespace in the database too', async () => {
+    const demo = await register(claim({ email: demoEmail() }));
+    const real = await register(claim());
+    const approve = (id: string, identity: string) =>
+      env.DB.prepare(`UPDATE alumni_verifications SET status = 'approved', identity_user_id = ? WHERE id = ?`)
+        .bind(identity, id)
+        .run();
+    await expect(approve(demo.json.id, `personal-${crypto.randomUUID()}`)).rejects.toThrow(/CHECK/);
+    await expect(approve(real.json.id, `demo-alumni-${crypto.randomUUID()}`)).rejects.toThrow(/CHECK/);
+  });
 });
