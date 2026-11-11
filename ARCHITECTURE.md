@@ -69,7 +69,7 @@ never talks to Team 17 directly: our Worker calls them and checks their answer f
 | [`src/docs.html`](src/docs.html) | API reference, with a console for trying every route | Section 11 |
 | [`migrations/0002_alumni_network.sql`](migrations/0002_alumni_network.sql) | The database: tables, rules, triggers and the faculty and interest lists | Section 8 |
 | [`migrations/0003_current_mfu_schools.sql`](migrations/0003_current_mfu_schools.sql) | Brings the schools up to MFU's current 15: the PRD's 11 had an old name and four missing | Section 8 |
-| [`test/`](test/) | 341 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
+| [`test/`](test/) | 346 tests, run inside the Workers runtime against a real D1 database. See [TESTING.md](TESTING.md) | Test plan |
 | [`scripts/`](scripts/) | The live demo, seed data, and the Team 17 and security evidence runs | |
 
 ## The data
@@ -203,7 +203,7 @@ many accepts at once and checks that capacity always holds
 | **Contact details filtered in SQL** | `PUBLIC_COLUMNS` never selects contact or consent columns, so they can't leak by accident | Every new view needs its own query |
 | **Consent checked on every view, not copied at accept** | Taking consent back works straight away, even inside a connection (BR-03) | One more query when a connected student opens a profile |
 | **The web app is one HTML page with plain JavaScript, served by the same Worker** | No build step, same site so no CORS, and a strict Content-Security-Policy is possible | About 1,200 lines in one file, with no framework to organise them |
-| **Demo sign-in until MFU Identity publishes its tokens** | The browser must never hold `JWT_SECRET`, and Identity hasn't published its contract (PRD Assumption 1) | Anyone with the passcode can sign in as any demo person. Only [`auth.ts`](src/lib/auth.ts) changes when Identity arrives |
+| **Demo sign-in until MFU Identity publishes its tokens** | The browser must never hold `JWT_SECRET`, and Identity hasn't published its contract (PRD Assumption 1) | Anyone can sign in as any demo person, with no password, so the live demo data can be changed by visitors (`npm run demo:reset` restores it). Demo tokens only reach `demo-` IDs and demo claims. Only [`auth.ts`](src/lib/auth.ts) changes when Identity arrives |
 | **Our Worker calls Team 17, not the browser** | Keeps the page's policy at "this site only", and checks every listing before students see it | One more hop. Team 17 can take about 3 seconds to start up |
 | **Other teams get counts, not profiles** | Team 17 only needs to know whether mentors exist in a field. Names and contact details stay behind MFU sign-in and consent | They can't show who the mentors are. Students follow the link to our app for that |
 | **Events queued in the same transaction as the accept** | If sending fails later, the event isn't lost (the outbox pattern) | Sending isn't built yet, so events wait in the table |
@@ -224,7 +224,7 @@ Against the PRD's "MVP is complete when" list (section 17):
 | AI suggestions within 5 seconds, with a rule-based fallback | ❌ Not built (FR-09) |
 | `alumni.connection_created` reaches the Notification Hub through the outbox | ⚠️ Queued, not sent (FR-10). Forged inbound webhooks are refused ✅ |
 | Alumni events from Events and Clubs appear for matching students | ⚠️ Received, checked and stored. Not shown to students yet (FR-11) |
-| All 11 planned tests pass | ⚠️ 10 fully and test 6 half (sending isn't built), out of 341 tests. Run before each deploy, not in CI |
+| All 11 planned tests pass | ⚠️ 10 fully and test 6 half (sending isn't built), out of 346 tests. Run before each deploy, not in CI |
 | Deployed at 0 THB, with runbooks | ✅ Deployed on Cloudflare's free plan. ❌ No runbooks |
 
 Also not built: the OpenAPI document (the `/docs` page covers every route instead), and real Identity
@@ -235,8 +235,9 @@ the web app yet. An alumni whose student email has closed sends a claim with a p
 (`POST /auth/alumni/register`, student addresses refused). An admin, standing in for the Alumni
 Association, approves it (`/admin/alumni-verifications`). The alumni then signs in with a single-use,
 15-minute code sent to that email ([`alumni-verification.ts`](src/routes/alumni-verification.ts),
-[migration 0004](migrations/0004_alumni_email_fallback.sql)). No email provider is connected, so the
-code is only returned to a caller with the demo passcode.
+[migration 0004](migrations/0004_alumni_email_fallback.sql)). No email provider is connected, so only
+demo claims, with a reserved `@example.com` email, can sign in for now: their code comes back in the
+answer. A demo admin sees and reviews demo claims only.
 
 ## Deployment
 
@@ -246,6 +247,6 @@ code is only returned to a caller with the demo passcode.
 | Hosting | Cloudflare Workers, free plan |
 | Database | Cloudflare D1 `alumni-network-db`. Migrations in [`migrations/`](migrations/) |
 | Settings | [`wrangler.jsonc`](wrangler.jsonc): Team 17's URLs and our team name. Not secret |
-| Secrets | `JWT_SECRET`, `DEMO_PASSCODE`, `EVENTS_CLUBS_WEBHOOK_SECRET`, `WEBHOOK_SECRET` and `PARTNER_WEBHOOK_SECRET`, as Cloudflare Worker secrets |
+| Secrets | `JWT_SECRET`, `EVENTS_CLUBS_WEBHOOK_SECRET`, `WEBHOOK_SECRET` and `PARTNER_WEBHOOK_SECRET`, as Cloudflare Worker secrets |
 | Logs | Cloudflare Workers observability. Each Team 17 call is logged with its request ID |
 | Deploy | `npm test`, then `npm run deploy`, then `npm run demo` to check the live site end to end |

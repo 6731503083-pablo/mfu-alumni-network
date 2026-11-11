@@ -262,7 +262,7 @@
       <p class="index-group">Mentoring API</p>
       <ul>
         <li><a href="#sign-in">Sign in for testing</a></li>
-        <li><a href="#demo-login">Sign in with the demo passcode</a></li>
+        <li><a href="#demo-login">Sign in to a demo account</a></li>
         <li><a href="#search">Search alumni</a></li>
         <li><a href="#profile">View a profile</a></li>
         <li><a href="#own-profile">View your own profile</a></li>
@@ -353,14 +353,13 @@
 
       <section class="endpoint" id="demo-login">
         <div class="doc">
-          <h3>Sign in with the demo passcode</h3>
+          <h3>Sign in to a demo account</h3>
           <p class="route"><span class="method method-post">POST</span> /auth/demo-login</p>
-          <p>How the web app at <a href="/app">/app</a> signs people in until the Identity service publishes its login. It returns a two-hour token for a demo account, so the browser never needs <code>JWT_SECRET</code>. It only signs in IDs that start with <code>demo-</code>, so it can't be used to act as a real user. Its tokens carry <code>demo: true</code>, and a demo admin can only turn off demo profiles.</p>
+          <p>How the web app at <a href="/app">/app</a> signs people in until the Identity service publishes its login. It returns a two-hour token for a demo account, so the browser never needs <code>JWT_SECRET</code>. It needs no password, so anyone can try the app. That's why it only signs in IDs that start with <code>demo-</code>, so it can't be used to act as a real user. Its tokens carry <code>demo: true</code>, and a demo admin can only turn off demo profiles.</p>
           <h4>Body</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
             <tbody>
-              <tr><td><code>passcode</code><span class="where">Required</span></td><td>The demo passcode, set as the <code>DEMO_PASSCODE</code> secret.</td></tr>
               <tr><td><code>role</code><span class="where">Required</span></td><td><code>student</code>, <code>alumni</code> or <code>admin</code>.</td></tr>
               <tr><td><code>user_id</code><span class="where">Required</span></td><td>A demo ID that matches the role: <code>demo-student-…</code>, <code>demo-alumni-…</code> or <code>demo-admin</code>. A student ID can't ask to be admin.</td></tr>
             </tbody>
@@ -371,8 +370,7 @@
             <tbody>
               <tr><td class="status s2">200</td><td>Signed in.<code class="shape">{ token, expires_at, user: { id, role } }</code></td></tr>
               <tr><td class="status s4">400</td><td>A field is invalid, or the ID doesn't start with <code>demo-</code>.<code class="shape">{ error, code, fields }</code></td></tr>
-              <tr><td class="status s4">401</td><td><code>INVALID_PASSCODE</code>: the passcode is wrong.</td></tr>
-              <tr><td class="status s5">503</td><td><code>DEMO_LOGIN_NOT_CONFIGURED</code>: the server has no <code>DEMO_PASSCODE</code>.</td></tr>
+              <tr><td class="status s5">503</td><td><code>AUTH_NOT_CONFIGURED</code>: the server has no <code>JWT_SECRET</code>.</td></tr>
             </tbody>
           </table>
         </div>
@@ -380,8 +378,7 @@
           <div class="field"><label for="as-demo-login">Send as</label><select id="as-demo-login" data-as data-default="none"></select><p class="hint" data-as-hint hidden></p></div>
           <div class="field">
             <label for="demo-login-body">Body</label>
-            <textarea id="demo-login-body" data-body rows="6" spellcheck="false">{
-  "passcode": "",
+            <textarea id="demo-login-body" data-body rows="5" spellcheck="false">{
   "role": "student",
   "user_id": "demo-student-su-myat"
 }</textarea>
@@ -815,7 +812,7 @@
         <div class="doc">
           <h3>List alumni claims to check</h3>
           <p class="route"><span class="method method-get">GET</span> /admin/alumni-verifications <span class="api-id">Assumption 1</span></p>
-          <p>For admins, standing in for the Alumni Association. Shows what's needed to check a claim against graduation records, oldest first, up to 100.</p>
+          <p>For admins, standing in for the Alumni Association. Shows what's needed to check a claim against graduation records, oldest first, up to 100. A demo admin, signed in through <code>POST /auth/demo-login</code>, sees only demo claims: those with an <code>@example.com</code> email.</p>
           <h4>Filters</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Filter</th><th scope="col">What to send</th></tr></thead>
@@ -849,7 +846,7 @@
         <div class="doc">
           <h3>Approve or reject a claim</h3>
           <p class="route"><span class="method method-patch">PATCH</span> /admin/alumni-verifications/{id} <span class="api-id">Assumption 1</span></p>
-          <p>For admins. Only a pending claim can be reviewed. Approval gives the person an ID starting <code>personal-</code>, which can't collide with an Identity service user ID. A rejected person can send a new claim.</p>
+          <p>For admins. Only a pending claim can be reviewed. A demo admin can only review demo claims (<code>@example.com</code>), and gets 404 for any other. Approval gives the person an ID starting <code>personal-</code>, which can't collide with an Identity service user ID. A rejected person can send a new claim.</p>
           <h4>Body</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
@@ -864,7 +861,7 @@
             <tbody>
               <tr><td class="status s2">200</td><td>Reviewed.<code class="shape">{ id, status, identity_user_id }</code></td></tr>
               <tr><td class="status s4">403</td><td>The caller isn't an admin.</td></tr>
-              <tr><td class="status s4">404</td><td>There's no claim with this ID.</td></tr>
+              <tr><td class="status s4">404</td><td>There's no claim with this ID, or a demo admin asked about a claim that isn't a demo one.</td></tr>
               <tr><td class="status s4">409</td><td><code>ALREADY_REVIEWED</code>: the claim isn't pending any more.</td></tr>
             </tbody>
           </table>
@@ -893,21 +890,20 @@
           <h3>Ask for a sign-in code</h3>
           <p class="route"><span class="method method-post">POST</span> /auth/alumni/sign-in-link <span class="api-id">Assumption 1</span></p>
           <p>Sends a single-use code, valid for 15 minutes, to an approved personal email. Receiving it proves the person owns the inbox. The answer is the same whether or not the email has an account.</p>
-          <p class="note"><strong>No email provider is connected yet.</strong> Until one is, the code comes back as <code>demo_code</code>, and only to a caller who also sends the demo passcode. Without the passcode nothing is sent.</p>
+          <p class="note"><strong>No email provider is connected yet.</strong> So a real email gets nothing for now. A demo claim, one with an <code>@example.com</code> email (reserved, never a real inbox), gets the code back in the answer as <code>demo_code</code>.</p>
           <h4>Body</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>
             <tbody>
               <tr><td><code>email</code><span class="where">Required</span></td><td>The personal email from the claim.</td></tr>
-              <tr><td><code>passcode</code><span class="where">Optional</span></td><td>The demo passcode, to get the code back in the answer.</td></tr>
             </tbody>
           </table>
           <h4>Responses</h4>
           <table class="spec">
             <thead><tr><th scope="col">Status</th><th scope="col">Meaning</th></tr></thead>
             <tbody>
-              <tr><td class="status s2">202</td><td>Done, whether or not the email has an account. With the passcode and an approved email it adds the code.<code class="shape">{ message, demo_code?, expires_at? }</code></td></tr>
-              <tr><td class="status s4">401</td><td><code>INVALID_PASSCODE</code>: the passcode is wrong.</td></tr>
+              <tr><td class="status s2">202</td><td>Done, whether or not the email has an account. For an approved <code>@example.com</code> email it adds the code.<code class="shape">{ message, demo_code?, expires_at? }</code></td></tr>
+              <tr><td class="status s4">400</td><td>The email isn't valid.<code class="shape">{ error, code, fields }</code></td></tr>
             </tbody>
           </table>
         </div>
@@ -915,9 +911,8 @@
           <div class="field"><label for="as-alumni-sign-in-link">Send as</label><select id="as-alumni-sign-in-link" data-as data-default="none"></select><p class="hint" data-as-hint hidden></p></div>
           <div class="field">
             <label for="alumni-sign-in-link-body">Body</label>
-            <textarea id="alumni-sign-in-link-body" data-body rows="4" spellcheck="false">{
-  "email": "thiri.aung.demo@example.com",
-  "passcode": ""
+            <textarea id="alumni-sign-in-link-body" data-body rows="3" spellcheck="false">{
+  "email": "thiri.aung.demo@example.com"
 }</textarea>
           </div>
           <pre class="curl"><code></code></pre>
@@ -933,7 +928,7 @@
         <div class="doc">
           <h3>Sign in with the code</h3>
           <p class="route"><span class="method method-post">POST</span> /auth/alumni/sign-in <span class="api-id">Assumption 1</span></p>
-          <p>Swaps the code for a two-hour alumni token. A code works once, and only while the claim is still approved. The alumni then creates a profile with <code>PATCH /alumni/me</code>, as any alumni does.</p>
+          <p>Swaps the code for a two-hour alumni token. A code works once, and only while the claim is still approved. A demo claim's token carries <code>demo: true</code>. The alumni then creates a profile with <code>PATCH /alumni/me</code>, as any alumni does.</p>
           <h4>Body</h4>
           <table class="spec fields">
             <thead><tr><th scope="col">Field</th><th scope="col">What to send</th></tr></thead>

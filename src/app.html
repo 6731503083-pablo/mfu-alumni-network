@@ -279,7 +279,7 @@
   .consent-record { margin-top: 14px; color: var(--muted); font-size: .875rem; }
   .save-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 
-  /* Sign-in: type the passcode once, then one click on the person to be */
+  /* Sign-in: one click on the person to be */
   .signin { max-width: 920px; }
   .tagline { max-width: 28ch; font-size: 2.5rem; }
   .signin-lede { margin: 10px 0 28px; color: var(--muted); font-size: 1.0625rem; }
@@ -289,8 +289,8 @@
   .signin-row h2 { font-size: 1.25rem; }
   .signin-row h3 { font-family: var(--serif); font-size: 1.1875rem; color: var(--pine); }
   .signin-row .hint { font-size: .9375rem; }
-  .signin-key .field { margin-bottom: 0; }
-  .signin-key input { max-width: 360px; }
+  .signin-key { display: block; }
+  .signin-key .hint { margin: 4px 0 0; }
   .signin-key .alert { margin: 12px 0 0; }
   .accounts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .account { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 62px; padding: 10px 14px 10px 10px; font: inherit; text-align: left; color: var(--ink); background: var(--white); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
@@ -428,8 +428,7 @@
 
   const MESSAGES = {
     NETWORK: "Can't reach the server. Check the connection and try again.",
-    INVALID_PASSCODE: 'That passcode is wrong. Ask the presenter for the demo passcode.',
-    DEMO_LOGIN_NOT_CONFIGURED: "Demo sign-in isn't set up on this server yet.",
+    AUTH_NOT_CONFIGURED: "Sign-in isn't set up on this server yet.",
     DUPLICATE_PENDING: 'You already have a request waiting with this alumni.',
     PENDING_LIMIT: 'You already have 5 requests waiting. Cancel one, or wait for replies, before sending more.',
     NOT_OPEN_TO_MENTORING: "This alumni isn't taking mentoring requests right now.",
@@ -621,32 +620,12 @@
   }
 
   // ── Sign-in ────────────────────────────────────────────────────────────────────────────────
-  // The demo passcode is shared, not anyone's own, so the page keeps it until the tab reloads.
-  // Switching people during a demo is then one click. It is never written to storage.
-  let rememberedPasscode = '';
-
   function signInView() {
-    const passcode = h('input', { type: 'password', autocomplete: 'current-password', value: rememberedPasscode });
-    const passcodeField = field('passcode', 'Demo passcode', passcode, 'One passcode opens every account.');
     const errorBox = h('p', { class: 'alert', role: 'alert', hidden: true });
     const buttons = [];
 
-    function passcodeProblem(message) {
-      passcodeField.error.textContent = message;
-      passcodeField.error.hidden = !message;
-      if (message) passcode.setAttribute('aria-invalid', 'true');
-      else passcode.removeAttribute('aria-invalid');
-    }
-    passcode.addEventListener('input', () => passcodeProblem(''));
-
     async function signInAs(persona, button) {
       errorBox.hidden = true;
-      if (!passcode.value) {
-        passcodeProblem('Type the demo passcode first.');
-        passcode.focus();
-        return;
-      }
-      passcodeProblem('');
       const random = [...crypto.getRandomValues(new Uint8Array(6))].map((n) => (n % 36).toString(36)).join('');
       const userId = persona.id ?? `demo-alumni-new-${random}`;
       const detail = button.querySelector('.account-detail');
@@ -654,21 +633,13 @@
       button.setAttribute('aria-busy', 'true');
       detail.textContent = 'Signing in…';
       try {
-        const result = await api('POST', '/auth/demo-login', { passcode: passcode.value, role: persona.role, user_id: userId });
-        rememberedPasscode = passcode.value;
+        const result = await api('POST', '/auth/demo-login', { role: persona.role, user_id: userId });
         saveSession({ token: result.token, expiresAt: result.expires_at, user: result.user, name: persona.name });
         go(persona.role === 'alumni' ? (persona.id ? '#/requests' : '#/profile') : '#/discover');
       } catch (problem) {
-        if (problem.code === 'INVALID_PASSCODE' || problem.fields?.passcode) {
-          rememberedPasscode = '';
-          passcodeProblem(problem.fields?.passcode ? 'Type the demo passcode first.' : explain(problem));
-          passcode.select();
-          passcode.focus();
-        } else {
-          errorBox.textContent = explain(problem);
-          errorBox.hidden = false;
-          button.focus();
-        }
+        errorBox.textContent = explain(problem);
+        errorBox.hidden = false;
+        button.focus();
       } finally {
         for (const other of buttons) other.disabled = false;
         button.removeAttribute('aria-busy');
@@ -688,21 +659,11 @@
       return button;
     }
 
-    // Enter in the passcode field moves on to choosing a person, rather than picking one.
-    const form = h('form', {
-      class: 'signin-panel',
-      novalidate: true,
-      onsubmit: (event) => {
-        event.preventDefault();
-        if (!passcode.value) passcodeProblem('Type the demo passcode first.');
-        else buttons[0].focus();
-      },
-    },
+    const panel = h('div', { class: 'signin-panel' },
     h('div', { class: 'signin-row signin-key' },
-      h('div', null,
-        h('h2', null, 'Sign in to the demo'),
-        h('p', { class: 'hint' }, 'Type the passcode, then choose who to be.')),
-      h('div', null, passcodeField.wrap, errorBox)),
+      h('h2', null, 'Sign in to the demo'),
+      h('p', { class: 'hint' }, 'Choose who to be. Every account here is fictional, and no password is needed.'),
+      errorBox),
     ROLES.map(({ role, title, does }) => h('section', { class: 'signin-row', 'aria-labelledby': `role-${role}` },
       h('div', null,
         h('h3', { id: `role-${role}` }, title),
@@ -712,7 +673,7 @@
     return h('div', { class: 'signin' },
       h('h1', { class: 'tagline' }, 'Find alumni. Ask for mentoring. Always with consent.'),
       h('p', { class: 'signin-lede' }, 'For Mae Fah Luang University students and graduates, wherever they work now.'),
-      form,
+      panel,
       h('p', { class: 'signin-note' }, 'Demo sign-in stands in for MFU’s Identity service until it publishes its login. It only opens the accounts above, and each sign-in lasts two hours.'));
   }
 

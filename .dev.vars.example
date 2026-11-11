@@ -2,4 +2,3 @@ WEBHOOK_SECRET=change-me-your-secret
 PARTNER_WEBHOOK_SECRET=change-me-partner-secret
 JWT_SECRET=change-me-jwt-secret
 EVENTS_CLUBS_WEBHOOK_SECRET=change-me-events-clubs-secret
-DEMO_PASSCODE=change-me-demo-passcode

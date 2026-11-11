@@ -41,7 +41,6 @@ describe('GET /docs', () => {
     expect(text).not.toContain(env.WEBHOOK_SECRET);
     expect(text).not.toContain(env.EVENTS_CLUBS_WEBHOOK_SECRET);
     expect(text).not.toContain(env.PARTNER_WEBHOOK_SECRET);
-    expect(text).not.toContain(env.DEMO_PASSCODE);
   });
 });
 
@@ -51,7 +50,6 @@ describe('test setup', () => {
     expect(env.WEBHOOK_SECRET).toBe('test-team17-webhook-secret');
     expect(env.PARTNER_WEBHOOK_SECRET).toBe('test-partner-secret');
     expect(env.EVENTS_CLUBS_WEBHOOK_SECRET).toBe('test-events-clubs-secret');
-    expect(env.DEMO_PASSCODE).toBe('test-demo-passcode');
   });
 });
 

@@ -7,8 +7,6 @@
 //   npm run evidence:security                                   # live site
 //   BASE_URL=http://localhost:8787 npm run evidence:security    # local `npm run dev`
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 
 import { BASE_URL, IS_LOCAL, ROOT, c, person, query, request, signToken } from './lib.mjs';
 
@@ -33,12 +31,6 @@ const section = (title) => console.log(`\n${c.bold(c.cyan(title))}`);
 const got = (res) => `${res.status}${res.json?.code ? ` ${res.json.code}` : ''}`;
 const b64 = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
 const claimsOf = (token) => JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
-
-function readVar(name) {
-  const file = join(ROOT, IS_LOCAL ? '.dev.vars' : '.demo.vars');
-  if (!existsSync(file)) return null;
-  return readFileSync(file, 'utf8').match(new RegExp(`^${name}=(.+)$`, 'm'))?.[1].trim() ?? null;
-}
 
 function tryQuery(sql) {
   try {
@@ -159,28 +151,24 @@ const tampered = `${header}.${b64({ ...claimsOf(student.token), role: 'admin' })
 res = await request('PATCH', '/admin/alumni/any-id/deactivate', { as: tampered });
 check('A5', "a student's real token edited to say admin → 401", res.status === 401, got(res));
 
-res = await request('POST', '/auth/demo-login', { body: { passcode: 'wrong-passcode', role: 'student', user_id: 'demo-student-su-myat' } });
-check('A6', 'demo sign-in with a wrong passcode → 401', res.status === 401 && res.json?.code === 'INVALID_PASSCODE', got(res));
+// Demo sign-in needs no password, so these limits are what keep it to fictional accounts.
+res = await request('POST', '/auth/demo-login', { body: { role: 'alumni', user_id: `personal-${crypto.randomUUID()}` } });
+check('A6', "an approved personal-email alumni's ID (personal-…) → 400 (demo IDs only)", res.status === 400, got(res));
 
-res = await request('POST', '/auth/demo-login', { body: { passcode: 'x', role: 'admin', user_id: 'demo-student-su-myat' } });
+res = await request('POST', '/auth/demo-login', { body: { role: 'admin', user_id: 'demo-student-su-myat' } });
 check('A7', 'a demo student ID asking for the admin role → 400', res.status === 400, got(res));
 
-res = await request('POST', '/auth/demo-login', { body: { passcode: 'x', role: 'student', user_id: '6731503083' } });
+res = await request('POST', '/auth/demo-login', { body: { role: 'student', user_id: '6731503083' } });
 check('A8', 'a real-looking student ID → 400 (demo IDs only)', res.status === 400, got(res));
 
-const passcode = readVar('DEMO_PASSCODE');
-if (!passcode) {
-  skip('A9', 'demo admin token is marked demo and lasts two hours', 'no DEMO_PASSCODE in the vars file');
-} else {
-  res = await request('POST', '/auth/demo-login', { body: { passcode, role: 'admin', user_id: 'demo-admin' } });
-  const claims = res.json?.token ? claimsOf(res.json.token) : {};
-  check(
-    'A9',
-    'a demo admin token is marked demo and lasts two hours',
-    res.status === 200 && claims.demo === true && claims.exp - claims.iat === 7200,
-    `${res.status}, demo: ${claims.demo}, lifetime ${(claims.exp - claims.iat) / 3600} h`,
-  );
-}
+res = await request('POST', '/auth/demo-login', { body: { role: 'admin', user_id: 'demo-admin' } });
+const demoClaims = res.json?.token ? claimsOf(res.json.token) : {};
+check(
+  'A9',
+  'a demo admin token is marked demo and lasts two hours',
+  res.status === 200 && demoClaims.demo === true && demoClaims.exp - demoClaims.iat === 7200,
+  `${res.status}, demo: ${demoClaims.demo}, lifetime ${(demoClaims.exp - demoClaims.iat) / 3600} h`,
+);
 
 // ── Roles and ownership ───────────────────────────────────────────────────────────────────────
 section('3  Roles and ownership (authorisation)');

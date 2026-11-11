@@ -5,15 +5,13 @@ import { describe, expect, it } from 'vitest';
 import app from '../src/index';
 import { call, connect, makeAlumni, makePerson, nowSeconds, rows, tokenFor } from './helpers';
 
-const PASSCODE = 'test-demo-passcode';
-
 function demoLogin(body: Record<string, unknown>) {
   return call('POST', '/auth/demo-login', { body });
 }
 
 describe('POST /auth/demo-login', () => {
-  it('signs in a demo account with the passcode, and the token works on the API', async () => {
-    const res = await demoLogin({ passcode: PASSCODE, role: 'student', user_id: 'demo-student-su-myat' });
+  it('signs in a demo account without a password, and the token works on the API', async () => {
+    const res = await demoLogin({ role: 'student', user_id: 'demo-student-su-myat' });
     expect(res.status).toBe(200);
     expect(res.json.user).toEqual({ id: 'demo-student-su-myat', role: 'student' });
 
@@ -22,7 +20,7 @@ describe('POST /auth/demo-login', () => {
   });
 
   it('issues a token that expires within two hours', async () => {
-    const res = await demoLogin({ passcode: PASSCODE, role: 'alumni', user_id: 'demo-alumni-test' });
+    const res = await demoLogin({ role: 'alumni', user_id: 'demo-alumni-test' });
     const { payload } = decode(res.json.token);
     expect(payload).toMatchObject({ sub: 'demo-alumni-test', role: 'alumni' });
     expect(payload.exp).toBeGreaterThan(nowSeconds());
@@ -30,49 +28,43 @@ describe('POST /auth/demo-login', () => {
     expect(res.json.expires_at).toBe(new Date((payload.exp as number) * 1000).toISOString());
   });
 
-  it('rejects a wrong passcode', async () => {
-    const res = await demoLogin({ passcode: 'wrong', role: 'admin', user_id: 'demo-admin' });
-    expect(res.status).toBe(401);
-    expect(res.json.code).toBe('INVALID_PASSCODE');
-    expect(res.json).not.toHaveProperty('token');
-  });
-
   it('marks its tokens as demo tokens', async () => {
-    const res = await demoLogin({ passcode: PASSCODE, role: 'admin', user_id: 'demo-admin' });
+    const res = await demoLogin({ role: 'admin', user_id: 'demo-admin' });
     expect(decode(res.json.token).payload).toMatchObject({ sub: 'demo-admin', role: 'admin', demo: true });
   });
 
   it.each([
     ['an account outside the demo- prefix', { role: 'student', user_id: 'student-1' }, 'user_id'],
     ['a real-looking user ID', { role: 'admin', user_id: '6731503083' }, 'user_id'],
+    ['an approved personal-email alumni ID', { role: 'alumni', user_id: 'personal-0b7c2a9e' }, 'user_id'],
     ['a student ID asking to be admin', { role: 'admin', user_id: 'demo-student-su-myat' }, 'user_id'],
     ['an alumni ID asking to be a student', { role: 'student', user_id: 'demo-alumni-li-wei' }, 'user_id'],
     ['an unknown role', { role: 'superuser', user_id: 'demo-x1' }, 'role'],
-    ['a missing passcode', { role: 'student', user_id: 'demo-student-1', passcode: undefined }, 'passcode'],
+    ['a missing user ID', { role: 'student', user_id: undefined }, 'user_id'],
   ])('refuses %s', async (_label, fields, badField) => {
-    const res = await demoLogin({ passcode: PASSCODE, ...fields });
+    const res = await demoLogin(fields);
     expect(res.status).toBe(400);
     expect(res.json.fields).toHaveProperty(badField);
   });
 
-  it('refuses every request when no passcode is configured', async () => {
+  it('refuses every request when no JWT_SECRET is configured', async () => {
     const res = await app.request(
       '/auth/demo-login',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passcode: '', role: 'student', user_id: 'demo-student-1' }),
+        body: JSON.stringify({ role: 'student', user_id: 'demo-student-1' }),
       },
-      { ...env, DEMO_PASSCODE: '' },
+      { ...env, JWT_SECRET: '' },
     );
     expect(res.status).toBe(503);
-    expect(((await res.json()) as { code: string }).code).toBe('DEMO_LOGIN_NOT_CONFIGURED');
+    expect(((await res.json()) as { code: string }).code).toBe('AUTH_NOT_CONFIGURED');
   });
 });
 
 describe('a demo admin', () => {
   async function demoAdminToken() {
-    const res = await demoLogin({ passcode: PASSCODE, role: 'admin', user_id: 'demo-admin' });
+    const res = await demoLogin({ role: 'admin', user_id: 'demo-admin' });
     return res.json.token as string;
   }
 
@@ -168,6 +160,12 @@ describe('GET /app', () => {
     expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff');
   });
 
+  it('signs in with one click, with no passcode to type', async () => {
+    const { text } = await call('GET', '/app');
+    expect(text).not.toMatch(/passcode/i);
+    expect(text).not.toContain('type: \'password\'');
+  });
+
   it('uses a new nonce on every request', async () => {
     const first = (await call('GET', '/app')).headers.get('Content-Security-Policy');
     const second = (await call('GET', '/app')).headers.get('Content-Security-Policy');
@@ -191,7 +189,7 @@ describe('GET /app', () => {
 
   it('holds no secret', async () => {
     const { text } = await call('GET', '/app');
-    for (const secret of [env.JWT_SECRET, env.DEMO_PASSCODE, env.WEBHOOK_SECRET, env.PARTNER_WEBHOOK_SECRET]) {
+    for (const secret of [env.JWT_SECRET, env.WEBHOOK_SECRET, env.PARTNER_WEBHOOK_SECRET]) {
       expect(text).not.toContain(secret);
     }
   });
