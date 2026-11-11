@@ -66,17 +66,19 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
 4. **`contact_reveal_log` is append-only**, enforced by triggers. It is PDPA evidence.
 5. **Webhook signatures are verified with a timing-safe comparison** (`timingSafeEqual` in
    `src/lib/hmac.ts`). Never compare HMAC digests with `===`.
-6. **An empty secret must refuse requests.** `JWT_SECRET`, `EVENTS_CLUBS_WEBHOOK_SECRET` and
-   `DEMO_PASSCODE` return 503 when unset, because an empty key would let anyone sign or sign in.
+6. **An empty secret must refuse requests.** `JWT_SECRET` and `EVENTS_CLUBS_WEBHOOK_SECRET` return
+   503 when unset, because an empty key would let anyone sign.
 7. **`webhook_events.source_id` has a UNIQUE index** so a partner's retried delivery isn't stored
    twice. The A5 receiver treats any insert error as a duplicate, so a signed event with no `id` or
    `type` gets `duplicate: true` and isn't stored. This is known and documented on the docs page.
 8. **Secrets live only in `.dev.vars`** locally and `wrangler secret` when deployed, never committed.
-9. **Demo sign-in only signs `demo-` IDs, and the ID fixes the role.** `POST /auth/demo-login` must
-   never issue a token for an ID a real Identity user could have, and `demo-student-…` can't ask to be
+9. **Demo sign-in only signs `demo-` IDs, and the ID fixes the role.** `POST /auth/demo-login` has
+   no password since 11 Nov 2026, because the live link is the course submission and graders must get
+   in, so these limits are all that keep visitors off real accounts. It must never issue a token for
+   an ID a real Identity user or a `personal-` alumni could have, and `demo-student-…` can't ask to be
    admin. Its tokens carry `demo: true` (`user.demo`), and a demo admin can only deactivate profiles
-   whose `identity_user_id` starts with `demo-`. The passcode check has no rate limit. Delete the
-   route when Identity publishes its contract.
+   whose `identity_user_id` starts with `demo-`. Don't add a route a demo token can use on real data.
+   Delete the route when Identity publishes its contract.
 10. **The web app never parses API text as HTML.** `src/app.html` builds the page with
     `createElement` and text nodes, and has no inline event handlers. `/app` sends a
     Content-Security-Policy with a new nonce per response, and only the page's own `<script>` and
@@ -98,8 +100,10 @@ The demo scripts sign tokens with `JWT_SECRET` from `.demo.vars` (live) or `.dev
 - Screens for the Assumption 1 fallback, and sending its sign-in codes by email.
   `src/routes/alumni-verification.ts` lets alumni whose student email has closed register with a
   personal email, an admin approve them, and a single-use code sign them in. Approved IDs start
-  `personal-`. With no email provider, `POST /auth/alumni/sign-in-link` only returns the code
-  (`demo_code`) to a caller who sends the demo passcode.
+  `personal-`. Demo powers reach `@example.com` claims only (invariant 9): a demo admin sees and
+  reviews only those, `POST /auth/alumni/sign-in-link` returns their code (`demo_code`) in the
+  answer, and their tokens carry `demo: true`. A real email gets no code
+  until an email provider is connected.
 - The OpenAPI document (PRD section 11). The web app is served from the same Worker, so there's no
   CORS.
 

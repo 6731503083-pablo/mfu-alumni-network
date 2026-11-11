@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
 
-import { call, makePerson, rows } from './helpers';
+import { call, makePerson, rows, tokenFor } from './helpers';
 
 // PRD Assumption 1 fallback: personal email plus Alumni Association approval.
 
@@ -21,13 +21,22 @@ function claim(fields: Record<string, unknown> = {}) {
 const register = (body: unknown) => call('POST', '/auth/alumni/register', { body });
 const review = (as: unknown, id: string, body: unknown) =>
   call('PATCH', `/admin/alumni-verifications/${id}`, { as: as as any, body });
-const askForCode = (email: string, passcode?: string) =>
-  call('POST', '/auth/alumni/sign-in-link', { body: passcode === undefined ? { email } : { email, passcode } });
+const askForCode = (email: string) => call('POST', '/auth/alumni/sign-in-link', { body: { email } });
 const signIn = (code: string) => call('POST', '/auth/alumni/sign-in', { body: { code } });
 
-async function approvedAccount() {
+// @example.com is reserved, so it can never be a real inbox: the only claims demo powers reach.
+const demoEmail = () => `thiri.${crypto.randomUUID().slice(0, 8)}@example.com`;
+const demoAdmin = () => tokenFor('admin', 'demo-admin', { demo: true });
+const tokenClaims = (token: string) => JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+async function sha256Hex(text: string) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function approvedAccount(email = demoEmail()) {
   const admin = await makePerson('admin');
-  const body = claim();
+  const body = claim({ email });
   const res = await register(body);
   const approved = await review(admin, res.json.id, { status: 'approved' });
   return { body, id: res.json.id as string, identityUserId: approved.json.identity_user_id as string };
@@ -146,32 +155,32 @@ describe('Alumni Association review', () => {
 });
 
 describe('Signing in with a personal email', () => {
-  it('sends nothing back without the demo passcode, and says the same for any email', async () => {
-    const { body } = await approvedAccount();
+  it('says the same for a real email with an account as for one without', async () => {
+    const { body } = await approvedAccount(`thiri.${crypto.randomUUID().slice(0, 8)}@gmail.com`);
     const known = await askForCode(body.email);
-    const unknown = await askForCode('nobody@example.com');
+    const unknown = await askForCode('nobody@gmail.com');
     expect(known.status).toBe(202);
     expect(known.json.demo_code).toBeUndefined();
     expect(unknown.json).toEqual(known.json);
   });
 
-  it('refuses a wrong passcode', async () => {
-    const res = await askForCode('nobody@example.com', 'wrong');
-    expect(res.status).toBe(401);
-    expect(res.json.code).toBe('INVALID_PASSCODE');
+  it('refuses an email that is not valid', async () => {
+    const res = await askForCode('not-an-email');
+    expect(res.status).toBe(400);
+    expect(res.json.fields).toHaveProperty('email');
   });
 
   it('gives no code to a claim that is still pending', async () => {
-    const body = claim();
+    const body = claim({ email: demoEmail() });
     await register(body);
-    const res = await askForCode(body.email, env.DEMO_PASSCODE);
+    const res = await askForCode(body.email);
     expect(res.status).toBe(202);
     expect(res.json.demo_code).toBeUndefined();
   });
 
   it('stores only a hash of the code', async () => {
     const { body, id } = await approvedAccount();
-    const { json } = await askForCode(body.email, env.DEMO_PASSCODE);
+    const { json } = await askForCode(body.email);
     const stored = await rows('SELECT code_hash FROM alumni_sign_in_codes WHERE verification_id = ?', id);
     expect(stored).toHaveLength(1);
     expect(stored[0].code_hash).not.toBe(json.demo_code);
@@ -179,7 +188,7 @@ describe('Signing in with a personal email', () => {
 
   it('signs in once with the code, then refuses it', async () => {
     const { body, identityUserId } = await approvedAccount();
-    const { json } = await askForCode(body.email.toUpperCase(), env.DEMO_PASSCODE);
+    const { json } = await askForCode(body.email.toUpperCase());
     const first = await signIn(json.demo_code);
     expect(first.status).toBe(200);
     expect(first.json.user).toEqual({ id: identityUserId, role: 'alumni' });
@@ -190,14 +199,14 @@ describe('Signing in with a personal email', () => {
 
   it('lets only one of two requests with the same code through', async () => {
     const { body } = await approvedAccount();
-    const { json } = await askForCode(body.email, env.DEMO_PASSCODE);
+    const { json } = await askForCode(body.email);
     const results = await Promise.all([signIn(json.demo_code), signIn(json.demo_code)]);
     expect(results.map((r) => r.status).sort()).toEqual([200, 401]);
   });
 
   it('refuses an expired code', async () => {
     const { body, id } = await approvedAccount();
-    const { json } = await askForCode(body.email, env.DEMO_PASSCODE);
+    const { json } = await askForCode(body.email);
     await env.DB.prepare('UPDATE alumni_sign_in_codes SET expires_at = ? WHERE verification_id = ?')
       .bind(new Date(Date.now() - 1000).toISOString(), id)
       .run();
@@ -211,7 +220,7 @@ describe('Signing in with a personal email', () => {
 
   it('takes an approved alumni from sign-up to a profile students can find', async () => {
     const { body, identityUserId } = await approvedAccount();
-    const { json } = await askForCode(body.email, env.DEMO_PASSCODE);
+    const { json } = await askForCode(body.email);
     const { json: session } = await signIn(json.demo_code);
 
     const created = await call('PATCH', '/alumni/me', {
@@ -225,5 +234,54 @@ describe('Signing in with a personal email', () => {
     const student = await makePerson('student');
     const found = await call('GET', `/alumni/${created.json.id}`, { as: student });
     expect(found.status).toBe(200);
+  });
+});
+
+describe('Demo powers reach demo claims only (invariant 9)', () => {
+  it('never returns a code for a real email', async () => {
+    const { body, id } = await approvedAccount('thiri.real@gmail.com'.replace('real', crypto.randomUUID().slice(0, 8)));
+    const res = await askForCode(body.email);
+    expect(res.status).toBe(202);
+    expect(res.json.demo_code).toBeUndefined();
+    expect(await rows('SELECT 1 FROM alumni_sign_in_codes WHERE verification_id = ?', id)).toHaveLength(0);
+  });
+
+  it('shows a demo admin demo claims only', async () => {
+    const real = await register(claim());
+    const demo = await register(claim({ email: demoEmail() }));
+    const res = await call('GET', '/admin/alumni-verifications', { as: await demoAdmin() });
+    expect(res.status).toBe(200);
+    const ids = res.json.data.map((r: any) => r.id);
+    expect(ids).toContain(demo.json.id);
+    expect(ids).not.toContain(real.json.id);
+    expect(res.json.data.every((r: any) => r.email.endsWith('@example.com'))).toBe(true);
+  });
+
+  it('lets a demo admin review demo claims, and answers 404 for a real one', async () => {
+    const admin = await demoAdmin();
+    const real = await register(claim());
+    const demo = await register(claim({ email: demoEmail() }));
+    const refused = await review(admin, real.json.id, { status: 'approved' });
+    expect(refused.status).toBe(404);
+    const [row] = await rows('SELECT status, identity_user_id FROM alumni_verifications WHERE id = ?', real.json.id);
+    expect(row).toEqual({ status: 'pending', identity_user_id: null });
+    expect((await review(admin, demo.json.id, { status: 'approved' })).status).toBe(200);
+  });
+
+  it('marks a demo claim\'s token as demo, and a real one\'s not', async () => {
+    const demo = await approvedAccount();
+    const { json } = await askForCode(demo.body.email);
+    const demoSession = await signIn(json.demo_code);
+    expect(tokenClaims(demoSession.json.token).demo).toBe(true);
+
+    // A real claim's code would arrive by email. Stand in for that by storing one directly.
+    const real = await approvedAccount(`thiri.${crypto.randomUUID().slice(0, 8)}@gmail.com`);
+    const code = 'b'.repeat(64);
+    await env.DB.prepare('INSERT INTO alumni_sign_in_codes (code_hash, verification_id, expires_at) VALUES (?, ?, ?)')
+      .bind(await sha256Hex(code), real.id, new Date(Date.now() + 60_000).toISOString())
+      .run();
+    const realSession = await signIn(code);
+    expect(realSession.status).toBe(200);
+    expect(tokenClaims(realSession.json.token).demo).toBeUndefined();
   });
 });

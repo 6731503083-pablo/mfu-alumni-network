@@ -3,7 +3,6 @@ import { sign } from 'hono/jwt';
 import { z } from 'zod';
 
 import { ApiError } from '../lib/errors';
-import { timingSafeEqual } from '../lib/hmac';
 import { parseJsonBody } from '../lib/validate';
 import type { AppEnv } from '../types';
 
@@ -19,7 +18,6 @@ const ID_PATTERN = {
 
 const loginBody = z
   .strictObject({
-    passcode: z.string().min(1).max(200),
     role: z.enum(['student', 'alumni', 'admin']),
     user_id: z.string().max(80),
   })
@@ -28,31 +26,20 @@ const loginBody = z
     message: 'Use a demo ID for this role: demo-student-…, demo-alumni-… or demo-admin',
   });
 
-async function sha256Hex(text: string): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
 export const demoAuth = new Hono<AppEnv>();
 
 /**
  * Stands in for the Identity service until it publishes its token contract (PRD Assumption 1), so
- * the web app can sign people in without holding JWT_SECRET. Delete this route when Identity arrives.
+ * the web app can sign people in without holding JWT_SECRET. It is open to anyone, so it only signs
+ * demo IDs, and routes limit what a demo token can touch. Delete this route when Identity arrives.
  */
 demoAuth.post('/demo-login', async (c) => {
-  // An empty passcode or key would let anyone in, so refuse everything instead.
-  if (!c.env.DEMO_PASSCODE) {
-    throw new ApiError(503, 'DEMO_LOGIN_NOT_CONFIGURED', 'Demo sign-in is not set up on this server');
-  }
+  // An empty key would let anyone sign any token, so refuse everything instead.
   if (!c.env.JWT_SECRET) {
     throw new ApiError(503, 'AUTH_NOT_CONFIGURED', 'Sign-in is not set up on this server');
   }
 
-  const { passcode, role, user_id: userId } = await parseJsonBody(c, loginBody);
-  // Hashing both first makes the comparison take the same time whatever the passcode's length.
-  if (!timingSafeEqual(await sha256Hex(passcode), await sha256Hex(c.env.DEMO_PASSCODE))) {
-    throw new ApiError(401, 'INVALID_PASSCODE', 'The passcode is wrong');
-  }
+  const { role, user_id: userId } = await parseJsonBody(c, loginBody);
 
   const now = Math.floor(Date.now() / 1000);
   const exp = now + TOKEN_LIFETIME_SECONDS;

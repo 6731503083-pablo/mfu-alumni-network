@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 import { requireRole } from '../lib/auth';
 import { ApiError, conflict, isUniqueViolation, notFound, validationError } from '../lib/errors';
-import { timingSafeEqual } from '../lib/hmac';
 import { parseJsonBody, parseQuery } from '../lib/validate';
 import type { AppEnv } from '../types';
 
@@ -19,11 +18,19 @@ import type { AppEnv } from '../types';
  *   4. POST  /auth/alumni/sign-in-link         a single-use code, sent to the personal email
  *   5. POST  /auth/alumni/sign-in              the code becomes an alumni token
  *
- * Step 4's code proves the person owns the inbox. No email provider is connected yet, so the code is
- * only returned to a caller who also sends the demo passcode.
+ * Step 4's code proves the person owns the inbox. No email provider is connected yet.
+ *
+ * Demo powers reach demo claims only, as with demo sign-in (CLAUDE.md invariant 9). A demo claim uses
+ * an @example.com address, which is reserved and can never be a real inbox. For those, and only
+ * those, step 4 returns the code in the answer, a demo admin can see and review the claim, and the
+ * token carries `demo: true`. A claim with a real email needs a real admin and a real email.
  */
 
 const STUDENT_DOMAIN = /@lamduan\.mfu\.ac\.th$/i;
+const DEMO_DOMAIN = '@example.com';
+const isDemoEmail = (email: string) => email.endsWith(DEMO_DOMAIN);
+// substr, not LIKE, on user text (invariant 2).
+const IS_DEMO_CLAIM = `substr(email, -${DEMO_DOMAIN.length}) = '${DEMO_DOMAIN}'`;
 const CODE_LIFETIME_MS = 15 * 60 * 1000;
 const TOKEN_LIFETIME_SECONDS = 2 * 3600;
 
@@ -81,21 +88,16 @@ alumniSignup.post('/register', async (c) => {
   );
 });
 
-const linkBody = z.strictObject({ email: personalEmail, passcode: z.string().min(1).max(200).optional() });
+const linkBody = z.strictObject({ email: personalEmail });
 
 // Step 4. The same answer whether or not the email has an account, so it can't be used to find out.
 alumniSignup.post('/sign-in-link', async (c) => {
-  const { email, passcode } = await parseJsonBody(c, linkBody);
+  const { email } = await parseJsonBody(c, linkBody);
   const answer = { message: 'If this email has an approved account, a sign-in code is on its way' };
 
-  // No email provider yet: only a demo-passcode holder gets the code back. Without one, nothing is sent.
-  if (passcode === undefined) return c.json(answer, 202);
-  if (!c.env.DEMO_PASSCODE) {
-    throw new ApiError(503, 'DEMO_LOGIN_NOT_CONFIGURED', 'Demo sign-in is not set up on this server');
-  }
-  if (!timingSafeEqual(await sha256Hex(passcode), await sha256Hex(c.env.DEMO_PASSCODE))) {
-    throw new ApiError(401, 'INVALID_PASSCODE', 'The passcode is wrong');
-  }
+  // No email provider yet, so a real address gets nothing. Only a demo address gets the code back
+  // in the answer, since no one can own an @example.com inbox.
+  if (!isDemoEmail(email)) return c.json(answer, 202);
 
   const account = await c.env.DB.prepare(
     `SELECT id FROM alumni_verifications WHERE email = ? AND status = 'approved'`,
@@ -134,16 +136,17 @@ alumniSignup.post('/sign-in', async (c) => {
   const account =
     used &&
     (await c.env.DB.prepare(
-      `SELECT identity_user_id FROM alumni_verifications WHERE id = ? AND status = 'approved'`,
+      `SELECT identity_user_id, email FROM alumni_verifications WHERE id = ? AND status = 'approved'`,
     )
       .bind(used.verification_id)
-      .first<{ identity_user_id: string }>());
+      .first<{ identity_user_id: string; email: string }>());
   if (!account) throw new ApiError(401, 'INVALID_CODE', 'The code is wrong, used or expired');
 
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + TOKEN_LIFETIME_SECONDS;
   const userId = account.identity_user_id;
-  const token = await sign({ sub: userId, role: 'alumni', iat, exp }, c.env.JWT_SECRET, 'HS256');
+  const claims = { sub: userId, role: 'alumni', ...(isDemoEmail(account.email) ? { demo: true } : {}), iat, exp };
+  const token = await sign(claims, c.env.JWT_SECRET, 'HS256');
   return c.json({ token, expires_at: new Date(exp * 1000).toISOString(), user: { id: userId, role: 'alumni' } });
 });
 
@@ -154,15 +157,18 @@ const listQuery = z.strictObject({
 });
 
 // Step 2. The Association sees what it needs to check a claim, and nothing from alumni profiles.
+// A demo admin sees demo claims only, so a real claimant's email and student ID stay hidden.
 verificationAdmin.get('/', requireRole('admin'), async (c) => {
   const { status } = parseQuery(c, listQuery);
+  const demo = c.get('user').demo ? 1 : 0;
   const { results } = await c.env.DB.prepare(
     `SELECT v.id, v.email, v.display_name, v.student_id, v.faculty_id, f.name AS faculty, v.grad_year,
             v.status, v.review_note, v.reviewed_at, v.created_at
      FROM alumni_verifications v JOIN faculties f ON f.id = v.faculty_id
-     WHERE v.status = ? ORDER BY v.created_at LIMIT 100`,
+     WHERE v.status = ?1 AND (?2 = 0 OR ${IS_DEMO_CLAIM.replace('email', 'v.email')})
+     ORDER BY v.created_at LIMIT 100`,
   )
-    .bind(status)
+    .bind(status, demo)
     .all();
   return c.json({ data: results });
 });
@@ -173,20 +179,27 @@ const reviewBody = z.strictObject({
 });
 
 // Step 3. Only a pending claim can be reviewed, and the check and the change are one statement.
+// A demo admin can only review demo claims, and a real claim answers 404 to them, as if it weren't there.
 verificationAdmin.patch('/:id', requireRole('admin'), async (c) => {
   const id = c.req.param('id');
   const { status, note } = await parseJsonBody(c, reviewBody);
+  const user = c.get('user');
+  const demo = user.demo ? 1 : 0;
   const identityUserId = status === 'approved' ? `personal-${crypto.randomUUID()}` : null;
 
   const updated = await c.env.DB.prepare(
     `UPDATE alumni_verifications
-     SET status = ?, identity_user_id = ?, review_note = ?, reviewed_by = ?, reviewed_at = ?
-     WHERE id = ? AND status = 'pending'`,
+     SET status = ?1, identity_user_id = ?2, review_note = ?3, reviewed_by = ?4, reviewed_at = ?5
+     WHERE id = ?6 AND status = 'pending' AND (?7 = 0 OR ${IS_DEMO_CLAIM})`,
   )
-    .bind(status, identityUserId, note ?? null, c.get('user').id, new Date().toISOString(), id)
+    .bind(status, identityUserId, note ?? null, user.id, new Date().toISOString(), id, demo)
     .run();
   if (!updated.meta.changes) {
-    const exists = await c.env.DB.prepare('SELECT 1 FROM alumni_verifications WHERE id = ?').bind(id).first();
+    const exists = await c.env.DB.prepare(
+      `SELECT 1 FROM alumni_verifications WHERE id = ?1 AND (?2 = 0 OR ${IS_DEMO_CLAIM})`,
+    )
+      .bind(id, demo)
+      .first();
     if (exists) throw conflict('ALREADY_REVIEWED', 'This claim has already been reviewed');
     throw notFound('Claim');
   }

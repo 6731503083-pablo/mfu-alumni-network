@@ -11,10 +11,10 @@ Using secrets defined in .dev.vars
 Using secrets defined in .dev.vars
 Using secrets defined in .dev.vars
 stdout | test/partner-mentors.test.ts > GET /api/mentors > needs no token, and lists every interest with a count and a link
-{"route":"GET /api/mentors","request_id":"71494a0a-68aa-40b4-a073-4bd959d8568a","origin":null}
+{"route":"GET /api/mentors","request_id":"e4860378-0e86-4dc6-9350-a31cad0c1d2b","origin":null}
 
 stdout | test/partner-mentors.test.ts > GET /api/mentors > counts only alumni who are active, open to mentoring and have room
-{"route":"GET /api/mentors","request_id":"49178ba9-a9d6-4742-ad88-c1e3a958e7de","interest":"Cosmetic Science","origin":null}
+{"route":"GET /api/mentors","request_id":"2a84970d-681f-404b-82fd-c575b0a91e1a","interest":"Cosmetic Science","origin":null}
 
 stderr | test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects no signature and stores nothing
 events-clubs webhook rejected: invalid signature
@@ -35,278 +35,278 @@ stderr | test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > reje
 events-clubs webhook rejected: invalid signature
 
 stdout | test/partner-mentors.test.ts > GET /api/mentors > counts only alumni who are active, open to mentoring and have room
-{"route":"GET /api/mentors","request_id":"3b72bc83-6621-46a5-a574-73f9cf905c79","interest":"Cosmetic Science","origin":null}
+{"route":"GET /api/mentors","request_id":"aa73d313-507f-46ca-b9e1-7a66ee646212","interest":"Cosmetic Science","origin":null}
 
 stdout | test/partner-mentors.test.ts > GET /api/mentors > never returns names, IDs or contact details
-{"route":"GET /api/mentors","request_id":"959ff838-84d2-427c-a6e5-9b1867679736","origin":null}
+{"route":"GET /api/mentors","request_id":"15dfce06-4de2-48d0-a4e8-714a68ec9e19","origin":null}
 
 stdout | test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category Engineering and answers with our matching interests
-{"route":"GET /api/mentors","request_id":"890fa1b6-f29c-47eb-9ecd-5aa6d798aba0","category":"Engineering","origin":null}
+{"route":"GET /api/mentors","request_id":"bf25cbd7-c74e-425f-88ba-034fe3bde473","category":"Engineering","origin":null}
 
 stdout | test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category Design and answers with our matching interests
-{"route":"GET /api/mentors","request_id":"89d0b026-fc16-4822-8a03-3951a216b7a7","category":"Design","origin":null}
+{"route":"GET /api/mentors","request_id":"431800ee-1640-4cc9-bf3c-94f5582a2ec7","category":"Design","origin":null}
 
 stdout | test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category data and answers with our matching interests
-{"route":"GET /api/mentors","request_id":"74fa90bf-2b7c-4333-9e06-63f8a8ef07d0","category":"data","origin":null}
+{"route":"GET /api/mentors","request_id":"16682aa5-5baf-413e-ba50-e32e58916258","category":"data","origin":null}
 
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > stores a correctly signed event, with no JWT needed 8ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > stores a retried delivery only once 5ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > stores a correctly signed event, with no JWT needed 10ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > stores a retried delivery only once 7ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > stores one copy when two deliveries arrive together 4ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > ignores extra fields so the sender can add to its schema 2ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > ignores extra fields so the sender can add to its schema 1ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects no signature and stores nothing 3ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a forged signature and stores nothing 2ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a signature of the wrong length and stores nothing 8ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a forged signature and stores nothing 8ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a signature of the wrong length and stores nothing 3ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects an empty signature and stores nothing 3ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a body changed after signing 2ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a body changed after signing 3ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > rejects a signature made with the Team 17 secret 2ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > logs and skips a signed body that is not JSON 3ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad event_id 3ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > logs and skips a signed body that is not JSON 2ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad event_id 2ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad event_id 1ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad event_type 2ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad occurred_at 1ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data 2ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data.title 1ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad occurred_at 2ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data 1ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data.title 2ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data.title 1ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data.starts_at 1ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data.starts_at 2ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > skips an event with a bad data.url 1ms
  ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > malformed events (FR-11) > stores nothing from a bad event, and the next good one still works 4ms
- ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > refuses every delivery when the secret is not set 1ms
+ ✓ test/events-clubs.test.ts > POST /webhooks/events-clubs (API-09) > refuses every delivery when the secret is not set 0ms
 stdout | test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category MARKETING and answers with our matching interests
-{"route":"GET /api/mentors","request_id":"9dedf82f-d897-42fd-9bf8-2c350f61e44c","category":"MARKETING","origin":null}
+{"route":"GET /api/mentors","request_id":"61351443-a9a6-4f87-a730-c6b085885c4e","category":"MARKETING","origin":null}
 
 Using secrets defined in .dev.vars
 stdout | test/partner-mentors.test.ts > GET /api/mentors > can be narrowed to one of our interests
-{"route":"GET /api/mentors","request_id":"33088ddf-5f08-42ce-acf5-b92678578454","interest":"UX/UI Design","origin":null}
+{"route":"GET /api/mentors","request_id":"cb7f6c42-58e6-4fad-b687-92f0de362be9","interest":"UX/UI Design","origin":null}
 
-stdout | test/partner-mentors.test.ts > GET /api/mentors > lets any website read it, including its errors
-{"route":"GET /api/mentors","request_id":"0e7b90cf-5ce4-4e53-9cb1-f92fc189184e","origin":"https://team17-internship.vercel.app"}
-
-stdout | test/partner-mentors.test.ts > GET /api/mentors > gives every answer a request ID, for matching logs with the caller
-{"route":"GET /api/mentors","request_id":"e875a33c-bcb8-46e0-9de6-48e152e1801b","origin":null}
-
-stdout | test/partner-mentors.test.ts > GET /api/mentors > gives every answer a request ID, for matching logs with the caller
-{"route":"GET /api/mentors","request_id":"d0ac2ee8-0140-422e-a631-d6627a6adf0a","origin":null}
-
- ✓ test/partner-mentors.test.ts > GET /api/mentors > needs no token, and lists every interest with a count and a link 17ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > counts only alumni who are active, open to mentoring and have room 33ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > never returns names, IDs or contact details 5ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category Engineering and answers with our matching interests 2ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category Design and answers with our matching interests 3ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category data and answers with our matching interests 2ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category MARKETING and answers with our matching interests 3ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > can be narrowed to one of our interests 6ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects an unknown category 4ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects an unknown interest 7ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects both filters at once 2ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects an unknown parameter 2ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > lets any website read it, including its errors 3ms
- ✓ test/partner-mentors.test.ts > GET /api/mentors > gives every answer a request ID, for matching logs with the caller 5ms
-Using secrets defined in .dev.vars
- ✓ test/quality-security.test.ts > focused authentication and authorization checks > rejects unauthenticated access to protected endpoints 15ms
- ✓ test/quality-security.test.ts > focused authentication and authorization checks > prevents a student from using an admin-only endpoint 1ms
- ✓ test/quality-security.test.ts > focused authentication and authorization checks > rejects a target profile ID and keeps PATCH /alumni/me scoped to the authenticated alumni 16ms
- ✓ test/quality-security.test.ts > focused privacy and consent checks > does not expose contact information in public profile views 9ms
- ✓ test/quality-security.test.ts > focused privacy and consent checks > reveals only consented contact fields after an active connection 15ms
- ✓ test/quality-security.test.ts > focused privacy and consent checks > stops disclosing a contact field after consent is withdrawn 20ms
- ✓ test/quality-security.test.ts > focused mentoring request workflow checks > submits a valid pending mentoring request 11ms
- ✓ test/quality-security.test.ts > focused mentoring request workflow checks > rejects duplicate pending requests for the same student and alumni 6ms
- ✓ test/app.test.ts > POST /auth/demo-login > signs in a demo account with the passcode, and the token works on the API 12ms
- ✓ test/app.test.ts > POST /auth/demo-login > issues a token that expires within two hours 3ms
+ ✓ test/app.test.ts > POST /auth/demo-login > signs in a demo account with the passcode, and the token works on the API 16ms
+ ✓ test/app.test.ts > POST /auth/demo-login > issues a token that expires within two hours 2ms
  ✓ test/app.test.ts > POST /auth/demo-login > rejects a wrong passcode 1ms
  ✓ test/app.test.ts > POST /auth/demo-login > marks its tokens as demo tokens 2ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses an account outside the demo- prefix 2ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses a real-looking user ID 2ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses a student ID asking to be admin 1ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses an alumni ID asking to be a student 16ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses an unknown role 3ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses a missing passcode 3ms
- ✓ test/app.test.ts > POST /auth/demo-login > refuses every request when no passcode is configured 1ms
- ✓ test/app.test.ts > a demo admin > can turn off a demo profile 9ms
- ✓ test/app.test.ts > a demo admin > cannot turn off a real profile 6ms
- ✓ test/app.test.ts > a demo admin > still gets 404 for an unknown profile 4ms
- ✓ test/app.test.ts > GET /alumni/me > returns 404 before the alumni has a profile 5ms
- ✓ test/app.test.ts > GET /alumni/me > returns the owner view, with contact and consent fields 13ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses an account outside the demo- prefix 1ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses a real-looking user ID 1ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses a student ID asking to be admin 2ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses an alumni ID asking to be a student 1ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses an unknown role 11ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses a missing passcode 1ms
+ ✓ test/app.test.ts > POST /auth/demo-login > refuses every request when no passcode is configured 0ms
+ ✓ test/app.test.ts > a demo admin > can turn off a demo profile 8ms
+ ✓ test/app.test.ts > a demo admin > cannot turn off a real profile 8ms
+ ✓ test/app.test.ts > a demo admin > still gets 404 for an unknown profile 3ms
+ ✓ test/app.test.ts > GET /alumni/me > returns 404 before the alumni has a profile 2ms
+ ✓ test/app.test.ts > GET /alumni/me > returns the owner view, with contact and consent fields 5ms
  ✓ test/app.test.ts > GET /alumni/me > is for alumni only 1ms
- ✓ test/app.test.ts > admin browsing the directory > can search and open profiles, without contact or consent data 12ms
- ✓ test/app.test.ts > GET /app > is served as an HTML page 1ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > stores a pending claim without signing anyone in 8ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student address, which closes after graduation 3ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses the student domain in capitals too 1ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student ID that is not 10 digits 1ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year in the future 1ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year before MFU 2ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an empty name 1ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an unknown faculty 2ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a field the API does not take 2ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a second open claim for the same email or student ID 7ms
- ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > accepts a new claim after the last one was rejected 7ms
- ✓ test/alumni-verification.test.ts > Alumni Association review > only lets admins see the queue 7ms
- ✓ test/alumni-verification.test.ts > Alumni Association review > lists pending claims with what the Association needs to check them 4ms
- ✓ test/alumni-verification.test.ts > Alumni Association review > approves a claim and gives it an ID that cannot collide with Identity 5ms
- ✓ test/alumni-verification.test.ts > Alumni Association review > refuses to review a claim twice 6ms
- ✓ test/alumni-verification.test.ts > Alumni Association review > answers 404 for an unknown claim 2ms
- ✓ test/alumni-verification.test.ts > Alumni Association review > does not let an alumni approve their own claim 11ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > sends nothing back without the demo passcode, and says the same for any email 11ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > refuses a wrong passcode 2ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > gives no code to a claim that is still pending 4ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > stores only a hash of the code 10ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > creates the profile on the first call 8ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > requires name, graduation year and faculty when creating 2ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > updates only the fields sent 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > lets a nullable field be cleared 6ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects an update with no fields 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects a body that is not valid JSON 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects fields outside the allow-list and changes nothing 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects display_name = "" 6ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects display_name = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects grad_year = 1997 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects grad_year = 2028 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects grad_year = 2020.5 9ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects faculty_id = 999 12ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects job_title = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects company = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects city = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 5ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > creates a pending request 11ms
+ ✓ test/app.test.ts > admin browsing the directory > can search and open profiles, without contact or consent data 28ms
+ ✓ test/app.test.ts > GET /app > is served as an HTML page 2ms
+ ✓ test/app.test.ts > GET /app > sends a strict Content-Security-Policy whose nonce matches every script and style tag 2ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > needs no token, and lists every interest with a count and a link 10ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > counts only alumni who are active, open to mentoring and have room 44ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > never returns names, IDs or contact details 6ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category Engineering and answers with our matching interests 3ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category Design and answers with our matching interests 2ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category data and answers with our matching interests 2ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > takes Team 17 category MARKETING and answers with our matching interests 3ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > can be narrowed to one of our interests 9ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects an unknown category 12ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects an unknown interest 8ms
+ ✓ test/quality-security.test.ts > focused authentication and authorization checks > rejects unauthenticated access to protected endpoints 18ms
+ ✓ test/quality-security.test.ts > focused authentication and authorization checks > prevents a student from using an admin-only endpoint 3ms
+ ✓ test/quality-security.test.ts > focused authentication and authorization checks > rejects a target profile ID and keeps PATCH /alumni/me scoped to the authenticated alumni 16ms
+ ✓ test/quality-security.test.ts > focused privacy and consent checks > does not expose contact information in public profile views 9ms
+ ✓ test/quality-security.test.ts > focused privacy and consent checks > reveals only consented contact fields after an active connection 14ms
+ ✓ test/quality-security.test.ts > focused privacy and consent checks > stops disclosing a contact field after consent is withdrawn 31ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > creates a pending request 16ms
  ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a message that is missing 5ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a message that is blank 14ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a message that is too short 5ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a message that is blank 7ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a message that is too short 4ms
  ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a message that is too long 5ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > accepts a non-Latin message of 10 characters 4ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > accepts a non-Latin message of 10 characters 6ms
  ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > will not let a student send a request as someone else 5ms
  ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > returns 404 for an unknown alumni 2ms
  ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > returns 409 when the alumni is not open to mentoring 5ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a second pending request to the same alumni 12ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > lets one of two simultaneous duplicate requests through 12ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > allows a new request after the earlier one was rejected 11ms
- ✓ test/auth.test.ts > token checks > GET /alumni needs a token 4ms
- ✓ test/auth.test.ts > token checks > GET /alumni/some-id needs a token 2ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a second pending request to the same alumni 7ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > lets one of two simultaneous duplicate requests through 9ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > allows a new request after the earlier one was rejected 23ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > creates the profile on the first call 11ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > requires name, graduation year and faculty when creating 1ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > updates only the fields sent 8ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > lets a nullable field be cleared 8ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects an update with no fields 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects a body that is not valid JSON 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects fields outside the allow-list and changes nothing 7ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects display_name = "" 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects display_name = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 3ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects grad_year = 1997 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects grad_year = 2028 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects grad_year = 2020.5 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects faculty_id = 999 21ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects job_title = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 6ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects company = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 6ms
+ ✓ test/auth.test.ts > token checks > GET /alumni needs a token 7ms
+ ✓ test/auth.test.ts > token checks > GET /alumni/some-id needs a token 10ms
  ✓ test/auth.test.ts > token checks > GET /alumni/me needs a token 1ms
  ✓ test/auth.test.ts > token checks > PATCH /alumni/me needs a token 2ms
  ✓ test/auth.test.ts > token checks > POST /mentoring-requests needs a token 2ms
- ✓ test/auth.test.ts > token checks > GET /mentoring-requests/me needs a token 1ms
- ✓ test/auth.test.ts > token checks > PATCH /mentoring-requests/some-id needs a token 1ms
+ ✓ test/auth.test.ts > token checks > GET /mentoring-requests/me needs a token 2ms
+ ✓ test/auth.test.ts > token checks > PATCH /mentoring-requests/some-id needs a token 2ms
  ✓ test/auth.test.ts > token checks > DELETE /connections/some-id needs a token 1ms
  ✓ test/auth.test.ts > token checks > PATCH /admin/alumni/some-id/deactivate needs a token 2ms
- ✓ test/auth.test.ts > token checks > GET /partners/team17/internships needs a token 1ms
+ ✓ test/auth.test.ts > token checks > GET /partners/team17/internships needs a token 2ms
  ✓ test/auth.test.ts > token checks > rejects a token that is not a JWT 1ms
- ✓ test/auth.test.ts > token checks > rejects a scheme other than Bearer 1ms
- ✓ test/auth.test.ts > token checks > rejects a token signed with a different secret 1ms
+ ✓ test/auth.test.ts > token checks > rejects a scheme other than Bearer 2ms
+ ✓ test/auth.test.ts > token checks > rejects a token signed with a different secret 2ms
  ✓ test/auth.test.ts > token checks > rejects an expired token 2ms
- ✓ test/auth.test.ts > token checks > allows a few seconds of clock skew on expiry 3ms
- ✓ test/auth.test.ts > token checks > rejects a token with no expiry 2ms
+ ✓ test/auth.test.ts > token checks > allows a few seconds of clock skew on expiry 4ms
+ ✓ test/auth.test.ts > token checks > rejects a token with no expiry 1ms
  ✓ test/auth.test.ts > token checks > rejects an unsigned alg:none token 2ms
- ✓ test/auth.test.ts > token checks > rejects a token with no user ID 2ms
+ ✓ test/auth.test.ts > token checks > rejects a token with no user ID 1ms
  ✓ test/auth.test.ts > token checks > accepts the PRD claim name user_id when sub is absent 2ms
  ✓ test/auth.test.ts > token checks > refuses every token when JWT_SECRET is not set 1ms
- ✓ test/auth.test.ts > role checks > student calling GET /alumni: allowed=true 3ms
- ✓ test/auth.test.ts > role checks > alumni calling GET /alumni: allowed=true 3ms
- ✓ test/auth.test.ts > role checks > admin calling GET /alumni: allowed=true 1ms
- ✓ test/auth.test.ts > role checks > superuser calling GET /alumni: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > student calling GET /alumni/missing-id: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > alumni calling GET /alumni/missing-id: allowed=true 2ms
+ ✓ test/auth.test.ts > role checks > student calling GET /alumni: allowed=true 2ms
+ ✓ test/auth.test.ts > role checks > alumni calling GET /alumni: allowed=true 2ms
+ ✓ test/auth.test.ts > role checks > admin calling GET /alumni: allowed=true 2ms
+ ✓ test/auth.test.ts > role checks > superuser calling GET /alumni: allowed=false 1ms
+ ✓ test/auth.test.ts > role checks > student calling GET /alumni/missing-id: allowed=true 3ms
+ ✓ test/auth.test.ts > role checks > alumni calling GET /alumni/missing-id: allowed=true 1ms
  ✓ test/auth.test.ts > role checks > admin calling GET /alumni/missing-id: allowed=true 2ms
  ✓ test/auth.test.ts > role checks > superuser calling GET /alumni/missing-id: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > student calling GET /alumni/me: allowed=false 1ms
- ✓ test/auth.test.ts > role checks > alumni calling GET /alumni/me: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > admin calling GET /alumni/me: allowed=false 2ms
+ ✓ test/auth.test.ts > role checks > student calling GET /alumni/me: allowed=false 4ms
+ ✓ test/auth.test.ts > role checks > alumni calling GET /alumni/me: allowed=true 11ms
+ ✓ test/auth.test.ts > role checks > admin calling GET /alumni/me: allowed=false 7ms
  ✓ test/auth.test.ts > role checks > superuser calling GET /alumni/me: allowed=false 4ms
- ✓ test/auth.test.ts > role checks > student calling PATCH /alumni/me: allowed=false 5ms
- ✓ test/auth.test.ts > role checks > alumni calling PATCH /alumni/me: allowed=true 7ms
- ✓ test/auth.test.ts > role checks > admin calling PATCH /alumni/me: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > superuser calling PATCH /alumni/me: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > student calling POST /mentoring-requests: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > alumni calling POST /mentoring-requests: allowed=false 1ms
- ✓ test/auth.test.ts > role checks > admin calling POST /mentoring-requests: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > superuser calling POST /mentoring-requests: allowed=false 1ms
- ✓ test/auth.test.ts > role checks > student calling GET /mentoring-requests/me: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > alumni calling GET /mentoring-requests/me: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > admin calling GET /mentoring-requests/me: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > superuser calling GET /mentoring-requests/me: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > student calling PATCH /mentoring-requests/missing-id: allowed=true 5ms
- ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > lets the student end the connection 18ms
- ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > lets the alumni end the connection 12ms
+ ✓ test/auth.test.ts > role checks > student calling PATCH /alumni/me: allowed=false 1ms
+ ✓ test/auth.test.ts > role checks > alumni calling PATCH /alumni/me: allowed=true 4ms
+ ✓ test/auth.test.ts > role checks > admin calling PATCH /alumni/me: allowed=false 4ms
+stdout | test/partner-mentors.test.ts > GET /api/mentors > lets any website read it, including its errors
+{"route":"GET /api/mentors","request_id":"540e9b80-5804-46e4-bf0d-05808a00e95e","origin":"https://team17-internship.vercel.app"}
+
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > stores a pending claim without signing anyone in 9ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student address, which closes after graduation 2ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses the student domain in capitals too 1ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a student ID that is not 10 digits 2ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year in the future 1ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a year before MFU 3ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an empty name 2ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses an unknown faculty 2ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a field the API does not take 1ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > refuses a second open claim for the same email or student ID 7ms
+ ✓ test/alumni-verification.test.ts > POST /auth/alumni/register > accepts a new claim after the last one was rejected 7ms
+ ✓ test/alumni-verification.test.ts > Alumni Association review > only lets admins see the queue 3ms
+ ✓ test/alumni-verification.test.ts > Alumni Association review > lists pending claims with what the Association needs to check them 4ms
+ ✓ test/alumni-verification.test.ts > Alumni Association review > approves a claim and gives it an ID that cannot collide with Identity 4ms
+ ✓ test/alumni-verification.test.ts > Alumni Association review > refuses to review a claim twice 6ms
+ ✓ test/alumni-verification.test.ts > Alumni Association review > answers 404 for an unknown claim 2ms
+ ✓ test/alumni-verification.test.ts > Alumni Association review > does not let an alumni approve their own claim 4ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > sends nothing back without the demo passcode, and says the same for any email 25ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > refuses a wrong passcode 2ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > gives no code to a claim that is still pending 7ms
+ ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > lets the student end the connection 20ms
+ ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > lets the alumni end the connection 13ms
  ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > keeps the row and the reveal log (soft delete) 12ms
- ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > returns 409 when the connection has already ended 12ms
- ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > returns 403 to anyone outside the connection 26ms
- ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > returns 404 for an unknown connection 2ms
- ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > deactivates a profile without returning private data 5ms
- ✓ test/app.test.ts > GET /app > sends a strict Content-Security-Policy whose nonce matches every script and style tag 5ms
+ ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > returns 409 when the connection has already ended 20ms
  ✓ test/app.test.ts > GET /app > uses a new nonce on every request 7ms
  ✓ test/app.test.ts > GET /app > never builds HTML from strings or uses inline event handlers 4ms
- ✓ test/app.test.ts > GET /app > lists exactly the faculties and interests in the database 3ms
- ✓ test/app.test.ts > GET /app > holds no secret 2ms
+ ✓ test/app.test.ts > GET /app > lists exactly the faculties and interests in the database 6ms
+ ✓ test/app.test.ts > GET /app > holds no secret 1ms
+stdout | test/partner-mentors.test.ts > GET /api/mentors > gives every answer a request ID, for matching logs with the caller
+{"route":"GET /api/mentors","request_id":"58cc20db-019a-43df-9c03-289da627e457","origin":null}
+
+Using secrets defined in .dev.vars
+stdout | test/partner-mentors.test.ts > GET /api/mentors > gives every answer a request ID, for matching logs with the caller
+{"route":"GET /api/mentors","request_id":"6c141190-6e4d-4738-b0e6-e6cc58324683","origin":null}
+
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects both filters at once 4ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > rejects an unknown parameter 2ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > lets any website read it, including its errors 9ms
+ ✓ test/partner-mentors.test.ts > GET /api/mentors > gives every answer a request ID, for matching logs with the caller 8ms
 Using secrets defined in .dev.vars
 stderr | test/quality-security.test.ts > focused webhook security checks > rejects an invalid HMAC signature without storing the event
 events-clubs webhook rejected: invalid signature
 
- ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > hides the profile from search, profile views and new requests 17ms
+ ✓ test/quality-security.test.ts > focused mentoring request workflow checks > submits a valid pending mentoring request 12ms
+ ✓ test/quality-security.test.ts > focused mentoring request workflow checks > rejects duplicate pending requests for the same student and alumni 17ms
+ ✓ test/quality-security.test.ts > focused mentoring request workflow checks > rejects accepting or rejecting a request after it is already closed 37ms
+ ✓ test/quality-security.test.ts > focused mentoring request workflow checks > rejects a student attempting to accept another user’s request 8ms
+ ✓ test/quality-security.test.ts > focused webhook security checks > rejects an invalid HMAC signature without storing the event 3ms
+ ✓ test/quality-security.test.ts > focused webhook security checks > stores duplicate webhook event IDs only once 4ms
+ ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > returns 403 to anyone outside the connection 39ms
+ ✓ test/connections-admin.test.ts > DELETE /connections/:id (API-07) > returns 404 for an unknown connection 10ms
+ ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > deactivates a profile without returning private data 11ms
+ ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > hides the profile from search, profile views and new requests 25ms
  ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > can be repeated safely 8ms
- ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > returns 404 for an unknown profile 3ms
- ✓ test/quality-security.test.ts > focused mentoring request workflow checks > rejects accepting or rejecting a request after it is already closed 20ms
- ✓ test/quality-security.test.ts > focused mentoring request workflow checks > rejects a student attempting to accept another user’s request 6ms
- ✓ test/quality-security.test.ts > focused webhook security checks > rejects an invalid HMAC signature without storing the event 4ms
- ✓ test/quality-security.test.ts > focused webhook security checks > stores duplicate webhook event IDs only once 10ms
- ✓ test/auth.test.ts > role checks > alumni calling PATCH /mentoring-requests/missing-id: allowed=true 6ms
+ ✓ test/connections-admin.test.ts > PATCH /admin/alumni/:id/deactivate (API-08) > returns 404 for an unknown profile 2ms
+ ✓ test/auth.test.ts > role checks > superuser calling PATCH /alumni/me: allowed=false 4ms
+ ✓ test/auth.test.ts > role checks > student calling POST /mentoring-requests: allowed=true 5ms
+ ✓ test/auth.test.ts > role checks > alumni calling POST /mentoring-requests: allowed=false 8ms
+ ✓ test/auth.test.ts > role checks > admin calling POST /mentoring-requests: allowed=false 7ms
+ ✓ test/auth.test.ts > role checks > superuser calling POST /mentoring-requests: allowed=false 4ms
+ ✓ test/auth.test.ts > role checks > student calling GET /mentoring-requests/me: allowed=true 5ms
+ ✓ test/auth.test.ts > role checks > alumni calling GET /mentoring-requests/me: allowed=true 7ms
+ ✓ test/auth.test.ts > role checks > admin calling GET /mentoring-requests/me: allowed=false 9ms
+ ✓ test/auth.test.ts > role checks > superuser calling GET /mentoring-requests/me: allowed=false 2ms
+ ✓ test/auth.test.ts > role checks > student calling PATCH /mentoring-requests/missing-id: allowed=true 3ms
+ ✓ test/auth.test.ts > role checks > alumni calling PATCH /mentoring-requests/missing-id: allowed=true 3ms
  ✓ test/auth.test.ts > role checks > admin calling PATCH /mentoring-requests/missing-id: allowed=false 2ms
  ✓ test/auth.test.ts > role checks > superuser calling PATCH /mentoring-requests/missing-id: allowed=false 1ms
- ✓ test/auth.test.ts > role checks > student calling DELETE /connections/missing-id: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > alumni calling DELETE /connections/missing-id: allowed=true 2ms
- ✓ test/auth.test.ts > role checks > admin calling DELETE /connections/missing-id: allowed=false 1ms
- ✓ test/auth.test.ts > role checks > superuser calling DELETE /connections/missing-id: allowed=false 2ms
- ✓ test/auth.test.ts > role checks > student calling PATCH /admin/alumni/missing-id/deactivate: allowed=false 3ms
- ✓ test/auth.test.ts > role checks > alumni calling PATCH /admin/alumni/missing-id/deactivate: allowed=false 4ms
- ✓ test/auth.test.ts > role checks > admin calling PATCH /admin/alumni/missing-id/deactivate: allowed=true 5ms
- ✓ test/auth.test.ts > role checks > superuser calling PATCH /admin/alumni/missing-id/deactivate: allowed=false 2ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > signs in once with the code, then refuses it 15ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > lets only one of two requests with the same code through 16ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > refuses an expired code 11ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > refuses a made-up code 3ms
- ✓ test/alumni-verification.test.ts > Signing in with a personal email > takes an approved alumni from sign-up to a profile students can find 11ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects bio = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 10ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects country_code = "mm" 6ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects country_code = "MMR" 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects mentee_capacity = 11 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects mentee_capacity = -1 10ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects is_open_to_mentoring = "yes" 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_email = "not-an-email" 7ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_line = "has spaces" 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_linkedin = "javascript:alert(1)" 3ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_linkedin = "https://evil.example/in/aung" 3ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects interests = ["Not A Real Interest"] 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects interests = "Finance" 3ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > accepts the earliest and latest allowed graduation years 8ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > replaces the whole interest list 5ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > records when consent was given and to which purpose version (BR-02) 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > refuses consent for a contact field that is empty 3ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > refuses to clear a contact field while consent is on 3ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > lets consent and the contact field be cleared together 4ms
- ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > never gives one alumni access to another alumni profile 4ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a sixth pending request 41ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > holds the five-request cap when the last two arrive together 25ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > frees a slot when a pending request is cancelled 22ms
- ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a request while the pair is already connected, and allows it after 10ms
- ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > shows a student only their own requests 5ms
+ ✓ test/auth.test.ts > role checks > student calling DELETE /connections/missing-id: allowed=true 3ms
+ ✓ test/auth.test.ts > role checks > alumni calling DELETE /connections/missing-id: allowed=true 1ms
+ ✓ test/auth.test.ts > role checks > admin calling DELETE /connections/missing-id: allowed=false 2ms
+ ✓ test/auth.test.ts > role checks > superuser calling DELETE /connections/missing-id: allowed=false 1ms
+ ✓ test/auth.test.ts > role checks > student calling PATCH /admin/alumni/missing-id/deactivate: allowed=false 1ms
+ ✓ test/auth.test.ts > role checks > alumni calling PATCH /admin/alumni/missing-id/deactivate: allowed=false 1ms
+ ✓ test/auth.test.ts > role checks > admin calling PATCH /admin/alumni/missing-id/deactivate: allowed=true 2ms
+ ✓ test/auth.test.ts > role checks > superuser calling PATCH /admin/alumni/missing-id/deactivate: allowed=false 3ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > stores only a hash of the code 13ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > signs in once with the code, then refuses it 28ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > lets only one of two requests with the same code through 20ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > refuses an expired code 9ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > refuses a made-up code 4ms
+ ✓ test/alumni-verification.test.ts > Signing in with a personal email > takes an approved alumni from sign-up to a profile students can find 17ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > never returns a code for a real email, even with the passcode 5ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > shows a demo admin demo claims only 5ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > lets a demo admin review demo claims, and answers 404 for a real one 7ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects city = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 10ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects bio = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 16ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects country_code = "mm" 9ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects country_code = "MMR" 17ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects mentee_capacity = 11 7ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects mentee_capacity = -1 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects is_open_to_mentoring = "yes" 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_email = "not-an-email" 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_line = "has spaces" 7ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_linkedin = "javascript:alert(1)" 6ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects contact_linkedin = "https://evil.example/in/aung" 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects interests = ["Not A Real Interest"] 3ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > rejects interests = "Finance" 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > accepts the earliest and latest allowed graduation years 6ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > replaces the whole interest list 6ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a sixth pending request 66ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > holds the five-request cap when the last two arrive together 33ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > frees a slot when a pending request is cancelled 24ms
+ ✓ test/alumni-verification.test.ts > Demo powers reach demo claims only (invariant 9) > marks a demo claim's token as demo, and a real one's not 12ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > records when consent was given and to which purpose version (BR-02) 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > refuses consent for a contact field that is empty 4ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > refuses to clear a contact field while consent is on 5ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > lets consent and the contact field be cleared together 19ms
+ ✓ test/alumni.test.ts > PATCH /alumni/me (API-03) > never gives one alumni access to another alumni profile 5ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > applies each filter, alone and combined 41ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > matches any of several interests 12ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Burmese job title 10ms
+ ✓ test/requests.test.ts > POST /mentoring-requests (API-04) > rejects a request while the pair is already connected, and allows it after 28ms
+ ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > shows a student only their own requests 7ms
  ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > shows an alumni only the requests sent to them 9ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > applies each filter, alone and combined 18ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > matches any of several interests 35ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Burmese job title 23ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Thai job title 9ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Chinese job title 8ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a English job title at the full 100-character length 4ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Burmese job title at the full 100-character length 4ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > matches English job titles whatever the case 4ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > treats % and _ in the role filter as plain text 9ms
  ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > returns an empty list to an alumni with no profile yet 14ms
- ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > includes the status and connection once accepted (FR-07) 37ms
- ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > returns connection as null while pending 8ms
+ ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > includes the status and connection once accepted (FR-07) 22ms
+ ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > returns connection as null while pending 6ms
  ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > never exposes alumni contact details 9ms
- ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > pages through results 12ms
- ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > rejects unknown query parameters 1ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > creates the connection, reveal log and queued event together 8ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > gives each event its own event_id 11ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > can limit results to alumni open to mentoring 7ms
- ✓ test/alumni.test.ts > GET /alumni (API-01) > returns pages with a total 7ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Thai job title 8ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Chinese job title 9ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a English job title at the full 100-character length 4ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > finds a Burmese job title at the full 100-character length 3ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > matches English job titles whatever the case 3ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > treats % and _ in the role filter as plain text 8ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > can limit results to alumni open to mentoring 8ms
+ ✓ test/alumni.test.ts > GET /alumni (API-01) > returns pages with a total 9ms
  ✓ test/alumni.test.ts > GET /alumni (API-01) > never returns contact or consent data, even when consent is given 4ms
  ✓ test/alumni.test.ts > GET /alumni (API-01) > rejects the query grad_year=abc 1ms
  ✓ test/alumni.test.ts > GET /alumni (API-01) > rejects the query faculty_id=abc 1ms
@@ -316,110 +316,114 @@ events-clubs webhook rejected: invalid signature
  ✓ test/alumni.test.ts > GET /alumni (API-01) > rejects the query country=myanmar 1ms
  ✓ test/alumni.test.ts > GET /alumni (API-01) > rejects the query open_to_mentoring=maybe 1ms
  ✓ test/alumni.test.ts > GET /alumni (API-01) > rejects the query unknown_filter=1 1ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > shows a stranger public fields only, even when consent is given 4ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > hides contact from another alumni browsing the directory 5ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > shows a connected student only the fields consented to right now 9ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > logs a field consented after connecting, once, when the student first sees it 11ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > does not log anything when a stranger views a profile 4ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > stops showing contact once the connection has ended 8ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > does not reveal contact while a request is only pending or was rejected 8ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > shows the owner everything 4ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > returns 404 for an unknown ID 1ms
- ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > returns stored script tags as JSON data, never as HTML 3ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > logs only the fields consented at the moment of accepting (FR-06) 8ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > returns 409 when capacity is full, and writes nothing 8ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > shows a stranger public fields only, even when consent is given 5ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > hides contact from another alumni browsing the directory 6ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > shows a connected student only the fields consented to right now 11ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > logs a field consented after connecting, once, when the student first sees it 13ms
+ ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > pages through results 13ms
+ ✓ test/requests.test.ts > GET /mentoring-requests/me (API-05) > rejects unknown query parameters 2ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > creates the connection, reveal log and queued event together 8ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > gives each event its own event_id 11ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > logs only the fields consented at the moment of accepting (FR-06) 9ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > returns 409 when capacity is full, and writes nothing 9ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > returns 409 when capacity is zero 5ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > frees a capacity slot when a connection ends 12ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > returns 409 when the alumni has been deactivated 6ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > accept > rolls everything back if a later step fails 9ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > creates one connection when two accepts race for the last slot 9ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > never passes capacity under a larger burst 24ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > creates one connection when the same request is accepted twice at once 9ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > lets exactly one side win when accept races cancel 8ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > reject and cancel > lets the recipient reject 7ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > reject and cancel > lets the sender cancel 4ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > creates one connection when two accepts race for the last slot 10ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > does not log anything when a stranger views a profile 5ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > stops showing contact once the connection has ended 11ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > does not reveal contact while a request is only pending or was rejected 11ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > shows the owner everything 4ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > returns 404 for an unknown ID 4ms
+ ✓ test/alumni.test.ts > GET /alumni/:id (API-02) > returns stored script tags as JSON data, never as HTML 4ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > never passes capacity under a larger burst 31ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > creates one connection when the same request is accepted twice at once 11ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > racing requests > lets exactly one side win when accept races cancel 9ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > reject and cancel > lets the recipient reject 4ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > reject and cancel > lets the sender cancel 5ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects accepted to accepted 6ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects accepted to rejected 6ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects accepted to cancelled 5ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects rejected to accepted 5ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects rejected to rejected 5ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects rejected to cancelled 7ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects accepted to cancelled 6ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects rejected to accepted 6ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects rejected to rejected 6ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects rejected to cancelled 6ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects cancelled to accepted 5ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects cancelled to rejected 5ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects cancelled to cancelled 5ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status "pending" 3ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status "ended" 3ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status "pending" 4ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status "ended" 4ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status "ACCEPTED" 3ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status 7 4ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status null 4ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects extra fields 3ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status 7 5ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects the status null 5ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > state machine > rejects extra fields 4ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops a student accepting their own request 4ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops a student rejecting their own request 4ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops a different alumni accepting or rejecting 5ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops a different alumni accepting or rejecting 11ms
  ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops an alumni with no profile accepting 4ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops a different student cancelling 6ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops the recipient alumni cancelling 5ms
- ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > returns 404 for an unknown request 3ms
- ✓ test/requests.test.ts > contact reveal log (BR-10) > cannot be edited or deleted 5ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops a different student cancelling 5ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > stops the recipient alumni cancelling 3ms
+ ✓ test/requests.test.ts > PATCH /mentoring-requests/:id (API-06) > ownership > returns 404 for an unknown request 4ms
+ ✓ test/requests.test.ts > contact reveal log (BR-10) > cannot be edited or deleted 6ms
 stderr | test/phase2-validation.test.ts > Phase 2 API input validation > rejects a webhook title over its documented 200-character limit
 events-clubs webhook skipped: invalid event {"data.title":"Too big: expected string to have <=200 characters"}
 
 stderr | test/phase2-validation.test.ts > Phase 2 API input validation > rejects a webhook URL with an unsupported scheme
 events-clubs webhook skipped: invalid event {"data.url":"Invalid URL"}
 
- ✓ test/phase2-validation.test.ts > Phase 2 API input validation > reports all missing required mentoring-request fields 8ms
+ ✓ test/phase2-validation.test.ts > Phase 2 API input validation > reports all missing required mentoring-request fields 3ms
  ✓ test/phase2-validation.test.ts > Phase 2 API input validation > rejects a whitespace-only profile display name 2ms
  ✓ test/phase2-validation.test.ts > Phase 2 API input validation > rejects a profile field with the wrong JSON type 3ms
  ✓ test/phase2-validation.test.ts > Phase 2 API input validation > rejects a webhook title over its documented 200-character limit 1ms
  ✓ test/phase2-validation.test.ts > Phase 2 API input validation > rejects a webhook URL with an unsupported scheme 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > returns Team 17's open internships with only the fields we use 4ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Engineering category to our mentor interests 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Data category to our mentor interests 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Design category to our mentor interests 5ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Marketing category to our mentor interests 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Logistics category to our mentor interests 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > forwards only the filters Team 17 accepts, with status=open 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects an unknown work mode without calling Team 17 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects a search over 100 characters without calling Team 17 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects a limit over 50 without calling Team 17 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects an unknown parameter without calling Team 17 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > skips a listing that breaks the contract, and counts it 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > drops a details link to another site 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > drops a details link to a javascript: link 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > drops a details link to plain http 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 503 when Team 17 says it is unavailable 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 503 when Team 17 cannot be reached 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 504 when Team 17 is too slow 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when Team 17 returns another error 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when the response is not JSON 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when the response is the wrong shape 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when the response is success: false with 200 0ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > is for students and alumni 1ms
- ✓ test/partner-internships.test.ts > GET /partners/team17/internships > needs a token 1ms
- ✓ test/docs-and-lab.test.ts > GET /docs > is served as an HTML page 3ms
- ✓ test/docs-and-lab.test.ts > GET /docs > has a console for every route the Worker serves 1ms
+ ✓ test/docs-and-lab.test.ts > GET /docs > is served as an HTML page 7ms
+ ✓ test/docs-and-lab.test.ts > GET /docs > has a console for every route the Worker serves 2ms
  ✓ test/docs-and-lab.test.ts > GET /docs > lists every faculty and interest clients can use 2ms
  ✓ test/docs-and-lab.test.ts > GET /docs > holds no secret 1ms
  ✓ test/docs-and-lab.test.ts > test setup > uses fixed test secrets, not the real ones in .dev.vars 0ms
  ✓ test/docs-and-lab.test.ts > reference data > seeds MFU's 15 current schools and the data design's 17 interests 1ms
  ✓ test/docs-and-lab.test.ts > errors > answers an unknown route with JSON 1ms
  ✓ test/docs-and-lab.test.ts > errors > answers an unexpected failure with JSON and no internal detail 1ms
- ✓ test/docs-and-lab.test.ts > errors > reports malformed JSON with the standard validation error shape 1ms
+ ✓ test/docs-and-lab.test.ts > errors > reports malformed JSON with the standard validation error shape 2ms
  ✓ test/docs-and-lab.test.ts > security headers > are sent on the web app 1ms
- ✓ test/docs-and-lab.test.ts > security headers > are sent on the docs page 1ms
- ✓ test/docs-and-lab.test.ts > security headers > are sent on an API answer 0ms
- ✓ test/docs-and-lab.test.ts > security headers > are sent on a refused request 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on the docs page 0ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on an API answer 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > are sent on a refused request 0ms
  ✓ test/docs-and-lab.test.ts > security headers > are sent on a validation error 2ms
  ✓ test/docs-and-lab.test.ts > security headers > are sent on an unknown route 0ms
  ✓ test/docs-and-lab.test.ts > security headers > sends plain HTTP on the live host to HTTPS, keeping the method and path 1ms
- ✓ test/docs-and-lab.test.ts > security headers > leaves plain HTTP alone on a local server 1ms
+ ✓ test/docs-and-lab.test.ts > security headers > leaves plain HTTP alone on a local server 0ms
  ✓ test/docs-and-lab.test.ts > A5 integration lab routes > still answers the status check 1ms
  ✓ test/docs-and-lab.test.ts > A5 integration lab routes > still verifies and de-duplicates Team 17 webhooks 3ms
- ✓ test/docs-and-lab.test.ts > A5 integration lab routes > still replays the idempotent create 2ms
- ✓ test/docs-and-lab.test.ts > A5 integration lab routes > is unaffected by the mentoring API needing a token 0ms
+ ✓ test/docs-and-lab.test.ts > A5 integration lab routes > still replays the idempotent create 1ms
+ ✓ test/docs-and-lab.test.ts > A5 integration lab routes > is unaffected by the mentoring API needing a token 1ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > returns Team 17's open internships with only the fields we use 4ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Engineering category to our mentor interests 1ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Data category to our mentor interests 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Design category to our mentor interests 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Marketing category to our mentor interests 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > maps the Logistics category to our mentor interests 1ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > forwards only the filters Team 17 accepts, with status=open 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects an unknown work mode without calling Team 17 1ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects a search over 100 characters without calling Team 17 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects a limit over 50 without calling Team 17 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > rejects an unknown parameter without calling Team 17 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > skips a listing that breaks the contract, and counts it 1ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > drops a details link to another site 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > drops a details link to a javascript: link 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > drops a details link to plain http 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 503 when Team 17 says it is unavailable 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 503 when Team 17 cannot be reached 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 504 when Team 17 is too slow 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when Team 17 returns another error 1ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when the response is not JSON 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when the response is the wrong shape 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > answers 502 when the response is success: false with 200 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > is for students and alumni 0ms
+ ✓ test/partner-internships.test.ts > GET /partners/team17/internships > needs a token 1ms
 
  Test Files  12 passed (12)
-      Tests  341 passed (341)
-   Start at  14:15:19
-   Duration  2.07s (transform 2.27s, setup 7.41s, import 297ms, tests 1.77s, environment 1ms)
+      Tests  345 passed (345)
+   Start at  14:24:32
+   Duration  2.14s (transform 2.29s, setup 7.60s, import 438ms, tests 2.11s, environment 0ms)
 

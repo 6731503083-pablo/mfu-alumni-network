@@ -7,7 +7,8 @@ the questions we expect, and what to do if something breaks. Everything here was
 
 **One laptop has the keys.** Deploying needs the Cloudflare login, and the live demo scripts need
 `.demo.vars`. Both are on Phyo Phyo Lay's laptop, so run the commands there. Any of us can drive it.
-The demo passcode isn't written here: ask Phyo Phyo Lay.
+The web app itself needs no password: since 11 November, anyone with the link can sign in as a demo
+person.
 
 ## Before 13:00
 
@@ -16,7 +17,7 @@ Run these in `alumni-network/`, in this order:
 | # | Do | Expect |
 |---|---|---|
 | 1 | `git pull` and `npm install` | Up to date |
-| 2 | `npm test` | 341 pass, in about 2 seconds |
+| 2 | `npm test` | 346 pass, in about 2 seconds |
 | 3 | `npm run typecheck` | No TypeScript errors |
 | 4 | `npm run evidence:team17` | `200`. This also confirms Team 17 is online. If it isn't, message Team 17 |
 | 5 | `npm run evidence:security` | 40 of 40 pass |
@@ -29,12 +30,11 @@ Run these in `alumni-network/`, in this order:
 
 About 7 minutes with talking (our estimate). The rehearsal on a local copy took 5 seconds of
 machine time, and Team 17's first answer took about 3 seconds. Sign out between people with
-**Sign out** at the top right. The passcode stays filled in until the tab reloads, so signing in as
-the next person is one click on their name.
+**Sign out** at the top right. Signing in as the next person is one click on their name.
 
 | # | Signed in as | Do | Say |
 |---|---|---|---|
-| 1 | **Ko Min** (student) | Type the passcode, then click **Ko Min** | "Until MFU's Identity service publishes its login, a demo sign-in stands in for it." |
+| 1 | **Ko Min** (student) | Click **Ko Min** | "Until MFU's Identity service publishes its login, a demo sign-in stands in for it." |
 | 2 | Ko Min | Type `พยาบาล` in Job title. The list updates as you type, no button needed | "Search works in Thai and Burmese." One result: Nattaya Srisuk (FR-01) |
 | 3 | Ko Min | Open **Nattaya Srisuk** | The panel on the right shows three steps. Step 3, *Contact details unlock*, shows Email, LINE and LinkedIn locked: "They're hidden until she accepts, and then he sees only the ones she shares." (BR-01) |
 | 4 | Ko Min | Click the **Healthcare** draft, add a line of your own, then **Send request**. The panel moves to step 2, *Waiting for Nattaya Srisuk to answer* | "One pending request per alumni and five in total, checked by the database." (BR-05, BR-08) |
@@ -60,11 +60,11 @@ through **Internships**, then **Find a mentor for this**.
 
 ### A visible change, deployed (rehearsed: about 20 seconds)
 
-1. Open [`src/app.html`](src/app.html#L713), line 713, the sign-in page's tagline. Change the text.
+1. Open [`src/app.html`](src/app.html#L674), line 674, the sign-in page's tagline. Change the text.
 2. Run it:
 
    ```bash
-   npm test          # 341 pass, about 2 seconds
+   npm test          # 346 pass, about 2 seconds
    npm run typecheck # no TypeScript errors
    npm run deploy    # about 9 seconds
    ```
@@ -126,15 +126,15 @@ The "Who" column suggests someone by PRD role. Swap as you like.
 |---|---|
 | Internships says Team 17 can't be reached | Press *Try again* once. If it still fails, say so: this is the designed failure. Show the [saved screenshot](evidence/team17-internships-live.png) and the failure table in the [integration evidence](evidence/team17-internships-integration.md) |
 | "You already have a pending request" or "already connected" | `npm run demo:reset`, or use the backup pair |
-| The passcode is refused | Ask Phyo Phyo Lay for it again. It's case-sensitive |
-| The live site is down | Run it locally: `npm run dev`, then `BASE_URL=http://localhost:8787 npm run demo:seed`, and open <http://localhost:8787/app>. The local passcode is in `.dev.vars` |
+| The live site is down | Run it locally: `npm run dev`, then `BASE_URL=http://localhost:8787 npm run demo:seed`, and open <http://localhost:8787/app> |
 | No internet | The local copy works, except Internships |
 | A deploy broke something | `npx wrangler rollback`, then check the site |
 | The page looks stuck | Sign out and sign in again |
 
 ## After the evaluation
 
-- Replace the three secrets that were shared in an AI chat:
-  `npx wrangler secret put JWT_SECRET`, `EVENTS_CLUBS_WEBHOOK_SECRET` and `DEMO_PASSCODE`. Then update
-  `.demo.vars` to match.
+- Replace the two secrets still in use that were shared in an AI chat:
+  `npx wrangler secret put JWT_SECRET` and `EVENTS_CLUBS_WEBHOOK_SECRET`. Then update `.demo.vars` to
+  match. The third, `DEMO_PASSCODE`, has been unused since 11 November: delete it with
+  `npx wrangler secret delete DEMO_PASSCODE`.
 - Decide what to do with the open Week 06 routes (SECURITY.md, gap 4).

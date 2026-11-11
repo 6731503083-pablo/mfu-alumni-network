@@ -18,10 +18,8 @@ Run every command from this folder, on Phyo Phyo Lay's laptop. The live site is
   - VS Code with `alumni-network/`
   - a terminal in `alumni-network/`
 - [ ] Zoom the browser so the back row can read it.
-- [ ] Have the demo passcode ready. It's case-sensitive.
-
-**Switching people:** click **Sign out** at the top right. The passcode stays filled in until the page
-reloads, so the next sign-in is one click on a name.
+**Switching people:** click **Sign out** at the top right. Signing in is one click on a name, with no
+password.
 
 ## Opening (20 seconds)
 
@@ -33,7 +31,7 @@ reloads, so the next sign-in is one click on a name.
 
 ### 1. Sign in as Ko Min (student)
 
-- **Do:** type the passcode, then click **Ko Min**.
+- **Do:** click **Ko Min**.
 - **You see:** Find a mentor.
 - **Say:** "MFU's Identity service hasn't published its login yet, so a demo sign-in stands in for it."
 
@@ -118,7 +116,7 @@ reloads, so the next sign-in is one click on a name.
 
 ## Closing (10 seconds)
 
-> "The suite has 341 automated tests, and 40 security checks run against the live site. The tests,
+> "The suite has 346 automated tests, and 40 security checks run against the live site. The tests,
 > the security write-up and the integration evidence are all in the repo."
 
 ## If they ask for a live change
@@ -129,7 +127,7 @@ reloads, so the next sign-in is one click on a name.
 2. In the terminal:
 
    ```bash
-   npm test           # 341 pass, about 2 seconds
+   npm test           # 346 pass, about 2 seconds
    npm run typecheck  # no errors
    npm run deploy     # about 9 seconds
    ```
@@ -170,20 +168,19 @@ reloads, so the next sign-in is one click on a name.
 |---|---|
 | Internships can't reach Team 17 | Press *Try again* once. If it still fails, say "this is the designed failure", then show `evidence/team17-internships-live.png` |
 | "You already have a request waiting" or "already connected" | Run `npm run demo:reset`, or use the backup pair: Su Myat finds Ei Mon Thant through **Internships** |
-| The passcode is refused | It's case-sensitive. Type it again |
 | A deploy broke something | Run `npx wrangler rollback` |
-| The live site is down | Run `npm run dev`, then `BASE_URL=http://localhost:8787 npm run demo:seed`, and open <http://localhost:8787/app>. The local passcode is in `.dev.vars` |
+| The live site is down | Run `npm run dev`, then `BASE_URL=http://localhost:8787 npm run demo:seed`, and open <http://localhost:8787/app> |
 | The page looks stuck | Sign out and sign in again |
 
 ## After the demo
 
 - Run `npm run demo:reset` if anyone will demo again.
-- After the evaluation, replace the three secrets that were shared in an AI chat:
+- After the evaluation, replace the two secrets still in use that were shared in an AI chat:
 
   ```bash
   npx wrangler secret put JWT_SECRET
   npx wrangler secret put EVENTS_CLUBS_WEBHOOK_SECRET
-  npx wrangler secret put DEMO_PASSCODE
   ```
 
-  Then update `.demo.vars` to match.
+  Then update `.demo.vars` to match. The third, `DEMO_PASSCODE`, has been unused since 11 November:
+  delete it with `npx wrangler secret delete DEMO_PASSCODE`.

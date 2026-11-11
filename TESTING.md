@@ -1,14 +1,15 @@
 # Testing
 
-How the MFU Alumni Network is tested, how to run each test, and where the results are. All results
-are from 9 November 2026.
+How the MFU Alumni Network is tested, how to run each test, and where the results are. Results are
+from 9 November 2026, except the automated tests and the live security checks, which were run again
+on 11 November after demo sign-in stopped needing a passcode.
 
 | Kind | What it covers | Run it | Result | Evidence |
 |---|---|---|---|---|
-| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **341 of 341 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-10.txt) |
+| Automated | Every API route, the security rules, and the web page's safety rules. Runs in the Workers runtime against a real D1 database (Miniflare) | `npm test` | **346 of 346 pass** in about 2 s | [report](evidence/tests/automated-test-report-2026-11-11.txt) |
 | Type check | `src` and `test` | `npm run typecheck` | No errors | |
 | End to end, live | The presentation's five steps to a mentor, plus consent withdrawal, security and admin, against the deployed API | `npm run demo` | **35 of 35 checks pass** | [live run](evidence/demo-run-live-2026-11-09.txt) |
-| Security, live | 40 attacks and privacy checks against the deployed site. It writes nothing to the live database | `npm run evidence:security` | **40 of 40 pass** | [live run](evidence/security/live-security-checks-2026-11-09.txt), [SECURITY.md](SECURITY.md) |
+| Security, live | 40 attacks and privacy checks against the deployed site. It writes nothing to the live database | `npm run evidence:security` | **40 of 40 pass** | [live run](evidence/security/live-security-checks-2026-11-11.txt), [SECURITY.md](SECURITY.md) |
 | Partner, live | Our call to Team 17's internship API, with their request ID | `npm run evidence:team17` | 200 | [integration evidence](evidence/team17-internships-integration.md) |
 | Manual | The web app in a real browser, for every role and at phone width | [log](evidence/tests/manual-test-log.md) | **25 checks: 18 passed, 7 failed and were fixed** | [screenshots](evidence/screenshots/) |
 
@@ -19,14 +20,14 @@ are from 9 November 2026.
 | [`test/alumni.test.ts`](test/alumni.test.ts) | 65 | Profile create and update (allow-list, consent rules), search with every filter including Burmese and Thai text, the three profile views, reveal logging, and stored script tags returned as data |
 | [`test/requests.test.ts`](test/requests.test.ts) | 61 | Sending requests (one per alumni, five in total), listing, accepting as one transaction, a burst of simultaneous accepts at capacity, reject and cancel, the state machine, ownership, and the reveal log |
 | [`test/auth.test.ts`](test/auth.test.ts) | 56 | Every protected route refuses a missing, forged, expired or unsigned (`alg: none`) token, and a role matrix covers student, alumni, admin and an unknown role on every Mentoring API route |
-| [`test/app.test.ts`](test/app.test.ts) | 24 | Demo sign-in (passcode, fixed roles, demo-only IDs), demo admin limits, `GET /alumni/me`, admin read access, and `/app`'s Content-Security-Policy nonce, no HTML parsing, reference data and no secrets |
+| [`test/app.test.ts`](test/app.test.ts) | 25 | Demo sign-in (no password, fixed roles, demo-only IDs), demo admin limits, `GET /alumni/me`, admin read access, and `/app`'s Content-Security-Policy nonce, no HTML parsing, reference data and no secrets |
 | [`test/partner-internships.test.ts`](test/partner-internships.test.ts) | 24 | Team 17 integration against a fake Team 17: field mapping, forwarded filters, broken listings, unsafe links, 503, timeout and bad responses |
 | [`test/partner-mentors.test.ts`](test/partner-mentors.test.ts) | 14 | The public mentor counts for other teams: only alumni who can take a mentee are counted, no name, ID or contact detail ever appears, Team 17's categories map to our interests, bad queries are refused, and any site may read it |
 | [`test/events-clubs.test.ts`](test/events-clubs.test.ts) | 23 | The signed Events & Clubs webhook: signature checks, a missing secret, retries stored once, and malformed events |
 | [`test/docs-and-lab.test.ts`](test/docs-and-lab.test.ts) | 21 | The docs page has a console for every route and no secrets, the seed lists, error shapes, security headers on every answer, the HTTPS redirect, and the A5 lab routes |
 | [`test/connections-admin.test.ts`](test/connections-admin.test.ts) | 10 | Ending a connection (either party only) and admin deactivation |
 | [`test/quality-security.test.ts`](test/quality-security.test.ts) | 12 | A second, focused pass by Quality and Security: protected routes, admin-only routes, contact details only after a connection and only while consented, duplicate and closed requests, and webhook signatures and retries. See [QUALITY_ASSURANCE_REPORT.md](QUALITY_ASSURANCE_REPORT.md) |
-| [`test/alumni-verification.test.ts`](test/alumni-verification.test.ts) | 26 | The PRD Assumption 1 fallback: personal-email claims (student addresses refused), the admin review queue, single-use sign-in codes (expired, reused, raced), and sign-up through to a profile students can find |
+| [`test/alumni-verification.test.ts`](test/alumni-verification.test.ts) | 30 | The PRD Assumption 1 fallback: personal-email claims (student addresses refused), the admin review queue, single-use sign-in codes (expired, reused, raced), sign-up through to a profile students can find, and demo powers limited to `@example.com` claims |
 | [`test/phase2-validation.test.ts`](test/phase2-validation.test.ts) | 5 | Input validation: missing request fields, a blank display name, a wrong JSON type, an over-long webhook title and an unsupported URL scheme |
 
 ### The PRD's 11 planned tests
